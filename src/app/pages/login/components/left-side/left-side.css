@@ -1,0 +1,125 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 4rem;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+  :host {
+    padding: 2rem 6rem;
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+    margin: 0;
+  }
+}
+
+.logo-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+}
+
+.logo-icon i {
+  font-size: 2rem;
+  color: white;
+}
+
+.brand-name {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.brand-accent {
+  color: var(--accent);
+}
+
+.brand-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.welcome-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  letter-spacing: -0.025em;
+}
+
+.welcome-subtitle {
+  color: var(--text-muted);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.form-control {
+  height: 48px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.forgot-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+  color: var(--primary-dark);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.password-toggle:hover {
+  color: var(--text-dark);
+}
+
+.btn-login {
+  height: 48px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-login:hover {
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}

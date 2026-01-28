@@ -1,0 +1,44 @@
+<div class="w-100" style="max-width: 400px; margin: 0 auto;">
+  <!-- Logo -->
+  <div class="d-flex align-items-center gap-3 mb-5">
+    <div class="logo-icon">
+      <i class="bi bi-capsule"></i>
+    </div>
+    <div>
+      <h1 class="brand-name mb-0">Farma<span class="brand-accent">Dantas</span></h1>
+      <p class="brand-subtitle mb-0">A vermelhinha de Santa Luzia</p>
+    </div>
+  </div>
+
+  <!-- Welcome text -->
+  <div class="mb-4">
+    <h2 class="welcome-title">Seja bem-vindo</h2>
+    <p class="welcome-subtitle">Entre com suas credenciais para acessar o sistema</p>
+  </div>
+
+  <!-- Form -->
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="email" class="form-label">E-mail</label>
+      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" placeholder="seu@email.com" required>
+    </div>
+
+    <div class="mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <label for="password" class="form-label mb-0">Senha</label>
+        <a href="#" class="forgot-link">Esqueceu a senha?</a>
+      </div>
+      <div class="position-relative">
+        <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+        <button type="button" class="password-toggle" (click)="togglePassword()">
+          <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+        </button>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-login w-100 d-flex align-items-center justify-content-center gap-2">
+      <span>Entrar</span>
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </form>
+</div>

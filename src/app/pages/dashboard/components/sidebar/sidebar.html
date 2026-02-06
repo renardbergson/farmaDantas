@@ -1,0 +1,91 @@
+<aside class="sidebar">
+  <!-- Logo Section -->
+  <div class="sidebar-header">
+    <div class="logo-icon">
+      <i class="bi bi-capsule"></i>
+    </div>
+    <div class="logo-text">
+      <h1 class="brand-name">Farma<span class="brand-accent">Dantas</span></h1>
+      <p class="brand-subtitle">controle de cashback</p>
+    </div>
+  </div>
+
+  <!-- Collapse Button -->
+  <button class="collapse-btn" (click)="toggleSidebar()" [attr.aria-label]="getCollapseButtonLabel()">
+    <i class="bi" [class.bi-chevron-left]="!isCollapsed" [class.bi-chevron-right]="isCollapsed"></i>
+  </button>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <!-- Menu Principal -->
+    <div class="nav-section">
+      <p class="nav-section-title">Menu Principal</p>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a routerLink="/user/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+            <i class="bi bi-grid-1x2"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/user/customers" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-people"></i>
+            <span>Clientes</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/user/purchases" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-cart"></i>
+            <span>Compras</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/user/cashbacks" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-gift"></i>
+            <span>Cashbacks</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Administração (condicional para admins) -->
+    <div class="nav-section" *ngIf="isAdmin">
+      <p class="nav-section-title">Administração</p>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a routerLink="/relatorios" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-bar-chart"></i>
+            <span>Relatórios</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/funcionarios" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-people"></i>
+            <span>Funcionários</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/configuracoes" routerLinkActive="active" class="nav-link">
+            <i class="bi bi-gear"></i>
+            <span>Configurações</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- User Section -->
+  <section class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">{{ userInitials }}</div>
+      <div class="user-details">
+        <p class="user-name">{{ userName }}</p>
+        <p class="user-role">{{ userRole }}</p>
+      </div>
+    </div>
+    <a routerLink="/login" class="logout-link">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Sair</span>
+    </a>
+  </section>
+</aside>

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-left-side',
   imports: [FormsModule],
@@ -11,17 +11,18 @@ import { FormsModule } from '@angular/forms';
   }
 })
 export class LeftSide {
+  constructor(private router: Router) { }
+
   email: string = '';
   password: string = '';
   showPassword: boolean = false;
+  isSubmitting = signal(false);
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
   onSubmit(): void {
-    // Implementar lógica de login aqui
-    console.log('Login attempt:', { email: this.email, password: this.password });
-    // TODO: Implementar toasts para mensagens de erro/sucesso
+    this.router.navigate(['/user/dashboard']);
   }
 }

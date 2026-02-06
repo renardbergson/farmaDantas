@@ -9,6 +9,21 @@
   --text-muted: #737373;
   --bg-light: #fafafa;
   --border-color: #e5e5e5;
+
+  /* Sidebar Colors */
+  --sidebar-bg: #dc2626;
+  --sidebar-border: #b91c1c;
+  --sidebar-accent: #991b1b;
+  --sidebar-text: #ffffff;
+  --sidebar-text-muted: rgba(255, 255, 255, 0.7);
+  --accent-gold: #eab308;
+
+  /* Sidebar Dimensions */
+  --sidebar-width-expanded: 256px;
+  --sidebar-width-collapsed: 80px;
+
+  /* Transitions */
+  --transition-speed: 0.3s;
 }
 
 * {

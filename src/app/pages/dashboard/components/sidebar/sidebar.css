@@ -1,0 +1,347 @@
+:host {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: var(--sidebar-width-expanded);
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--transition-speed) ease;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+:host.collapsed {
+  width: var(--sidebar-width-collapsed);
+}
+
+/* Logo Section */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 20px;
+  min-height: 100px;
+  border-bottom: 1px solid var(--sidebar-border);
+  transition: all var(--transition-speed) ease;
+}
+
+:host.collapsed .sidebar-header {
+  min-height: 80px;
+  justify-content: center;
+  padding: 16px 0;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--sidebar-bg) 0%, var(--sidebar-border) 100%);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+  transition: all var(--transition-speed) ease;
+}
+
+:host.collapsed .logo-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.logo-icon i {
+  font-size: 1.5rem;
+  color: var(--sidebar-text);
+  transition: font-size var(--transition-speed) ease;
+}
+
+:host.collapsed .logo-icon i {
+  font-size: 1.25rem;
+}
+
+.logo-text {
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+  flex: 1;
+  min-width: 0;
+}
+
+:host.collapsed .logo-text {
+  opacity: 0;
+  width: 0;
+  display: none;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sidebar-text);
+  line-height: 1.3;
+  white-space: nowrap;
+  margin-bottom: 0;
+}
+
+.brand-accent {
+  color: var(--accent-gold);
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--sidebar-text-muted);
+  margin-bottom: 0;
+}
+
+/* Collapse Button */
+.collapse-btn {
+  position: absolute;
+  right: -12px;
+  top: 76px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all var(--transition-speed) ease;
+}
+
+.collapse-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.collapse-btn i {
+  font-size: 0.875rem;
+  color: #374151;
+  transition: transform var(--transition-speed) ease;
+}
+
+:host.collapsed .collapse-btn i {
+  transform: rotate(180deg);
+}
+
+/* Navigation */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.nav-section {
+  margin-bottom: 24px;
+}
+
+.nav-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sidebar-text-muted);
+  padding: 0 12px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+}
+
+:host.collapsed .nav-section-title {
+  opacity: 0;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.nav-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-item {
+  margin-bottom: 4px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+:host.collapsed .nav-link {
+  justify-content: center;
+  gap: 0;
+}
+
+.nav-link:hover {
+  background-color: rgba(153, 27, 27, 0.5);
+  color: var(--sidebar-text);
+}
+
+.nav-link.active {
+  background-color: var(--primary-dark) !important;
+  color: var(--sidebar-text) !important;
+}
+
+.nav-link.active i {
+  color: var(--sidebar-text) !important;
+}
+
+.nav-link i {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-link span {
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+}
+
+:host.collapsed .nav-link span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* User Section */
+.sidebar-footer {
+  border-top: 1px solid var(--sidebar-border);
+  padding: 12px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all var(--transition-speed) ease;
+}
+
+:host.collapsed .user-info {
+  justify-content: center;
+  padding: 8px 0;
+  gap: 0;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--sidebar-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
+.user-details {
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+}
+
+:host.collapsed .user-details {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sidebar-text);
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: var(--sidebar-text-muted);
+}
+
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--sidebar-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+}
+
+:host.collapsed .logout-link {
+  justify-content: center;
+  padding: 10px;
+}
+
+.logout-link:hover {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-text);
+}
+
+.logout-link i {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.logout-link span {
+  opacity: 1;
+  transition: opacity var(--transition-speed) ease;
+}
+
+:host.collapsed .logout-link {
+  gap: 0;
+}
+
+:host.collapsed .logout-link span {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+/* Focus states for accessibility */
+.nav-link:focus {
+  outline: none;
+  background-color: rgba(153, 27, 27, 0.5);
+}
+
+.nav-link.active:focus {
+  background-color: var(--primary-dark) !important;
+}
+
+.logout-link:focus,
+.collapse-btn:focus {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}

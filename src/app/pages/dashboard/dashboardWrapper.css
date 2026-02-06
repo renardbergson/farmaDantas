@@ -1,0 +1,12 @@
+.main-content {
+  margin-left: var(--sidebar-width-expanded);
+  flex: 1;
+  padding: 24px;
+  transition: margin-left var(--transition-speed) ease;
+  min-height: 100vh;
+}
+
+/* Quando sidebar está colapsada, ajustar margem */
+.sidebar-collapsed .main-content {
+  margin-left: var(--sidebar-width-collapsed);
+}

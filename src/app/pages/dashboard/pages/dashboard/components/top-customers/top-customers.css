@@ -1,0 +1,152 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Card */
+/* Altura fixa: 520px para manter layout consistente mesmo com poucos ou nenhum item */
+/* Overflow hidden: garante que o conteúdo não ultrapasse os limites do card */
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  min-height: 520px;
+  height: 520px;
+  max-height: 520px;
+  overflow: hidden;
+}
+
+.dashboard-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.dashboard-card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 4px 0 0 0;
+}
+
+.dashboard-card-body {
+  padding: 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Importante para flex funcionar corretamente */
+  overflow: hidden;
+  /* Previne estouro do conteúdo */
+}
+
+.btn-ghost {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--primary);
+}
+
+/* Top Clients List */
+/* Container da lista com scroll automático se necessário */
+/* Suporta até 5 clientes sem scroll, após isso mostra scroll vertical */
+.d-flex.flex-column.gap-2 {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Scroll vertical quando necessário */
+  overflow-x: hidden;
+  /* Sem scroll horizontal */
+}
+
+.client-list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.client-list-item:hover {
+  background: #f0f0f0;
+}
+
+.client-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.client-info {
+  flex: 1;
+}
+
+.client-name {
+  font-weight: 500;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.client-purchases {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.client-cashback {
+  text-align: right;
+}
+
+.client-cashback-value {
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+}
+
+.client-cashback-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+}

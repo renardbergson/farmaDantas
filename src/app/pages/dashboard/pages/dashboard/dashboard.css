@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Spacing utility - matching original design */
+/* Usado para espaçamento vertical entre seções do dashboard */
+/* Aplicado nas rows que contêm gráficos e listas */
+.mb-6 {
+  margin-bottom: 1.5rem;
+  /* 24px - espaçamento padrão entre seções */
+}

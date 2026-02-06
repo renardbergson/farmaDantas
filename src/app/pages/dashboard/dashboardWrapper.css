@@ -1,12 +1,20 @@
+:host {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
 .main-content {
   margin-left: var(--sidebar-width-expanded);
   flex: 1;
   padding: 24px;
   transition: margin-left var(--transition-speed) ease;
   min-height: 100vh;
+  width: calc(100% - var(--sidebar-width-expanded));
 }
 
 /* Quando sidebar está colapsada, ajustar margem */
-.sidebar-collapsed .main-content {
+:host.sidebar-collapsed .main-content {
   margin-left: var(--sidebar-width-collapsed);
+  width: calc(100% - var(--sidebar-width-collapsed));
 }

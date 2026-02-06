@@ -1,1 +1,23 @@
-<p>dashboard works!</p>
+<app-header />
+
+<app-stats-grid />
+
+<!-- Charts Row -->
+<div class="row g-4 mb-6">
+  <div class="col-lg-6">
+    <app-cashback-measure />
+  </div>
+  <div class="col-lg-6">
+    <app-cashback-quantity />
+  </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="row g-4">
+  <div class="col-lg-6">
+    <app-top-customers />
+  </div>
+  <div class="col-lg-6">
+    <app-recent-cashbacks />
+  </div>
+</div>

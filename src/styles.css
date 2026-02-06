@@ -28,9 +28,33 @@
 
 * {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  cursor: default;
 }
 
 body {
   background-color: var(--bg-light);
   min-height: 100vh;
+}
+
+/* Cursor text para campos de formulário */
+input,
+textarea,
+select,
+[contenteditable="true"],
+[contenteditable=""] {
+  cursor: text;
+}
+
+/* Cursor pointer para elementos interativos */
+a,
+button,
+[role="button"],
+[tabindex]:not([tabindex="-1"]),
+label[for],
+.nav-link,
+.btn-ghost,
+.btn-primary-gradient,
+.collapse-btn,
+.logout-link {
+  cursor: pointer;
 }

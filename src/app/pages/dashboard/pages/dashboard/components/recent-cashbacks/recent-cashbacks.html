@@ -1,0 +1,32 @@
+<div class="dashboard-card">
+  <div class="dashboard-card-header">
+    <div>
+      <h2 class="dashboard-card-title">Cashbacks Recentes</h2>
+      <p class="dashboard-card-subtitle">Últimos cashbacks gerados</p>
+    </div>
+    <button class="btn-ghost" (click)="verTodosCashbacks()">
+      Ver todos <i class="bi bi-arrow-right ms-1"></i>
+    </button>
+  </div>
+  <div class="dashboard-card-body">
+    <div class="d-flex flex-column gap-3">
+      <div class="cashback-list-item" *ngFor="let cashback of recentCashbacks">
+        <div class="d-flex align-items-center">
+          <div class="cashback-icon">
+            <i class="bi bi-gift"></i>
+          </div>
+          <div class="cashback-info">
+            <p class="cashback-cliente">{{ cashback.cliente }}</p>
+            <p class="cashback-expira">Expira em {{ cashback.expira }}</p>
+          </div>
+        </div>
+        <div class="cashback-right">
+          <span class="badge-status" [class.badge-ativo]="cashback.status === 'ativo'" [class.badge-expirado]="cashback.status === 'expirado'">
+            {{ cashback.status }}
+          </span>
+          <span class="cashback-valor">R$ {{ cashback.valor | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

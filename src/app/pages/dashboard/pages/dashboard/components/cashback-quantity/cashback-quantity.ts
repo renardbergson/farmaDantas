@@ -4,7 +4,7 @@ declare var Chart: any;
 
 export interface CashbackQuantityData {
   labels: string[];
-  quantidades: number[];
+  quantities: number[];
 }
 
 @Component({
@@ -25,7 +25,7 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
    */
   chartData: CashbackQuantityData = {
     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-    quantidades: [120, 98, 145, 132, 167, 189]
+    quantities: [120, 98, 145, 132, 167, 189]
   };
 
   ngOnInit(): void {
@@ -66,7 +66,7 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
             labels: this.chartData.labels,
             datasets: [{
               label: 'Quantidade',
-              data: this.chartData.quantidades,
+              data: this.chartData.quantities,
               backgroundColor: primaryColor,
               borderRadius: 4,
               borderSkipped: false
@@ -123,7 +123,7 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
     this.chartData = { ...data };
     if (this.barChart) {
       this.barChart.data.labels = data.labels;
-      this.barChart.data.datasets[0].data = data.quantidades;
+      this.barChart.data.datasets[0].data = data.quantities;
       this.barChart.update();
     }
   }
@@ -133,7 +133,7 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
    * Endpoint sugerido: GET /api/dashboard/cashback-quantity
    * Parâmetros opcionais: ?period=6 (quantidade de meses/períodos)
    * Resposta esperada: { labels: string[], quantidades: number[] }
-   * 
+   *
    * Exemplo de implementação:
    * loadChartData(): void {
    *   this.cashbackService.getQuantityData({ period: 6 }).subscribe({

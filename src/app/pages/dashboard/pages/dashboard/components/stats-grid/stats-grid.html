@@ -5,10 +5,10 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Total de Clientes</p>
-          <p class="stat-card-value">{{ stats.totalClientes | number }}</p>
-          <p class="stat-card-subtitle">{{ stats.novosClientesHoje }} novos hoje</p>
+          <p class="stat-card-value">{{ stats.totalCustomers | number }}</p>
+          <p class="stat-card-subtitle">{{ stats.newCustomersToday }} novos hoje</p>
           <div class="stat-card-trend">
-            <span class="trend-positive">+{{ stats.trendClientes }}%</span>
+            <span class="trend-positive">+{{ stats.trendCustomers }}%</span>
             <span class="trend-label">vs mês anterior</span>
           </div>
         </div>
@@ -24,10 +24,10 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Compras do Mês</p>
-          <p class="stat-card-value">{{ stats.comprasMes | number }}</p>
-          <p class="stat-card-subtitle">R$ {{ stats.vendasMes | number:'1.2-2' }} em vendas</p>
+          <p class="stat-card-value">{{ stats.purchasesMonth | number }}</p>
+          <p class="stat-card-subtitle">R$ {{ stats.salesMonth | number:'1.2-2' }} em vendas</p>
           <div class="stat-card-trend">
-            <span class="trend-positive">+{{ stats.trendCompras }}%</span>
+            <span class="trend-positive">+{{ stats.trendPurchases }}%</span>
             <span class="trend-label">vs mês anterior</span>
           </div>
         </div>
@@ -43,8 +43,8 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Cashbacks Ativos</p>
-          <p class="stat-card-value">{{ stats.cashbacksAtivos | number }}</p>
-          <p class="stat-card-subtitle">R$ {{ stats.cashbacksDisponiveis | number:'1.2-2' }} disponíveis</p>
+          <p class="stat-card-value">{{ stats.activeCashbacks | number }}</p>
+          <p class="stat-card-subtitle">R$ {{ stats.availableCashbacks | number:'1.2-2' }} disponíveis</p>
           <div class="stat-card-trend">
             <span class="trend-positive">+{{ stats.trendCashbacks }}%</span>
             <span class="trend-label">vs mês anterior</span>
@@ -62,10 +62,10 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Taxa de Retorno</p>
-          <p class="stat-card-value">{{ stats.taxaRetorno }}%</p>
+          <p class="stat-card-value">{{ stats.returnRate }}%</p>
           <p class="stat-card-subtitle">Clientes que voltam</p>
           <div class="stat-card-trend">
-            <span class="trend-positive">+{{ stats.trendRetorno }}%</span>
+            <span class="trend-positive">+{{ stats.trendReturn }}%</span>
             <span class="trend-label">vs mês anterior</span>
           </div>
         </div>

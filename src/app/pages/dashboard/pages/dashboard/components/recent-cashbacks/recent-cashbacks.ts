@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 export interface RecentCashback {
-  cliente: string;
-  expira: string;
-  status: 'ativo' | 'expirado';
-  valor: number;
+  customer: string;
+  expiresIn: string;
+  status: 'active' | 'expired';
+  value: number;
 }
 
 @Component({
@@ -24,10 +24,10 @@ export class RecentCashbacks implements OnInit {
    * Status: 'ativo' ou 'expirado'
    */
   recentCashbacks: RecentCashback[] = [
-    { cliente: 'Maria Silva', expira: '5 dias', status: 'ativo', valor: 15.00 },
-    { cliente: 'João Santos', expira: '12 dias', status: 'ativo', valor: 22.50 },
-    { cliente: 'Ana Oliveira', expira: '28 dias', status: 'ativo', valor: 8.00 },
-    { cliente: 'Carlos Souza', expira: '-', status: 'expirado', valor: 35.00 }
+    { customer: 'Maria Silva', expiresIn: '5 dias', status: 'active', value: 15.00 },
+    { customer: 'João Santos', expiresIn: '12 dias', status: 'active', value: 22.50 },
+    { customer: 'Ana Oliveira', expiresIn: '28 dias', status: 'active', value: 8.00 },
+    { customer: 'Carlos Souza', expiresIn: '-', status: 'expired', value: 35.00 }
   ];
 
   constructor(private router: Router) { }
@@ -38,7 +38,7 @@ export class RecentCashbacks implements OnInit {
     // this.loadRecentCashbacks();
   }
 
-  verTodosCashbacks(): void {
+  viewAllCashbacks(): void {
     this.router.navigate(['/user/cashbacks']);
   }
 
@@ -56,7 +56,7 @@ export class RecentCashbacks implements OnInit {
    * Endpoint sugerido: GET /api/dashboard/recent-cashbacks
    * Parâmetros opcionais: ?limit=4 (limite de cashbacks)
    * Resposta esperada: RecentCashback[]
-   * 
+   *
    * Exemplo de implementação:
    * loadRecentCashbacks(): void {
    *   this.cashbackService.getRecentCashbacks({ limit: 4 }).subscribe({

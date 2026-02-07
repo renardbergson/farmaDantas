@@ -135,12 +135,12 @@
   font-weight: 500;
 }
 
-.badge-ativo {
+.badge-active {
   background: rgba(22, 163, 74, 0.1);
   color: #16a34a;
 }
 
-.badge-expirado {
+.badge-expired {
   background: #f0f0f0;
   color: var(--text-muted);
 }

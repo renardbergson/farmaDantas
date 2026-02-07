@@ -4,7 +4,7 @@
       <h2 class="dashboard-card-title">Cashbacks Recentes</h2>
       <p class="dashboard-card-subtitle">Últimos cashbacks gerados</p>
     </div>
-    <button class="btn-ghost" (click)="verTodosCashbacks()">
+    <button class="btn-ghost" (click)="viewAllCashbacks()">
       Ver todos <i class="bi bi-arrow-right ms-1"></i>
     </button>
   </div>
@@ -16,15 +16,15 @@
             <i class="bi bi-gift"></i>
           </div>
           <div class="cashback-info">
-            <p class="cashback-cliente">{{ cashback.cliente }}</p>
-            <p class="cashback-expira">Expira em {{ cashback.expira }}</p>
+            <p class="cashback-cliente">{{ cashback.customer }}</p>
+            <p class="cashback-expira">Expira em {{ cashback.expiresIn }}</p>
           </div>
         </div>
         <div class="cashback-right">
-          <span class="badge-status" [class.badge-ativo]="cashback.status === 'ativo'" [class.badge-expirado]="cashback.status === 'expirado'">
+          <span class="badge-status" [class.badge-active]="cashback.status === 'active'" [class.badge-expired]="cashback.status === 'expired'">
             {{ cashback.status }}
           </span>
-          <span class="cashback-valor">R$ {{ cashback.valor | number:'1.2-2' }}</span>
+          <span class="cashback-valor">R$ {{ cashback.value | number:'1.2-2' }}</span>
         </div>
       </div>
     </div>

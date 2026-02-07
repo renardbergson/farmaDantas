@@ -2,17 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface DashboardStats {
-  totalClientes: number;
-  novosClientesHoje: number;
-  trendClientes: number;
-  comprasMes: number;
-  vendasMes: number;
-  trendCompras: number;
-  cashbacksAtivos: number;
-  cashbacksDisponiveis: number;
+  totalCustomers: number;
+  newCustomersToday: number;
+  trendCustomers: number;
+  purchasesMonth: number;
+  salesMonth: number;
+  trendPurchases: number;
+  activeCashbacks: number;
+  availableCashbacks: number;
   trendCashbacks: number;
-  taxaRetorno: number;
-  trendRetorno: number;
+  returnRate: number;
+  trendReturn: number;
 }
 
 @Component({
@@ -23,17 +23,17 @@ export interface DashboardStats {
 })
 export class StatsGrid implements OnInit {
   stats: DashboardStats = {
-    totalClientes: 2547,
-    novosClientesHoje: 12,
-    trendClientes: 12,
-    comprasMes: 1234,
-    vendasMes: 45890.00,
-    trendCompras: 8,
-    cashbacksAtivos: 856,
-    cashbacksDisponiveis: 4280.00,
+    totalCustomers: 2547,
+    newCustomersToday: 12,
+    trendCustomers: 12,
+    purchasesMonth: 1234,
+    salesMonth: 45890.00,
+    trendPurchases: 8,
+    activeCashbacks: 856,
+    availableCashbacks: 4280.00,
     trendCashbacks: 5,
-    taxaRetorno: 73,
-    trendRetorno: 3
+    returnRate: 73,
+    trendReturn: 3
   };
 
   ngOnInit(): void {
@@ -46,7 +46,7 @@ export class StatsGrid implements OnInit {
    * Método para carregar dados do backend
    * Endpoint sugerido: GET /api/dashboard/stats
    * Resposta esperada: DashboardStats
-   * 
+   *
    * Exemplo de implementação:
    * loadStatsData(): void {
    *   this.dashboardService.getStats().subscribe({

@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-export interface TopCliente {
-  nome: string;
+export interface TopCustomer {
+  name: string;
   avatar: string;
-  compras: number;
+  purchases: number;
   cashback: number;
 }
 
@@ -19,15 +19,15 @@ export class TopCustomers implements OnInit {
   /**
    * Lista dos top 5 clientes com mais compras
    * TODO: Substituir por dados do backend
-   * Estrutura esperada: Array de TopCliente ordenado por quantidade de compras (decrescente)
+   * Estrutura esperada: Array de TopCustomer ordenado por quantidade de compras (decrescente)
    * Limite: 5 clientes
    */
-  topClientes: TopCliente[] = [
-    { nome: 'Maria Silva', avatar: 'MS', compras: 45, cashback: 450.00 },
-    { nome: 'João Santos', avatar: 'JS', compras: 38, cashback: 380.00 },
-    { nome: 'Ana Oliveira', avatar: 'AO', compras: 32, cashback: 320.00 },
-    { nome: 'Carlos Souza', avatar: 'CS', compras: 28, cashback: 280.00 },
-    { nome: 'Paula Costa', avatar: 'PC', compras: 25, cashback: 250.00 }
+  topCustomers: TopCustomer[] = [
+    { name: 'Maria Silva', avatar: 'MS', purchases: 45, cashback: 450.00 },
+    { name: 'João Santos', avatar: 'JS', purchases: 38, cashback: 380.00 },
+    { name: 'Ana Oliveira', avatar: 'AO', purchases: 32, cashback: 320.00 },
+    { name: 'Carlos Souza', avatar: 'CS', purchases: 28, cashback: 280.00 },
+    { name: 'Paula Costa', avatar: 'PC', purchases: 25, cashback: 250.00 }
   ];
 
   constructor(private router: Router) { }
@@ -38,30 +38,30 @@ export class TopCustomers implements OnInit {
     // this.loadTopClientes();
   }
 
-  verTodosClientes(): void {
+  viewAllCustomers(): void {
     this.router.navigate(['/user/customers']);
   }
 
   /**
    * Método para atualizar a lista de clientes manualmente
    * Útil para atualizações em tempo real ou quando os dados vierem de outro componente
-   * @param newClientes - Nova lista de top clientes (máximo 5)
+   * @param newCustomers - Nova lista de top clientes (máximo 5)
    */
-  updateClientes(newClientes: TopCliente[]): void {
-    this.topClientes = [...newClientes];
+  updateCustomers(newCustomers: TopCustomer[]): void {
+    this.topCustomers = [...newCustomers];
   }
 
   /**
    * Método para carregar dados do backend
    * Endpoint sugerido: GET /api/dashboard/top-customers
    * Parâmetros opcionais: ?limit=5&period=month (limite de clientes e período)
-   * Resposta esperada: TopCliente[]
-   * 
+   * Resposta esperada: TopCustomer[]
+   *
    * Exemplo de implementação:
    * loadTopClientes(): void {
    *   this.customersService.getTopClientes({ limit: 5, period: 'month' }).subscribe({
-   *     next: (clientes: TopCliente[]) => {
-   *       this.updateClientes(clientes);
+   *     next: (clientes: TopCustomer[]) => {
+   *       this.updateCustomers(clientes);
    *     },
    *     error: (error) => {
    *       console.error('Erro ao carregar top clientes:', error);

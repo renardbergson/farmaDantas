@@ -4,7 +4,7 @@ declare var Chart: any;
 
 export interface CashbackMeasureData {
   labels: string[];
-  valores: number[];
+  values: number[];
 }
 
 @Component({
@@ -25,7 +25,7 @@ export class CashbackMeasure implements OnInit, AfterViewInit, OnDestroy {
    */
   chartData: CashbackMeasureData = {
     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-    valores: [4200, 3800, 5100, 4600, 5800, 6200]
+    values: [4200, 3800, 5100, 4600, 5800, 6200]
   };
 
   ngOnInit(): void {
@@ -70,7 +70,7 @@ export class CashbackMeasure implements OnInit, AfterViewInit, OnDestroy {
             labels: this.chartData.labels,
             datasets: [{
               label: 'Valor (R$)',
-              data: this.chartData.valores,
+              data: this.chartData.values,
               fill: true,
               backgroundColor: areaGradient,
               borderColor: primaryColor,
@@ -141,7 +141,7 @@ export class CashbackMeasure implements OnInit, AfterViewInit, OnDestroy {
     this.chartData = { ...data };
     if (this.areaChart) {
       this.areaChart.data.labels = data.labels;
-      this.areaChart.data.datasets[0].data = data.valores;
+      this.areaChart.data.datasets[0].data = data.values;
       this.areaChart.update();
     }
   }
@@ -151,7 +151,7 @@ export class CashbackMeasure implements OnInit, AfterViewInit, OnDestroy {
    * Endpoint sugerido: GET /api/dashboard/cashback-measure
    * Parâmetros opcionais: ?period=6 (quantidade de meses/períodos)
    * Resposta esperada: { labels: string[], valores: number[] }
-   * 
+   *
    * Exemplo de implementação:
    * loadChartData(): void {
    *   this.cashbackService.getMeasureData({ period: 6 }).subscribe({

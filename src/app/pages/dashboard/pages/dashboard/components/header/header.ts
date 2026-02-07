@@ -15,7 +15,7 @@ export class Header {
    * Rota: /user/purchases
    * TODO: Se necessário, passar parâmetros ou estado para a página de destino
    */
-  novaCompra(): void {
+  newPurchase(): void {
     this.router.navigate(['/user/purchases']);
   }
 }

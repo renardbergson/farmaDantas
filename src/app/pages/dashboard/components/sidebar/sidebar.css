@@ -254,6 +254,7 @@
 .nav-link span {
   opacity: 1;
   transition: opacity var(--transition-speed) ease;
+  cursor: pointer;
 }
 
 :host.collapsed .nav-link span {
@@ -286,8 +287,8 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   background-color: var(--sidebar-accent);
   display: flex;
@@ -302,6 +303,10 @@
 .user-details {
   opacity: 1;
   transition: opacity var(--transition-speed) ease;
+}
+
+.user-details p {
+  margin-bottom: 0.5rem;
 }
 
 :host.collapsed .user-details {

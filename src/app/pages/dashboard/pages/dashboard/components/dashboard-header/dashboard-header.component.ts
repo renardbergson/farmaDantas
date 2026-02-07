@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-header',
+  selector: 'app-dashboard-header',
   imports: [],
-  templateUrl: './header.html',
-  styleUrl: './header.css',
+  templateUrl: './dashboard-header.component.html',
+  styleUrl: './dashboard-header.component.css',
 })
-export class Header {
+export class DashboardHeader {
   constructor(private router: Router) { }
 
   /**

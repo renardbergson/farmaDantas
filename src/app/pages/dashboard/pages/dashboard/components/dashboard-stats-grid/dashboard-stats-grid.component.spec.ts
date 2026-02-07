@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StatsGrid } from './stats-grid';
+import { DashboardStatsGrid } from './dashboard-stats-grid.component';
 
-describe('StatsGrid', () => {
-  let component: StatsGrid;
-  let fixture: ComponentFixture<StatsGrid>;
+describe('DashboardStatsGrid', () => {
+  let component: DashboardStatsGrid;
+  let fixture: ComponentFixture<DashboardStatsGrid>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StatsGrid]
+      imports: [DashboardStatsGrid]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(StatsGrid);
+    fixture = TestBed.createComponent(DashboardStatsGrid);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

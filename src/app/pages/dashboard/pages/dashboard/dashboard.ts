@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Header, StatsGrid, CashbackMeasure, CashbackQuantity, TopCustomers, RecentCashbacks } from './components/index';
+import { DashboardHeader, DashboardStatsGrid, DashboardCashbackMeasure, DashboardCashbackQuantity, DashboardTopCustomers, DashboardRecentCashbacks } from './components/index';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Header, StatsGrid, CashbackMeasure, CashbackQuantity, TopCustomers, RecentCashbacks],
+  imports: [DashboardHeader, DashboardStatsGrid, DashboardCashbackMeasure, DashboardCashbackQuantity, DashboardTopCustomers, DashboardRecentCashbacks],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -12,18 +12,18 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     /**
      * Componente container do dashboard
-     * 
+     *
      * Este componente é apenas um container que organiza os componentes filhos.
      * Toda a lógica de carregamento de dados está nos componentes individuais:
-     * 
-     * - StatsGrid: Carrega estatísticas gerais (ngOnInit)
-     * - CashbackMeasure: Carrega dados do gráfico de evolução (ngOnInit)
-     * - CashbackQuantity: Carrega dados do gráfico de quantidade (ngOnInit)
-     * - TopCustomers: Carrega lista de top clientes (ngOnInit)
-     * - RecentCashbacks: Carrega lista de cashbacks recentes (ngOnInit)
-     * 
+     *
+     * - DashboardStatsGrid: Carrega estatísticas gerais (ngOnInit)
+     * - DashboardCashbackMeasure: Carrega dados do gráfico de evolução (ngOnInit)
+     * - DashboardCashbackQuantity: Carrega dados do gráfico de quantidade (ngOnInit)
+     * - DashboardTopCustomers: Carrega lista de top clientes (ngOnInit)
+     * - DashboardRecentCashbacks: Carrega lista de cashbacks recentes (ngOnInit)
+     *
      * Para integração com API, implemente os métodos load*() em cada componente filho.
-     * 
+     *
      * TODO: Se necessário carregar todos os dados de uma vez, criar um serviço centralizado:
      * loadAllDashboardData(): void {
      *   forkJoin({

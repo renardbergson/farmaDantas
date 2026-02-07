@@ -10,12 +10,12 @@ export interface TopCustomer {
 }
 
 @Component({
-  selector: 'app-top-customers',
+  selector: 'app-dashboard-top-customers',
   imports: [CommonModule],
-  templateUrl: './top-customers.html',
-  styleUrl: './top-customers.css',
+  templateUrl: './dashboard-top-customers.component.html',
+  styleUrl: './dashboard-top-customers.component.css',
 })
-export class TopCustomers implements OnInit {
+export class DashboardTopCustomers implements OnInit {
   /**
    * Lista dos top 5 clientes com mais compras
    * TODO: Substituir por dados do backend

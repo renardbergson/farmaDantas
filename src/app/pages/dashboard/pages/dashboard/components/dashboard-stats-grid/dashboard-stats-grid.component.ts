@@ -16,12 +16,12 @@ export interface DashboardStats {
 }
 
 @Component({
-  selector: 'app-stats-grid',
+  selector: 'app-dashboard-stats-grid',
   imports: [CommonModule],
-  templateUrl: './stats-grid.html',
-  styleUrl: './stats-grid.css',
+  templateUrl: './dashboard-stats-grid.component.html',
+  styleUrl: './dashboard-stats-grid.component.css',
 })
-export class StatsGrid implements OnInit {
+export class DashboardStatsGrid implements OnInit {
   stats: DashboardStats = {
     totalCustomers: 2547,
     newCustomersToday: 12,

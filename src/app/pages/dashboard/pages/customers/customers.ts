@@ -1,15 +1,24 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {CustomerHeader, CustomerModal, CustomerSearchCard, CustomerTable} from './components';
+import {Customer, CustomerStatus} from './customerModel';
 
 @Component({
   selector: 'app-customers',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    CustomerHeader,
+    CustomerSearchCard,
+    CustomerTable,
+    CustomerModal
+  ],
   templateUrl: './customers.html',
   styleUrl: './customers.css',
 })
 export class Customers {
-  customers = [
+  // Lista original de clientes
+  allCustomers: Customer[] = [
     {
       id: 1,
       name: "Maria Silva",
@@ -18,7 +27,7 @@ export class Customers {
       cpf: "123.456.789-00",
       totalPurchases: 45,
       totalActiveCashback: 45.00,
-      status: "active"
+      status: CustomerStatus.ACTIVE
     },
     {
       id: 2,
@@ -28,7 +37,7 @@ export class Customers {
       cpf: "234.567.890-11",
       totalPurchases: 38,
       totalActiveCashback: 22.50,
-      status: "active"
+      status: CustomerStatus.ACTIVE
     },
     {
       id: 3,
@@ -38,7 +47,7 @@ export class Customers {
       cpf: "345.678.901-22",
       totalPurchases: 32,
       totalActiveCashback: 8.00,
-      status: "active"
+      status: CustomerStatus.ACTIVE
     },
     {
       id: 4,
@@ -48,7 +57,7 @@ export class Customers {
       cpf: "456.789.012-33",
       totalPurchases: 28,
       totalActiveCashback: 0.00,
-      status: "inactive"
+      status: CustomerStatus.INACTIVE
     },
     {
       id: 5,
@@ -58,24 +67,26 @@ export class Customers {
       cpf: "567.890.123-44",
       totalPurchases: 25,
       totalActiveCashback: 35.00,
-      status: "active"
+      status: CustomerStatus.ACTIVE
     }
   ];
 
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
+  // Lista de clientes filtrada para exibição
+  filteredCustomers: Customer[] = [...this.allCustomers];
+
+  // Filtra os clientes com base no termo de busca
+  onSearch(term: string): void {
+    const searchTerm = term.toLowerCase();
+    this.filteredCustomers = this.allCustomers.filter(customer =>
+      customer.name.toLowerCase().includes(searchTerm) ||
+      customer.cpf.includes(searchTerm) ||
+      customer.email.toLowerCase().includes(searchTerm)
+    );
   }
 
-  newPurchase(): void {
-    console.log('Nova compra clicada');
-  }
-
-  newCustomer(): void {
-    console.log('Novo cliente clicado');
+  // Abre o modal de novo cliente
+  onAddCustomer(): void {
+    // abertura de modal gerenciada pelo bootstrap ***
+    console.log('Abrir modal de novo cliente');
   }
 }

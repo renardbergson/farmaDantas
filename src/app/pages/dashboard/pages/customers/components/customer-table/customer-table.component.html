@@ -1,0 +1,73 @@
+<div class="dashboard-card">
+  <div class="dashboard-card-header">
+    <h2 class="dashboard-card-title">Lista de Clientes</h2>
+    <p class="dashboard-card-subtitle">
+      {{ customers.length }} cliente(s) encontrado(s)
+    </p>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-custom">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>CPF</th>
+          <th>Telefone</th>
+          <th class="text-center">Compras</th>
+          <th class="text-end">Cashback Ativo</th>
+          <th class="text-center">Status</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (customer of customers; track customer.cpf) {
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <div class="client-avatar">{{ getInitials(customer.name) }}</div>
+                <div class="client-info">
+                  <p class="client-name">{{ customer.name }}</p>
+                  <p class="client-email">{{ customer.email }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="text-muted">{{ customer.cpf }}</td>
+            <td class="text-muted">{{ customer.phone }}</td>
+            <td class="text-center fw-medium">{{ customer.totalPurchases }}</td>
+            <td class="text-end cashback-value">R$ {{ customer.totalActiveCashback | number:'1.2-2' }}</td>
+            <td class="text-center">
+              <span class="badge-status" [ngClass]="customer.status === CustomerStatus.ACTIVE ? 'badge-active' : 'badge-inactive'">
+                {{ customer.status }}
+              </span>
+            </td>
+            <!-- Actions -->
+            <td class="text-end">
+              <div class="dropdown">
+                <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-three-dots"></i>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i> Ver detalhes</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#"><i class="bi bi-gift me-2"></i> Ver cashbacks</a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i> Editar</a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i> Excluir</a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

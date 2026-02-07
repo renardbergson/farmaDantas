@@ -2,30 +2,30 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 
 declare var Chart: any;
 
-export interface CashbackQuantityData {
+export interface CashbackMeasureData {
   labels: string[];
-  quantities: number[];
+  values: number[];
 }
 
 @Component({
-  selector: 'app-cashback-quantity',
+  selector: 'app-dashboard-cashback-measure',
   imports: [],
-  templateUrl: './cashback-quantity.html',
-  styleUrl: './cashback-quantity.css',
+  templateUrl: './dashboard-cashback-measure.component.html',
+  styleUrl: './dashboard-cashback-measure.component.css',
 })
-export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
-  private barChart: any;
+export class DashboardCashbackMeasure implements OnInit, AfterViewInit, OnDestroy {
+  private areaChart: any;
 
   /**
-   * Dados do gráfico de quantidade de cashbacks
+   * Dados do gráfico de evolução de cashbacks
    * TODO: Substituir por dados do backend
    * Estrutura esperada:
    * - labels: Array de strings com os meses/períodos (ex: ['Jan', 'Fev', 'Mar'])
-   * - quantidades: Array de números com a quantidade de cashbacks de cada período
+   * - valores: Array de números com os valores em R$ de cada período
    */
-  chartData: CashbackQuantityData = {
+  chartData: CashbackMeasureData = {
     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-    quantities: [120, 98, 145, 132, 167, 189]
+    values: [4200, 3800, 5100, 4600, 5800, 6200]
   };
 
   ngOnInit(): void {
@@ -42,8 +42,8 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.barChart) {
-      this.barChart.destroy();
+    if (this.areaChart) {
+      this.areaChart.destroy();
     }
   }
 
@@ -55,21 +55,31 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
 
     const primaryColor = '#dc2626';
 
-    // Bar Chart - Quantidade de Cashbacks
-    const barCanvas = document.getElementById('cashbackBarChart') as HTMLCanvasElement;
-    if (barCanvas) {
-      const barCtx = barCanvas.getContext('2d');
-      if (barCtx) {
-        this.barChart = new Chart(barCtx, {
-          type: 'bar',
+    // Area Chart - Evolução de Cashbacks
+    const areaCanvas = document.getElementById('cashbackAreaChart') as HTMLCanvasElement;
+    if (areaCanvas) {
+      const areaCtx = areaCanvas.getContext('2d');
+      if (areaCtx) {
+        const areaGradient = areaCtx.createLinearGradient(0, 0, 0, 300);
+        areaGradient.addColorStop(0, 'rgba(220, 38, 38, 0.3)');
+        areaGradient.addColorStop(1, 'rgba(220, 38, 38, 0)');
+
+        this.areaChart = new Chart(areaCtx, {
+          type: 'line',
           data: {
             labels: this.chartData.labels,
             datasets: [{
-              label: 'Quantidade',
-              data: this.chartData.quantities,
-              backgroundColor: primaryColor,
-              borderRadius: 4,
-              borderSkipped: false
+              label: 'Valor (R$)',
+              data: this.chartData.values,
+              fill: true,
+              backgroundColor: areaGradient,
+              borderColor: primaryColor,
+              borderWidth: 2,
+              tension: 0.4,
+              pointRadius: 4,
+              pointBackgroundColor: primaryColor,
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2
             }]
           },
           options: {
@@ -86,7 +96,12 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
                 borderColor: '#e5e5e5',
                 borderWidth: 1,
                 padding: 12,
-                cornerRadius: 8
+                cornerRadius: 8,
+                callbacks: {
+                  label: function (context: any) {
+                    return 'R$ ' + context.raw.toLocaleString('pt-BR');
+                  }
+                }
               }
             },
             scales: {
@@ -104,7 +119,10 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
                   drawBorder: false
                 },
                 ticks: {
-                  color: '#737373'
+                  color: '#737373',
+                  callback: function (value: any) {
+                    return 'R$ ' + value.toLocaleString('pt-BR');
+                  }
                 }
               }
             }
@@ -117,27 +135,27 @@ export class CashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
   /**
    * Método para atualizar dados do gráfico
    * Chamado automaticamente quando os dados vierem do backend
-   * @param data - Dados do gráfico com labels e quantidades
+   * @param data - Dados do gráfico com labels e valores
    */
-  updateChartData(data: CashbackQuantityData): void {
+  updateChartData(data: CashbackMeasureData): void {
     this.chartData = { ...data };
-    if (this.barChart) {
-      this.barChart.data.labels = data.labels;
-      this.barChart.data.datasets[0].data = data.quantities;
-      this.barChart.update();
+    if (this.areaChart) {
+      this.areaChart.data.labels = data.labels;
+      this.areaChart.data.datasets[0].data = data.values;
+      this.areaChart.update();
     }
   }
 
   /**
    * Método para carregar dados do backend
-   * Endpoint sugerido: GET /api/dashboard/cashback-quantity
+   * Endpoint sugerido: GET /api/dashboard/cashback-measure
    * Parâmetros opcionais: ?period=6 (quantidade de meses/períodos)
-   * Resposta esperada: { labels: string[], quantidades: number[] }
+   * Resposta esperada: { labels: string[], valores: number[] }
    *
    * Exemplo de implementação:
    * loadChartData(): void {
-   *   this.cashbackService.getQuantityData({ period: 6 }).subscribe({
-   *     next: (data: CashbackQuantityData) => {
+   *   this.cashbackService.getMeasureData({ period: 6 }).subscribe({
+   *     next: (data: CashbackMeasureData) => {
    *       this.updateChartData(data);
    *     },
    *     error: (error) => {

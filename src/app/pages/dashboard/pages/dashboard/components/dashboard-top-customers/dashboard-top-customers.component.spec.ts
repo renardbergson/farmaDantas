@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CashbackMeasure } from './cashback-measure';
+import { DashboardTopCustomers } from './dashboard-top-customers.component';
 
-describe('CashbackMeasure', () => {
-  let component: CashbackMeasure;
-  let fixture: ComponentFixture<CashbackMeasure>;
+describe('DashboardTopCustomers', () => {
+  let component: DashboardTopCustomers;
+  let fixture: ComponentFixture<DashboardTopCustomers>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CashbackMeasure]
+      imports: [DashboardTopCustomers]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CashbackMeasure);
+    fixture = TestBed.createComponent(DashboardTopCustomers);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

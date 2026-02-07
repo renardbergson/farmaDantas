@@ -10,12 +10,12 @@ export interface RecentCashback {
 }
 
 @Component({
-  selector: 'app-recent-cashbacks',
+  selector: 'app-dashboard-recent-cashbacks',
   imports: [CommonModule],
-  templateUrl: './recent-cashbacks.html',
-  styleUrl: './recent-cashbacks.css',
+  templateUrl: './dashboard-recent-cashbacks.component.html',
+  styleUrl: './dashboard-recent-cashbacks.component.css',
 })
-export class RecentCashbacks implements OnInit {
+export class DashboardRecentCashbacks implements OnInit {
   /**
    * Lista dos últimos 4 cashbacks gerados
    * TODO: Substituir por dados do backend

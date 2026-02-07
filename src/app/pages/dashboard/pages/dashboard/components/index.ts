@@ -1,6 +1,6 @@
-export { Header } from './header/header';
-export { StatsGrid } from './stats-grid/stats-grid';
-export { CashbackMeasure } from './cashback-measure/cashback-measure';
-export { CashbackQuantity } from './cashback-quantity/cashback-quantity';
-export { TopCustomers } from './top-customers/top-customers';
-export { RecentCashbacks } from './recent-cashbacks/recent-cashbacks';
+export { DashboardHeader } from './dashboard-header/dashboard-header.component';
+export { DashboardStatsGrid } from './dashboard-stats-grid/dashboard-stats-grid.component';
+export { DashboardCashbackMeasure } from './dashboard-cashback-measure/dashboard-cashback-measure.component';
+export { DashboardCashbackQuantity } from './dashboard-cashback-quantity/dashboard-cashback-quantity.component';
+export { DashboardTopCustomers } from './dashboard-top-customers/dashboard-top-customers.component';
+export { DashboardRecentCashbacks } from './dashboard-recent-cashbacks/dashboard-recent-cashbacks.component';

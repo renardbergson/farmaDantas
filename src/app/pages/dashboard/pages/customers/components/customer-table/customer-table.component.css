@@ -100,9 +100,19 @@
   font-weight: 600;
 }
 
+.badge-new {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
 .badge-active {
   background: #dcfce7;
   color: #16a34a;
+}
+
+.badge-absent {
+  background: #fff7ed;
+  color: #ea580c;
 }
 
 .badge-inactive {

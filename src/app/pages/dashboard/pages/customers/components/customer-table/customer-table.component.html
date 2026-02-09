@@ -33,10 +33,11 @@
             <td class="text-center fw-medium">{{ customer.totalPurchases }}</td>
             <td class="text-end cashback-value">R$ {{ customer.totalActiveCashback | number:'1.2-2' }}</td>
             <td class="text-center">
-              <span class="badge-status" [ngClass]="customer.status === CustomerStatus.ACTIVE ? 'badge-active' : 'badge-inactive'">
+              <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
                 {{ customer.status }}
               </span>
             </td>
+
             <!-- Actions -->
             <td class="text-end">
               <div class="dropdown">
@@ -45,8 +46,10 @@
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item" href="#"><i class="bi bi-eye me-2"></i> Ver detalhes</a>
+                  <li (click)="onViewDetauls(customer)">
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
+                      <i class="bi bi-eye me-2"></i> Ver detalhes
+                    </a>
                   </li>
                   <li>
                     <a class="dropdown-item" href="#"><i class="bi bi-gift me-2"></i> Ver cashbacks</a>

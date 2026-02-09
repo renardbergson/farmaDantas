@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {Customer, CustomerStatus} from '../../customerModel';
 
@@ -11,6 +11,7 @@ import {Customer, CustomerStatus} from '../../customerModel';
 })
 export class CustomerTable {
   @Input() customers: Customer[] = [];
+  @Output() viewDetails = new EventEmitter<Customer>();
 
   // Gera as iniciais do nome do cliente
   getInitials(name: string): string {
@@ -22,5 +23,19 @@ export class CustomerTable {
       .substring(0, 2);
   }
 
+  onViewDetauls(customer: Customer): void {
+    this.viewDetails.emit(customer);
+  }
+
   protected readonly CustomerStatus = CustomerStatus;
+
+  getStatusClass(status: CustomerStatus): string {
+    switch (status) {
+      case CustomerStatus.NEW: return 'badge-new';
+      case CustomerStatus.ACTIVE: return 'badge-active';
+      case CustomerStatus.ABSENT: return 'badge-absent';
+      case CustomerStatus.INACTIVE: return 'badge-inactive';
+      default: return 'badge-inactive';
+    }
+  }
 }

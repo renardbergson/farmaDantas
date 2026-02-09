@@ -1,7 +1,11 @@
 <app-customer-header (addCustomer)="onAddCustomer()" />
 
+<app-customer-status-chart [customers]="allCustomers" />
+
 <app-customer-search-card (search)="onSearch($event)" />
 
-<app-customer-table [customers]="filteredCustomers" />
+<app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)"/>
 
 <app-customer-modal />
+
+<app-customer-details-modal [customer]="selectedCustomer" />

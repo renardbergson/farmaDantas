@@ -22,12 +22,15 @@
                 type="checkbox"
                 [id]="'filter-' + status.value"
                 (change)="toggleStatus(status.value)"
+                [checked]="statusMustBeChecked(status.value)"
                 class="btn-check"
               >
+              <!-- usamos vírgula aqui porque estamos passando um array de condições para o
+              ngClass, que converterá cada condição em uma classe separada -->
               <label
                 [for]="'filter-' + status.value"
                 class="status-chip"
-                [ngClass]="status.class"
+                [ngClass]="[status.class, selectedStatuses.has(status.value) ? 'is-active' : '']"
               >
                 {{ status.label }}
               </label>

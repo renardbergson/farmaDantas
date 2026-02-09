@@ -26,6 +26,44 @@
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
+.form-control-custom[readonly] {
+  background-color: #f8fafc;
+  cursor: not-allowed;
+}
+
+/* Estilos para múltiplos telefones */
+.btn-add-phone {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 1.25rem;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.2s;
+}
+
+.btn-add-phone:hover {
+  transform: scale(1.1);
+  color: var(--primary-dark);
+}
+
+.btn-remove-phone {
+  background: #fee2e2;
+  border: none;
+  color: #ef4444;
+  border-radius: 8px;
+  width: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-remove-phone:hover {
+  background: #fecaca;
+  color: #dc2626;
+}
+
 .btn-primary-gradient {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   border: none;

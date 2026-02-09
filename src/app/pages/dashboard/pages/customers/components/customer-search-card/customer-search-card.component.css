@@ -44,29 +44,38 @@
   border-color: #cbd5e1;
 }
 
-/* Estilos quando o checkbox está marcado (via .btn-check do Bootstrap) */
-.btn-check:checked + .status-chip.filter-new {
+/* Estilos quando o chip está ativo (gerenciado pelo Angular via classe .is-active) */
+.status-chip.is-active {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+.status-chip.is-active.filter-new {
   background: #eff6ff;
   color: #2563eb;
   border-color: #2563eb;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
 }
 
-.btn-check:checked + .status-chip.filter-active {
+.status-chip.is-active.filter-active {
   background: #dcfce7;
   color: #16a34a;
   border-color: #16a34a;
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.4);
 }
 
-.btn-check:checked + .status-chip.filter-absent {
+.status-chip.is-active.filter-absent {
   background: #fff7ed;
   color: #ea580c;
   border-color: #ea580c;
+  box-shadow: 0 0 10px rgba(234, 88, 12, 0.4);
 }
 
-.btn-check:checked + .status-chip.filter-inactive {
+.status-chip.is-active.filter-inactive {
   background: #f1f5f9;
   color: #64748b;
   border-color: #64748b;
+  box-shadow: 0 0 10px rgba(100, 116, 139, 0.4);
 }
 
 .search-icon {

@@ -13,6 +13,8 @@ export class CustomerSearchCard {
   @Output() search = new EventEmitter<string>();
   @Output() statusFilter = new EventEmitter<CustomerStatus[]>();
 
+  constructor() {}
+
   statuses = [
     { value: CustomerStatus.NEW, label: 'Novo', class: 'filter-new' },
     { value: CustomerStatus.ACTIVE, label: 'Ativo', class: 'filter-active' },
@@ -34,6 +36,7 @@ export class CustomerSearchCard {
   }
 
   toggleStatus(status: CustomerStatus): void {
+    // 1. Verifica status individualmente
     if (this.selectedStatuses.has(status)) {
       // Se o status JÁ ESTÁ no conjunto, o usuário clicou para REMOVER o filtro.
       this.selectedStatuses.delete(status);
@@ -41,9 +44,18 @@ export class CustomerSearchCard {
       // Se o status NÃO ESTÁ no conjunto, o usuário clicou para ADICIONAR o filtro.
       this.selectedStatuses.add(status);
     }
-    // Como o selectedStatuses é um Set, e definimos que o nosso @Output envia um
-    // Array (CustomerStatus[]), usamos este comando para converter o conjunto de
-    // volta para um formato de lista (Array) convencional.
+
+    // 2. Se todos os filtros de status forem selecionados, removemos todos
+    const totalEnumStatusCount = Object.values(CustomerStatus).length;
+    if(this.selectedStatuses.size === totalEnumStatusCount) {
+      this.selectedStatuses.clear();
+    }
+
+    // Notifica o pai
     this.statusFilter.emit(Array.from(this.selectedStatuses));
+  }
+
+  statusMustBeChecked(status: CustomerStatus): boolean {
+    return this.selectedStatuses.has(status);
   }
 }

@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CustomerHeader, CustomerModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
+import {CustomerHeader, CustomerAddNewModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
 import {Customer, CustomerStatus} from './customerModel';
 
 @Component({
@@ -11,7 +11,7 @@ import {Customer, CustomerStatus} from './customerModel';
     CustomerHeader,
     CustomerSearchCard,
     CustomerTable,
-    CustomerModal,
+    CustomerAddNewModal,
     CustomerDetailsModal,
     CustomerStatusChart
   ],

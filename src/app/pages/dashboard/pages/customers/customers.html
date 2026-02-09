@@ -2,7 +2,7 @@
 
 <app-customer-status-chart [customers]="allCustomers" />
 
-<app-customer-search-card (search)="onSearch($event)" />
+<app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterStatus($event)" />
 
 <app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)"/>
 

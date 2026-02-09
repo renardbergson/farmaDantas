@@ -92,27 +92,48 @@ export class Customers {
       status: CustomerStatus.ABSENT
     }
   ];
-
+  // Filtros
+  searchTerm: string = '';
+  currentStatusFilters: CustomerStatus[] = [];
   // Lista de clientes filtrada para exibição
   filteredCustomers: Customer[] = [...this.allCustomers];
-
   // Captura cliente selecionado na tabela
   selectedCustomer?: Customer;
 
   // Filtra os clientes com base no termo de busca
   onSearch(term: string): void {
-    const searchTerm = term.toLowerCase();
-    this.filteredCustomers = this.allCustomers.filter(customer =>
-      customer.name.toLowerCase().includes(searchTerm) ||
-      customer.cpf.includes(searchTerm) ||
-      customer.email.toLowerCase().includes(searchTerm)
-    );
+    this.searchTerm = term;
+    this.applyFilters();
+  }
+
+  // Filtra is clientes com base nos status selecionados
+  onFilterStatus(statuses: CustomerStatus[]): void {
+    this.currentStatusFilters = statuses;
+    this.applyFilters();
+    console.log('Status selecionados para filtro:', this.currentStatusFilters);
+  }
+
+  applyFilters(): void {
+    this.filteredCustomers = this.allCustomers.filter(customer => {
+      const matchesSearchTerm =
+        // verifica se o nome, cpf ou e-mail bate com a busca
+        customer.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        customer.cpf.includes(this.searchTerm) ||
+        customer.email.toLowerCase().includes(this.searchTerm)
+
+      const matchesStatusSearch =
+        // verifica se o status do cliente bate com os filtros selecionados
+        this.currentStatusFilters.length === 0 ||
+        this.currentStatusFilters.includes(customer.status);
+
+      // retorno do filter
+      return matchesSearchTerm && matchesStatusSearch;
+    });
   }
 
   // Abre o modal de novo cliente
   onAddCustomer(): void {
     // abertura de modal gerenciada pelo bootstrap ***
-    console.log('Abrir modal de novo cliente');
   }
 
   // Atribui o cliente selecionado ao modal de detalhes

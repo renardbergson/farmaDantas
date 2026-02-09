@@ -15,7 +15,58 @@
 
 .search-wrapper {
   position: relative;
+  flex: 1;
+  min-width: 300px;
   max-width: 400px;
+}
+
+.filter-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-chip {
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.status-chip:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Estilos quando o checkbox está marcado (via .btn-check do Bootstrap) */
+.btn-check:checked + .status-chip.filter-new {
+  background: #eff6ff;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn-check:checked + .status-chip.filter-active {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+.btn-check:checked + .status-chip.filter-absent {
+  background: #fff7ed;
+  color: #ea580c;
+  border-color: #ea580c;
+}
+
+.btn-check:checked + .status-chip.filter-inactive {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #64748b;
 }
 
 .search-icon {

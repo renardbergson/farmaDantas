@@ -10,10 +10,9 @@
       <thead>
         <tr>
           <th>Cliente</th>
-          <th>CPF</th>
           <th>Telefone</th>
           <th class="text-center">Compras</th>
-          <th class="text-end">Cashback Ativo</th>
+          <th class="text-end">Total disponível</th>
           <th class="text-center">Status</th>
           <th class="text-end">Ações</th>
         </tr>
@@ -30,7 +29,6 @@
                 </div>
               </div>
             </td>
-            <td class="text-muted">{{ customer.cpf }}</td>
             <td class="text-muted">{{ customer.phone }}</td>
             <td class="text-center fw-medium">{{ customer.totalPurchases }}</td>
             <td class="text-end cashback-value">R$ {{ customer.totalActiveCashback | number:'1.2-2' }}</td>
@@ -42,7 +40,7 @@
             <!-- Actions -->
             <td class="text-end">
               <div class="dropdown">
-                <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
                   <i class="bi bi-three-dots"></i>
                 </button>
 

@@ -84,13 +84,16 @@
 
           <div class="mb-3">
             <label class="form-label-custom">Cidade</label>
-            <select class="form-select form-control-custom">
-              <option selected disabled>Selecione a cidade</option>
-              <option value="João Pessoa">João Pessoa</option>
-              <option value="Santa Luzia">Santa Luzia</option>
-              <option value="Campina Grande">Campina Grande</option>
-              <!-- Lógica de API será implementada futuramente -->
-            </select>
+            <ng-select
+              [items]="cities"
+              placeholder="Selecione ou busque a cidade"
+              class="custom-ng-select"
+              name="city"
+              [required]="true"
+              [searchable]="true"
+              [clearable]="false"
+            >
+            </ng-select>
           </div>
         </div>
         <div class="modal-footer">

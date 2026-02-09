@@ -11,7 +11,7 @@ import {AddressService} from '../../../../../../shared/services/address.service'
   imports: [CommonModule, FormsModule, NgxMaskDirective, NgSelectModule],
   providers: [provideNgxMask()],
   templateUrl: './customer-add-new-modal.component.html',
-  styleUrl: './customer-add-new-modal.component.css',
+  styleUrl: './customer-add-new-modal.component.css'
 })
 export class CustomerAddNewModal implements OnInit{
   cities: string[] = [];
@@ -27,7 +27,6 @@ export class CustomerAddNewModal implements OnInit{
     this.addressService.getCities().subscribe({
       next: (data) => {
         this.cities = data;
-        console.log(this.cities);
       },
       error: (err) => console.error(err)
     })

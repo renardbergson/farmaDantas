@@ -46,22 +46,24 @@
                 </button>
 
                 <ul class="dropdown-menu dropdown-menu-end">
-                  <li (click)="onViewDetauls(customer)">
-                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
+                  <li>
+                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetauls(customer)" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
                       <i class="bi bi-eye me-2"></i> Ver detalhes
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="#"><i class="bi bi-gift me-2"></i> Ver cashbacks</a>
+                    <a class="dropdown-item" (click)="$event.preventDefault()"><i class="bi bi-gift me-2"></i> Ver cashbacks</a>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="#"><i class="bi bi-pencil me-2"></i> Editar</a>
+                    <a class="dropdown-item" (click)="$event.preventDefault()"><i class="bi bi-pencil me-2"></i> Editar</a>
                   </li>
                   <li>
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <a class="dropdown-item text-danger" href="#"><i class="bi bi-trash me-2"></i> Excluir</a>
+                    <a class="dropdown-item text-danger" (click)="$event.preventDefault(); onDeleteCustomer(customer)" data-bs-toggle="modal" data-bs-target="#customerDeleteModal">
+                      <i class="bi bi-trash me-2"></i> Excluir
+                    </a>
                   </li>
                 </ul>
               </div>

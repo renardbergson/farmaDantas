@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {CustomerHeader, CustomerAddNewModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
+import {CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
 import {Customer, CustomerStatus} from './customerModel';
 
 @Component({
@@ -12,6 +12,7 @@ import {Customer, CustomerStatus} from './customerModel';
     CustomerSearchCard,
     CustomerTable,
     CustomerAddNewModal,
+    CustomerDeleteModal,
     CustomerDetailsModal,
     CustomerStatusChart
   ],
@@ -99,6 +100,7 @@ export class Customers {
   filteredCustomers: Customer[] = [...this.allCustomers];
   // Captura cliente selecionado na tabela
   selectedCustomer?: Customer;
+  customerToDelete: Customer | null = null;
 
   // Filtra os clientes com base no termo de busca
   onSearch(term: string): void {
@@ -139,5 +141,14 @@ export class Customers {
   // Atribui o cliente selecionado ao modal de detalhes
   onSelectCustomer(customer: Customer): void {
     this.selectedCustomer = customer;
+  }
+
+  onDeleteCustomer(customer: Customer): void {
+    this.customerToDelete = customer;
+  }
+
+  confirmDelete(customer: Customer): void {
+    console.log('Cliente a ser excluído:', customer);
+    // Funcionalidade de exclusão será implementada futuramente
   }
 }

@@ -12,6 +12,7 @@ import {Customer, CustomerStatus} from '../../customerModel';
 export class CustomerTable {
   @Input() customers: Customer[] = [];
   @Output() viewDetails = new EventEmitter<Customer>();
+  @Output() deleteCustomer = new EventEmitter<Customer>();
 
   // Gera as iniciais do nome do cliente
   getInitials(name: string): string {
@@ -25,6 +26,10 @@ export class CustomerTable {
 
   onViewDetauls(customer: Customer): void {
     this.viewDetails.emit(customer);
+  }
+
+  onDeleteCustomer(customer: Customer): void {
+    this.deleteCustomer.emit(customer);
   }
 
   protected readonly CustomerStatus = CustomerStatus;

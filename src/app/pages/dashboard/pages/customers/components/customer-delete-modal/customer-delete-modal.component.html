@@ -1,0 +1,43 @@
+<div class="modal fade" id="customerDeleteModal" tabindex="-1" aria-labelledby="customerDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold text-danger" id="customerDeleteModalLabel">Confirmar Exclusão</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body py-4">
+        <div class="text-center mb-4">
+          <div class="delete-icon-wrapper mx-auto mb-3">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
+          </div>
+          <p class="mb-0 fs-5 fw-semibold">Tem certeza que deseja excluir?</p>
+        </div>
+
+        <div class="alert alert-warning border-0 bg-warning-subtle d-flex align-items-center gap-3 mb-4 rounded-3">
+          <i class="bi bi-info-circle-fill fs-4 text-warning"></i>
+          <p class="mb-0 small text-dark-emphasis">
+            <strong>Atenção:</strong>Esta ação não poderá ser desfeita e todos os dados relacionados a compras e cashbacks deste cliente serão removidos permanentemente.
+          </p>
+        </div>
+
+        @if(customer) {
+          <div class="customer-preview p-3 rounded-3 bg-light border">
+            <div class="d-flex align-items-center gap-3">
+              <div class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold">
+                {{ customer.name.substring(0, 2).toUpperCase() }}
+              </div>
+              <div class="overflow-hidden">
+                <h6 class="mb-0 text-truncate">{{ customer.name }}</h6>
+                <p class="mb-0 text-muted small text-truncate">{{ customer.email }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="modal-footer border-top-0 pt-0 gap-2">
+        <button type="button" class="btn btn-light px-4 fw-medium border shadow-none" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger px-4 fw-medium shadow-none" (click)="onConfirm()" data-bs-dismiss="modal">Excluir Cliente</button>
+      </div>
+    </div>
+  </div>
+</div>

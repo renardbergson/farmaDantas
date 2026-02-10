@@ -23,7 +23,7 @@ export class CustomerStatusChart implements OnChanges {
     {
       status: CustomerStatus.NEW,
       label: 'Novo',
-      description: 'Cadastrado, sem nenhuma compra',
+      description: 'Recém cadastrado, nenhuma compra',
       class: 'badge-new',
       icon: 'bi-person-plus'
     },
@@ -70,10 +70,5 @@ export class CustomerStatusChart implements OnChanges {
         this.statusCounts[customer.status]++;
       }
     });
-  }
-
-  getPercentage(status: CustomerStatus): number {
-    if (this.customers.length === 0) return 0;
-    return (this.statusCounts[status] / this.customers.length) * 100;
   }
 }

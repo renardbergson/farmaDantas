@@ -1,7 +1,9 @@
 import {Component} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
-import {Customer, CustomerStatus} from './customerModel';
+import { CustomerCashbacksModal } from '../../../../shared/components';
+import {Customer, CustomerStatus} from '../../../../shared/models/customer.model';
+import {CashbackStatus} from '../../../../shared/models/cashback.model';
 
 @Component({
   selector: 'app-customers',
@@ -14,6 +16,7 @@ import {Customer, CustomerStatus} from './customerModel';
     CustomerAddNewModal,
     CustomerDeleteModal,
     CustomerDetailsModal,
+    CustomerCashbacksModal,
     CustomerStatusChart
   ],
   templateUrl: './customers.html',
@@ -21,7 +24,7 @@ import {Customer, CustomerStatus} from './customerModel';
 })
 export class Customers {
   // Lista original de clientes
-  allCustomers: Customer[] = [
+  customers: Customer[] = [
     {
       id: '1',
       name: "Maria Silva",
@@ -32,9 +35,12 @@ export class Customers {
       state: "Paraíba",
       createdAt: new Date("2023-01-01"),
       dateOfBirth: new Date("1992-08-01"),
-      totalPurchases: 45,
-      totalActiveCashback: 45.00,
-      status: CustomerStatus.NEW
+      purchasesCount: 0,
+      totalActiveCashback: 0.00,
+      totalCashbackValueGenerated: 0.00,
+      status: CustomerStatus.NEW,
+      purchases: [],
+      cashbacks: []
     },
     {
       id: '2',
@@ -46,9 +52,50 @@ export class Customers {
       state: "Paraíba",
       createdAt: new Date("2023-02-01"),
       dateOfBirth: new Date("1990-05-15"),
-      totalPurchases: 38,
-      totalActiveCashback: 22.50,
-      status: CustomerStatus.ACTIVE
+      purchasesCount: 2,
+      totalActiveCashback: 32.50,
+      totalCashbackValueGenerated: 32.50,
+      status: CustomerStatus.ACTIVE,
+      purchases: [
+        {
+          id: 'p3',
+          customerId: '2',
+          date: new Date('2026-01-20'),
+          totalValue: 200.00,
+          cashbackValueGenerated: 20.00
+        },
+        {
+          id: 'p4',
+          customerId: '2',
+          date: new Date('2026-02-05'),
+          totalValue: 125.00,
+          cashbackValueGenerated: 12.50,
+          cashbackUsed: 10.00,
+          usedCashbackId: 'c3'
+        }
+      ],
+      cashbacks: [
+        {
+          id: 'c3',
+          customerId: '2',
+          originPurchaseId: 'p3',
+          createdAt: new Date('2026-01-20'),
+          validUntil: new Date('2026-02-20'),
+          value: 20.00,
+          status: CashbackStatus.AVAILABLE,
+          minPurchaseValue: 40.00
+        },
+        {
+          id: 'c4',
+          customerId: '2',
+          originPurchaseId: 'p4',
+          createdAt: new Date('2026-02-05'),
+          validUntil: new Date('2026-03-05'),
+          value: 12.50,
+          status: CashbackStatus.AVAILABLE,
+          minPurchaseValue: 30.00
+        }
+      ]
     },
     {
       id: '3',
@@ -60,9 +107,31 @@ export class Customers {
       state: "Paraíba",
       createdAt: new Date("2023-03-01"),
       dateOfBirth: new Date("1995-02-20"),
-      totalPurchases: 32,
-      totalActiveCashback: 8.00,
-      status: CustomerStatus.ACTIVE
+      purchasesCount: 1,
+      totalActiveCashback: 10.00,
+      totalCashbackValueGenerated: 10.00,
+      status: CustomerStatus.ACTIVE,
+      purchases: [
+        {
+          id: 'p5',
+          customerId: '3',
+          date: new Date('2026-01-10'),
+          totalValue: 100.00,
+          cashbackValueGenerated: 10.00
+        }
+      ],
+      cashbacks: [
+        {
+          id: 'c5',
+          customerId: '3',
+          originPurchaseId: 'p5',
+          createdAt: new Date('2026-01-10'),
+          validUntil: new Date('2026-02-10'),
+          value: 10.00,
+          status: CashbackStatus.AVAILABLE,
+          minPurchaseValue: 20.00
+        }
+      ]
     },
     {
       id: '4',
@@ -74,9 +143,31 @@ export class Customers {
       state: "Paraíba",
       createdAt: new Date("2023-04-01"),
       dateOfBirth: new Date("1998-09-10"),
-      totalPurchases: 28,
+      purchasesCount: 1,
       totalActiveCashback: 0.00,
-      status: CustomerStatus.INACTIVE
+      totalCashbackValueGenerated: 15.00,
+      status: CustomerStatus.INACTIVE,
+      purchases: [
+        {
+          id: 'p6',
+          customerId: '4',
+          date: new Date('2025-05-20'),
+          totalValue: 150.00,
+          cashbackValueGenerated: 15.00
+        }
+      ],
+      cashbacks: [
+        {
+          id: 'c6',
+          customerId: '4',
+          originPurchaseId: 'p6',
+          createdAt: new Date('2025-05-20'),
+          validUntil: new Date('2025-06-20'),
+          value: 15.00,
+          status: CashbackStatus.EXPIRED,
+          minPurchaseValue: 30.00
+        }
+      ]
     },
     {
       id: '5',
@@ -88,16 +179,38 @@ export class Customers {
       state: "Paraíba",
       createdAt: new Date("2023-05-01"),
       dateOfBirth: new Date("1998-09-10"),
-      totalPurchases: 25,
-      totalActiveCashback: 35.00,
-      status: CustomerStatus.ABSENT
+      purchasesCount: 1,
+      totalActiveCashback: 0.00,
+      totalCashbackValueGenerated: 25.00,
+      status: CustomerStatus.ABSENT,
+      purchases: [
+        {
+          id: 'p7',
+          customerId: '5',
+          date: new Date('2025-09-10'),
+          totalValue: 250.00,
+          cashbackValueGenerated: 25.00
+        }
+      ],
+      cashbacks: [
+        {
+          id: 'c7',
+          customerId: '5',
+          originPurchaseId: 'p7',
+          createdAt: new Date('2025-09-10'),
+          validUntil: new Date('2025-10-10'),
+          value: 25.00,
+          status: CashbackStatus.EXPIRED,
+          minPurchaseValue: 50.00
+        }
+      ]
     }
   ];
   // Filtros
   searchTerm: string = '';
   currentStatusFilters: CustomerStatus[] = [];
   // Lista de clientes filtrada para exibição
-  filteredCustomers: Customer[] = [...this.allCustomers];
+  filteredCustomers: Customer[] = [...this.customers];
   // Captura cliente selecionado na tabela
   selectedCustomer?: Customer;
   customerToDelete: Customer | null = null;
@@ -112,11 +225,10 @@ export class Customers {
   onFilterStatus(statuses: CustomerStatus[]): void {
     this.currentStatusFilters = statuses;
     this.applyFilters();
-    console.log('Status selecionados para filtro:', this.currentStatusFilters);
   }
 
   applyFilters(): void {
-    this.filteredCustomers = this.allCustomers.filter(customer => {
+    this.filteredCustomers = this.customers.filter(customer => {
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
         customer.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||

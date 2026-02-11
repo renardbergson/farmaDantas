@@ -1,6 +1,6 @@
 <app-customer-header (addCustomer)="onAddCustomer()" />
 
-<app-customer-status-chart [customers]="allCustomers" />
+<app-customer-status-chart [customers]="customers" />
 
 <app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterStatus($event)" />
 
@@ -9,5 +9,7 @@
 <app-customer-add-new-modal />
 
 <app-customer-details-modal [customer]="selectedCustomer" />
+
+<app-customer-cashbacks-modal [customer]="selectedCustomer" />
 
 <app-customer-delete-modal [customer]="customerToDelete" (confirmDelete)="confirmDelete($event)"/>

@@ -1,0 +1,105 @@
+<div class="modal fade" id="customerCashbacksModal" tabindex="-1" aria-labelledby="customerCashbacksModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="header-content">
+          <h5 class="modal-title" id="customerCashbacksModalLabel">
+            Histórico de Cashbacks
+            @if (customer) {
+              <span class="text-primary ms-1">- {{ customer.name }}</span>
+            }
+          </h5>
+          <p class="modal-subtitle">Visualize o histórico de ganhos e utilização de cashbacks</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+        @if(customer) {
+          <!-- Resumo Rápido -->
+          <div class="cashback-summary mb-4">
+            <div class="summary-item">
+              <span class="summary-label">Disponível</span>
+              <span class="summary-value text-primary">R$ calcular...</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <span class="summary-label">Total Ganho</span>
+              <span class="summary-value text-success">R$ calcular...</span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <span class="summary-label">Total Utilizado</span>
+              <span class="summary-value text-secondary">R$ calcular...</span>
+            </div>
+          </div>
+        }
+
+        <!-- Filtros -->
+        <div class="filter-container">
+          <button type="button" class="btn-filter active">Todos</button>
+          <button type="button" class="btn-filter filter-available">Disponível</button>
+          <button type="button" class="btn-filter filter-used">Utilizado</button>
+          <button type="button" class="btn-filter filter-expired">Expirado</button>
+        </div>
+
+        <!-- Tabela de Histórico -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th>Data de Criação</th>
+                <th>Origem</th>
+                <th>Resgate</th>
+                <th class="text-center">Mín. Compra</th>
+                <th class="text-center">Status</th>
+                <th class="text-end">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of customer?.cashbacks; track item.id) {
+                <tr>
+                  <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <span class="fw-medium">{{ item.originPurchaseId }}</span>
+                  </td>
+                  <td>
+                    @if (item.usedInPurchaseId) {
+                      <span class="fw-bold text-dark">{{ item.usedInPurchaseId }}</span>
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    @if (item.minPurchaseValue > 0) {
+                      <span class="text-muted">R$ {{ item.minPurchaseValue | number:'1.2-2' }}</span>
+                    } @else {
+                      <span class="text-muted">-</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                      {{ item.status }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <span [class.text-success]="item.value > 0 && item.status !== 'Expirado'"
+                          [class.text-danger]="item.value < 0"
+                          [class.text-muted]="item.status === 'Expirado'"
+                          class="fw-bold">
+                      {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | number:'1.2-2' }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

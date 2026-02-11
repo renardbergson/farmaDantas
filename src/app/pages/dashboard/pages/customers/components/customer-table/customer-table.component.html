@@ -2,7 +2,7 @@
   <div class="dashboard-card-header">
     <h2 class="dashboard-card-title">Lista de Clientes</h2>
     <p class="dashboard-card-subtitle">
-      {{ customers.length }} cliente(s) encontrado(s)
+      {{ customers.length }} cliente(s) no total
     </p>
   </div>
   <div class="table-responsive">
@@ -11,8 +11,8 @@
         <tr>
           <th>Cliente</th>
           <th>Telefone</th>
-          <th class="text-center">Compras</th>
-          <th class="text-end">Total disponível</th>
+          <th class="text-center">Compras Realizadas</th>
+          <th class="text-end">Gasto em Compras</th>
           <th class="text-center">Status</th>
           <th class="text-end">Ações</th>
         </tr>
@@ -30,8 +30,8 @@
               </div>
             </td>
             <td class="text-muted">{{ customer.phone }}</td>
-            <td class="text-center fw-medium">{{ customer.totalPurchases }}</td>
-            <td class="text-end cashback-value">R$ {{ customer.totalActiveCashback | number:'1.2-2' }}</td>
+            <td class="text-center fw-medium">{{ customer.purchasesCount }}</td>
+            <td class="text-end cashback-value">R$ calcular...</td>
             <td class="text-center">
               <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
                 {{ customer.status }}
@@ -52,7 +52,9 @@
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault()"><i class="bi bi-gift me-2"></i> Ver cashbacks</a>
+                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetauls(customer)" data-bs-toggle="modal" data-bs-target="#customerCashbacksModal">
+                      <i class="bi bi-gift me-2"></i> Ver cashbacks
+                    </a>
                   </li>
                   <li>
                     <a class="dropdown-item" (click)="$event.preventDefault()"><i class="bi bi-pencil me-2"></i> Editar</a>

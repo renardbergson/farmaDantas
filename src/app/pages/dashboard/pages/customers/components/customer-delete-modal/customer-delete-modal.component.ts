@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {Customer} from '../../customerModel';
+import {Customer} from '../../../../../../shared/models/customer.model';
 
 @Component({
   selector: 'app-customer-delete-modal',

@@ -1,3 +1,6 @@
+import {Cashback} from './cashback.model';
+import {Purchase} from './purchase.model';
+
 export enum CustomerStatus {
   NEW = 'novo',
   ACTIVE = 'ativo',
@@ -15,7 +18,10 @@ export interface Customer {
   state: string;
   createdAt: Date;
   dateOfBirth: Date;
-  totalPurchases: number;
+  purchasesCount: number;
   totalActiveCashback: number;
+  totalCashbackValueGenerated: number;
+  cashbacks?: Cashback[];
+  purchases?: Purchase[];
   status: CustomerStatus;
 }

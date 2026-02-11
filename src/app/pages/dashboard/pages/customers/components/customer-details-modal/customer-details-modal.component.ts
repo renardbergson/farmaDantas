@@ -1,6 +1,6 @@
 import {Component, Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {Customer, CustomerStatus} from '../../customerModel';
+import {Customer, CustomerStatus} from '../../../../../../shared/models/customer.model';
 
 @Component({
   selector: 'app-customer-details-modal',

@@ -32,8 +32,6 @@ export class CustomerTable {
     this.deleteCustomer.emit(customer);
   }
 
-  protected readonly CustomerStatus = CustomerStatus;
-
   getStatusClass(status: CustomerStatus): string {
     switch (status) {
       case CustomerStatus.NEW: return 'badge-new';

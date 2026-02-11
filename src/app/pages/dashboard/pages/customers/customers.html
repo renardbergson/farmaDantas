@@ -4,7 +4,7 @@
 
 <app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterStatus($event)" />
 
-<app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
+<app-customer-table [customers]="customers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
 
 <app-customer-add-new-modal />
 

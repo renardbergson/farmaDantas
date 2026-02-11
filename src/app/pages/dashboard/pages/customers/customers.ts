@@ -25,10 +25,12 @@ import {CustomerService} from '../../../../shared/services/customer.service';
 })
 export class Customers implements OnInit {
   // Lista original de clientes
-  customers: Customer[] = [];
-  // Filtros
+  originalCustomers: Customer[] = [];
+  // Lista filtrada de clientes
+  filteredCustomers: Customer[] = [];
+  // Filtros de clientes
   searchTerm: string = '';
-  currentStatusFilters: CustomerStatus[] = [];
+  customerStatusFilters: CustomerStatus[] = [];
   // Captura cliente selecionado na tabela
   selectedCustomer?: Customer;
   customerToDelete: Customer | null = null;
@@ -42,7 +44,8 @@ export class Customers implements OnInit {
   loadCustomers(): void {
     this.customerService.getCustomers().subscribe({
       next: (data) => {
-        this.customers = data;
+        this.originalCustomers = data;
+        this.filteredCustomers = data;
       },
       error: (err) => console.error(err),
     })
@@ -51,17 +54,17 @@ export class Customers implements OnInit {
   // Filtra os clientes com base no termo de busca
   onSearch(term: string): void {
     this.searchTerm = term;
-    this.applyFilters();
+    this.applyCustomerFilters();
   }
 
   // Filtra is clientes com base nos status selecionados
-  onFilterStatus(statuses: CustomerStatus[]): void {
-    this.currentStatusFilters = statuses;
-    this.applyFilters();
+  onFilterCustomerStatus(statuses: CustomerStatus[]): void {
+    this.customerStatusFilters = statuses;
+    this.applyCustomerFilters();
   }
 
-  applyFilters(): void {
-    this.customers = this.customers.filter(customer => {
+  applyCustomerFilters(): void {
+    this.filteredCustomers = this.originalCustomers.filter(customer => {
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
         customer.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -70,8 +73,8 @@ export class Customers implements OnInit {
 
       const matchesStatusSearch =
         // verifica se o status do cliente bate com os filtros selecionados
-        this.currentStatusFilters.length === 0 ||
-        this.currentStatusFilters.includes(customer.status);
+        this.customerStatusFilters.length === 0 ||
+        this.customerStatusFilters.includes(customer.status);
 
       // retorno do filter
       return matchesSearchTerm && matchesStatusSearch;

@@ -15,13 +15,19 @@ export class CustomerSearchCard {
 
   constructor() {}
 
-  statuses = [
-    { value: CustomerStatus.NEW, label: 'Novo', class: 'filter-new' },
-    { value: CustomerStatus.ACTIVE, label: 'Ativo', class: 'filter-active' },
-    { value: CustomerStatus.ABSENT, label: 'Ausente', class: 'filter-absent' },
-    { value: CustomerStatus.INACTIVE, label: 'Inativo', class: 'filter-inactive' }
-  ];
+  // Mapeamento de status para classes CSS
+  statusStyles: Record<CustomerStatus, string> = {
+    [CustomerStatus.NEW]: 'filter-new',
+    [CustomerStatus.ACTIVE]: 'filter-active',
+    [CustomerStatus.ABSENT]: 'filter-absent',
+    [CustomerStatus.INACTIVE]: 'filter-inactive'
+  };
+  statuses = Object.values(CustomerStatus).map(status => ({
+    value: status,
+    class: this.statusStyles[status]
+  }))
 
+  // Set de filtros por status
   selectedStatuses: Set<CustomerStatus> = new Set();
   // No TS/JS, um Set é uma coleção de valores únicos.
   // Diferente de um Array comum, o Set não permite itens duplicados.

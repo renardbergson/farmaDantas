@@ -62,7 +62,7 @@
 }
 
 .table-responsive {
-  max-height: 400px;
+  height: 400px;
   overflow-y: auto;
 }
 
@@ -89,6 +89,13 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+  align-items: center;
+}
+
+.filter-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .btn-filter {

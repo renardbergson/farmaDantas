@@ -37,10 +37,18 @@
 
         <!-- Filtros -->
         <div class="filter-container">
-          <button type="button" class="btn-filter active">Todos</button>
-          <button type="button" class="btn-filter filter-available">Disponível</button>
-          <button type="button" class="btn-filter filter-used">Utilizado</button>
-          <button type="button" class="btn-filter filter-expired">Expirado</button>
+          <span class="filter-label text-muted"><i class="bi bi-funnel me-1"></i> Filtrar:</span>
+          @for(status of statuses; track status.value) {
+            <button
+              type="button"
+              class="btn-filter"
+              [ngClass]="status.class"
+              (click)="toggleStatus(status.value)"
+              [class.active]="selectedStatus.has(status.value)"
+            >
+              {{ status.value }}
+            </button>
+          }
         </div>
 
         <!-- Tabela de Histórico -->
@@ -57,7 +65,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (item of customer?.cashbacks; track item.id) {
+              @for (item of filteredCashbacks; track item.id) {
                 <tr>
                   <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
                   <td>

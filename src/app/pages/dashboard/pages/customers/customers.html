@@ -1,10 +1,10 @@
 <app-customer-header (addCustomer)="onAddCustomer()" />
 
-<app-customer-status-chart [customers]="customers" />
+<app-customer-status-chart [customers]="originalCustomers" />
 
-<app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterStatus($event)" />
+<app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterCustomerStatus($event)" />
 
-<app-customer-table [customers]="customers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
+<app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
 
 <app-customer-add-new-modal />
 

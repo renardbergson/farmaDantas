@@ -96,7 +96,6 @@ export class Customers implements OnInit {
   }
 
   confirmDelete(customer: Customer): void {
-    console.log('Cliente a ser excluído:', customer);
-    // Funcionalidade de exclusão será implementada futuramente
+    this.filteredCustomers = this.filteredCustomers.filter(c => c.id !== customer.id);
   }
 }

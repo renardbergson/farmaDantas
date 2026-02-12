@@ -81,7 +81,7 @@ export class CustomerAddNewModal implements OnInit{
   onSubmit() {
     if(this.customerForm.valid) {
       this.customerService.addCustomer(this.customerForm.value).subscribe({
-        next: (data) => {
+        next: () => {
           this.customerAdded.emit();
           this.customerForm.reset();
           const closeBtn = document.querySelector<HTMLElement>('#newCustomerModal .btn-close')

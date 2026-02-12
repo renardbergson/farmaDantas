@@ -69,7 +69,7 @@ export class Customers implements OnInit {
         // verifica se o nome, cpf ou e-mail bate com a busca
         customer.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         customer.cpf.includes(this.searchTerm) ||
-        customer.email.toLowerCase().includes(this.searchTerm)
+        customer.email?.toLowerCase().includes(this.searchTerm)
 
       const matchesStatusSearch =
         // verifica se o status do cliente bate com os filtros selecionados

@@ -10,7 +10,7 @@
       <thead>
         <tr>
           <th>Cliente</th>
-          <th>Telefone</th>
+          <th>Telefone Principal</th>
           <th class="text-center">Compras Realizadas</th>
           <th class="text-end">Gasto em Compras</th>
           <th class="text-center">Status</th>
@@ -29,7 +29,7 @@
                 </div>
               </div>
             </td>
-            <td class="text-muted">{{ customer.phone }}</td>
+            <td class="text-muted">{{ (customer.phones?.[0] || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
             <td class="text-center fw-medium">{{ customer.purchasesCount }}</td>
             <td class="text-end cashback-value">R$ calcular...</td>
             <td class="text-center">

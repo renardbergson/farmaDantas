@@ -9,19 +9,21 @@ export enum CustomerStatus {
 }
 
 export interface Customer {
+  // obrigatórios
   id: string;
+  status: CustomerStatus;
   name: string;
-  email: string;
-  phone: string;
   cpf: string;
-  city: string,
+  phones: string[];
   state: string;
   createdAt: Date;
-  dateOfBirth: Date;
   purchasesCount: number;
   totalActiveCashback: number;
   totalCashbackValueGenerated: number;
+  // opcionais
+  email?: string;
+  city?: string,
+  dateOfBirth?: Date;
   cashbacks?: Cashback[];
   purchases?: Purchase[];
-  status: CustomerStatus;
 }

@@ -31,8 +31,10 @@
                   <span>{{ customer.email }}</span>
                 </div>
                 <div class="info-item">
-                  <label>Telefone</label>
-                  <span>{{ customer.phone }}</span>
+                  <label>Telefone(s)</label>
+                  @for (phone of customer.phones; track phone) {
+                    <span>{{ phone | mask: '(00) 00000-0000' }}</span>
+                  }
                 </div>
                 <div class="info-item">
                   <label>CPF</label>

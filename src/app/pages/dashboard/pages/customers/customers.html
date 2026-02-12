@@ -6,7 +6,7 @@
 
 <app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
 
-<app-customer-add-new-modal />
+<app-customer-add-new-modal (customerAdded)="loadCustomers()"/>
 
 <app-customer-details-modal [customer]="selectedCustomer" />
 

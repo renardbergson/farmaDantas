@@ -29,7 +29,7 @@
                 </div>
               </div>
             </td>
-            <td class="text-muted">{{ (customer.phones[0] || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
+            <td class="text-muted">{{ (customer.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
             <td class="text-center fw-medium">{{ customer.purchasesCount }}</td>
             <td class="text-end cashback-value">R$ calcular...</td>
             <td class="text-center">
@@ -47,17 +47,24 @@
 
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetauls(customer)" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
+                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
                       <i class="bi bi-eye me-2"></i> Ver detalhes
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetauls(customer)" data-bs-toggle="modal" data-bs-target="#customerCashbacksModal">
+                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerCashbacksModal">
                       <i class="bi bi-gift me-2"></i> Ver cashbacks
                     </a>
                   </li>
                   <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault()"><i class="bi bi-pencil me-2"></i> Editar</a>
+                    <a
+                      class="dropdown-item"
+                      (click)="$event.preventDefault(); onEditCustomer(customer)"
+                      data-bs-toggle="modal" data-bs-target="#newCustomerModal"
+                    >
+                      <i class="bi bi-pencil me-2"></i>
+                      Editar
+                    </a>
                   </li>
                   <li>
                     <hr class="dropdown-divider">

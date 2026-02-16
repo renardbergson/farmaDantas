@@ -1,15 +1,29 @@
 <app-customer-header (addCustomer)="onAddCustomer()" />
 
-<app-customer-status-chart [customers]="originalCustomers" />
+<app-customer-status-chart [customers]="filteredCustomers" />
 
-<app-customer-search-card (search)="onSearch($event)" (statusFilter)="onFilterCustomerStatus($event)" />
+<app-customer-search-card
+  (search)="onSearch($event)"
+  (statusFilter)="onFilterCustomerStatus($event)"
+/>
 
-<app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)"/>
+<app-customer-table
+  [customers]="filteredCustomers"
+  (viewDetails)="onSelectCustomer($event)"
+  (editCustomer)="onEditCustomer($event)"
+  (deleteCustomer)="onDeleteCustomer($event)"
+/>
 
-<app-customer-add-new-modal (customerAdded)="loadCustomers()"/>
+<app-customer-add-new-modal
+  (customerAdded)="loadCustomers()"
+  [customer]="customerToEdit"
+/>
 
 <app-customer-details-modal [customer]="selectedCustomer" />
 
 <app-customer-cashbacks-modal [customer]="selectedCustomer" />
 
-<app-customer-delete-modal [customer]="customerToDelete" (confirmDelete)="confirmDelete($event)"/>
+<app-customer-delete-modal
+  [customer]="customerToDelete"
+  (confirmDelete)="confirmDelete($event)"
+/>

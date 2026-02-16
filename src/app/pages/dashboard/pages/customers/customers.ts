@@ -31,8 +31,11 @@ export class Customers implements OnInit {
   // Filtros de clientes
   searchTerm: string = '';
   customerStatusFilters: CustomerStatus[] = [];
-  // Captura cliente selecionado na tabela
+  // Cliente selecionado na tabela
   selectedCustomer?: Customer;
+  // Cliente para editar
+  customerToEdit?: Customer;
+  // Cliente para excluir
   customerToDelete: Customer | null = null;
 
   constructor(private customerService: CustomerService) {}
@@ -84,11 +87,16 @@ export class Customers implements OnInit {
   // Abre o modal de novo cliente
   onAddCustomer(): void {
     // abertura de modal gerenciada pelo bootstrap ***
+    this.customerToEdit = undefined; // garante que o modal inicie limpo
   }
 
   // Atribui o cliente selecionado ao modal de detalhes
   onSelectCustomer(customer: Customer): void {
     this.selectedCustomer = customer;
+  }
+
+  onEditCustomer(customer: Customer): void {
+    this.customerToEdit = customer;
   }
 
   onDeleteCustomer(customer: Customer): void {

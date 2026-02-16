@@ -14,6 +14,7 @@ import {NgxMaskPipe, provideNgxMask} from 'ngx-mask';
 export class CustomerTable {
   @Input() customers: Customer[] = [];
   @Output() viewDetails = new EventEmitter<Customer>();
+  @Output() editCustomer = new EventEmitter<Customer>();
   @Output() deleteCustomer = new EventEmitter<Customer>();
 
   // Gera as iniciais do nome do cliente
@@ -26,8 +27,12 @@ export class CustomerTable {
       .substring(0, 2);
   }
 
-  onViewDetauls(customer: Customer): void {
+  onViewDetails(customer: Customer): void {
     this.viewDetails.emit(customer);
+  }
+
+  onEditCustomer(customer: Customer): void {
+    this.editCustomer.emit(customer);
   }
 
   onDeleteCustomer(customer: Customer): void {

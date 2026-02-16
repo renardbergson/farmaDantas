@@ -68,4 +68,18 @@ export class CustomerService {
     this.customers.push(newCustomer);
     return of(newCustomer);
   }
+
+  updateCustomer(id: string, customerData: Partial<Customer>): Observable<Customer> {
+    const index = this.customers.findIndex(c => c.id === id);
+
+    if(index !== -1) {
+      this.customers[index] = {
+        ...this.customers[index], // mantemos os dados antigos
+        ...customerData // sobrescrevemos apenas dados novos (parciais)
+      }
+      return of(this.customers[index]);
+    }
+
+    throw new Error('Cliente não encontrado!');
+  }
 }

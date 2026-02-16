@@ -14,7 +14,7 @@ export interface Customer {
   status: CustomerStatus;
   name: string;
   cpf: string;
-  phones: string[];
+  phone: string;
   state: string;
   createdAt: Date;
   purchasesCount: number;

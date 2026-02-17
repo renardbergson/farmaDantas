@@ -1,8 +1,10 @@
-import {Injectable} from '@angular/core';
-import {Customer, CustomerStatus} from '../models/customer.model';
-import {Observable, of} from 'rxjs';
-import {MOCK_CUSTOMERS} from '../data/customers.mock';
-import {nanoid} from 'nanoid';
+import { Injectable } from '@angular/core';
+import { Customer, CustomerStatus } from '../models/customer.model';
+import { Observable, of } from 'rxjs';
+import { MOCK_CUSTOMERS } from '../data/customers.mock';
+import { nanoid } from 'nanoid';
+import { DashboardStats } from '../models/dashboard-stats.model';
+import { CashbackStatus } from '../models/cashback.model';
 
 @Injectable({
   providedIn: 'root',
@@ -72,7 +74,7 @@ export class CustomerService {
   updateCustomer(id: string, customerData: Partial<Customer>): Observable<Customer> {
     const index = this.customers.findIndex(c => c.id === id);
 
-    if(index !== -1) {
+    if (index !== -1) {
       this.customers[index] = {
         ...this.customers[index], // mantemos os dados antigos
         ...customerData // sobrescrevemos apenas dados novos (parciais)
@@ -81,5 +83,194 @@ export class CustomerService {
     }
 
     throw new Error('Cliente não encontrado!');
+  }
+
+  getDashboardStats() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    // zera as horas, minutos, segundos e milissegundos, 
+    // para levar em consideração apenas a data
+
+    const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    // cria uma data que representa o primeiro dia do mês atual, à meia-noite
+    // new Date(ano, mês, dia)
+    const lastMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+    // cria uma data que representa o primeiro dia do mês anterior, à meia-noite
+    // new Date(ano, mês atual - 1 (mês passado), dia)
+    const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+    // cria uma data que representa o primeiro dia do mês seguinte, à meia-noite
+    // new Date(ano, mês atual + 1 (próximo mês), dia)
+
+    // Customers
+    const totalCustomers = this.customers.length;
+    let newCustomersToday = 0;
+    let newCustomersThisMonth = 0;
+    let newCustomersLastMonth = 0;
+    let customersWithPurchasesLastMonth = 0;
+    let customersWithPurchasesThisMonth = 0;
+
+    // Purchases
+    let purchasesThisMonth = 0;
+    let purchasesLastMonth = 0;
+    let purchasesAmountThisMonth = 0;
+
+    // Cashbacks
+    let activeCashbacks = 0;
+    let activeCashbacksAmount = 0;
+    let activeCashbacksLastMonth = 0;
+    let activeCashbacksThisMonth = 0;
+
+    // Returning rate
+    let returningCustomersThisMonth = 0;
+    let returningCustomersLastMonth = 0;
+
+    this.customers.forEach(ct => {
+      const createdAt = new Date(ct.createdAt);
+      createdAt.setHours(0, 0, 0, 0); // zeramos as horas para comparar apenas a data
+
+      // --------------------
+      // CARD 1: CLIENTES
+      // --------------------
+      if (createdAt.getTime() === today.getTime()) {
+        newCustomersToday++;
+      }
+
+      if (createdAt >= currentMonth && createdAt < nextMonth) {
+        newCustomersThisMonth++;
+      }
+
+      if (createdAt >= lastMonth && createdAt < currentMonth) {
+        newCustomersLastMonth++;
+      }
+
+      // --------------------
+      // CARD 2: PURCHASES
+      // --------------------
+      const purchases = ct.purchases ?? [];
+
+      purchases.forEach(p => {
+        const purchaseDate = new Date(p.date);
+
+        if (purchaseDate >= currentMonth && purchaseDate < nextMonth) {
+          purchasesThisMonth++;
+          purchasesAmountThisMonth += p.totalValue;
+        }
+
+        if (purchaseDate >= lastMonth && purchaseDate < currentMonth) {
+          purchasesLastMonth++;
+        }
+      });
+
+      // --------------------
+      // CARD 3: CASHBACKS
+      // --------------------
+      const cashbacks = ct.cashbacks ?? [];
+
+      cashbacks.forEach(cb => {
+        const cashbackDate = new Date(cb.createdAt);
+
+        if (cb.status === CashbackStatus.ACTIVE) {
+          // total geral
+          activeCashbacks++;
+          activeCashbacksAmount += cb.value;
+
+          // mês passado
+          if (cashbackDate >= lastMonth && cashbackDate < currentMonth) {
+            activeCashbacksLastMonth++;
+          }
+
+          // mês atual
+          if (cashbackDate >= currentMonth && cashbackDate < nextMonth) {
+            activeCashbacksThisMonth++;
+          }
+        }
+      });
+
+      // --------------------
+      // CARD 4: TAXA DE RETORNO MENSAL
+      // --------------------
+      let purchasesCountThisMonth = 0;
+      let purchasesCountLastMonth = 0;
+
+      purchases.forEach(p => {
+        const purchaseDate = new Date(p.date);
+
+        if (purchaseDate >= currentMonth && purchaseDate < nextMonth) {
+          purchasesCountThisMonth++;
+        }
+
+        if (purchaseDate >= lastMonth && purchaseDate < currentMonth) {
+          purchasesCountLastMonth++;
+        }
+      });
+
+      // comprou neste mês
+      if (purchasesCountThisMonth > 0) {
+        customersWithPurchasesThisMonth++;
+      }
+
+      // comprou no mês passado
+      if (purchasesCountLastMonth > 0) {
+        customersWithPurchasesLastMonth++;
+      }
+
+      // fez mais de uma compra neste mês
+      if (purchasesCountThisMonth > 1) {
+        returningCustomersThisMonth++;
+      }
+
+      // fez mais de uma compra no mês passado
+      if (purchasesCountLastMonth > 1) {
+        returningCustomersLastMonth++;
+      }
+    });
+
+    // -------------------------
+    // FUNÇÃO - CALCULAR TAXAS
+    // -------------------------
+    function calculateRateChange(thisMonth: number, lastMonth: number): number {
+      if (lastMonth === 0 && thisMonth > 0) {
+        // todo valor deste mês é crescimento
+        return thisMonth;
+      } else if (lastMonth === 0 && thisMonth === 0) {
+        return 0; // nenhum dado, nenhuma variação
+      } else {
+        return (thisMonth - lastMonth) / lastMonth;
+      }
+    }
+
+    // --------------------
+    // TAXAS DE VARIAÇÃO
+    // --------------------
+    const newCustomersRateChange = calculateRateChange(newCustomersThisMonth, newCustomersLastMonth);
+    const purchasesRateChange = calculateRateChange(purchasesThisMonth, purchasesLastMonth);
+    const activeCashbacksRateChange = calculateRateChange(activeCashbacksThisMonth, activeCashbacksLastMonth);
+
+    // TAXA DE RECOMPRA
+    const returnRateThisMonth = customersWithPurchasesThisMonth > 0
+      ? (returningCustomersThisMonth / customersWithPurchasesThisMonth)
+      : 0;
+
+    const returnRateLastMonth = customersWithPurchasesLastMonth > 0
+      ? (returningCustomersLastMonth / customersWithPurchasesLastMonth)
+      : 0;
+
+    const returnRateChange = calculateRateChange(returnRateThisMonth, returnRateLastMonth);
+
+    const stats: DashboardStats = {
+      totalCustomers,
+      newCustomersToday,
+      newCustomersRateChange,
+      purchasesThisMonth,
+      purchasesAmountThisMonth,
+      purchasesRateChange,
+      activeCashbacks,
+      activeCashbacksAmount,
+      activeCashbacksRateChange,
+      returnRateThisMonth,
+      returnRateChange
+    }
+
+    return of(stats);
   }
 }

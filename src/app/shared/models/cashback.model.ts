@@ -1,5 +1,5 @@
 export enum CashbackStatus {
-  AVAILABLE = 'Disponível',
+  ACTIVE = 'Ativo',
   USED = 'Utilizado',
   EXPIRED = 'Expirado'
 }

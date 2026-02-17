@@ -1,19 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-export interface DashboardStats {
-  totalCustomers: number;
-  newCustomersToday: number;
-  trendCustomers: number;
-  purchasesMonth: number;
-  salesMonth: number;
-  trendPurchases: number;
-  activeCashbacks: number;
-  availableCashbacks: number;
-  trendCashbacks: number;
-  returnRate: number;
-  trendReturn: number;
-}
+import { CustomerService } from '../../../../../../shared/services/customer.service';
+import { DashboardStats } from '../../../../../../shared/models/dashboard-stats.model';
 
 @Component({
   selector: 'app-dashboard-stats-grid',
@@ -23,53 +11,37 @@ export interface DashboardStats {
 })
 export class DashboardStatsGrid implements OnInit {
   stats: DashboardStats = {
-    totalCustomers: 2547,
-    newCustomersToday: 12,
-    trendCustomers: 12,
-    purchasesMonth: 1234,
-    salesMonth: 45890.00,
-    trendPurchases: 8,
-    activeCashbacks: 856,
-    availableCashbacks: 4280.00,
-    trendCashbacks: 5,
-    returnRate: 73,
-    trendReturn: 3
+    totalCustomers: 0,
+    newCustomersToday: 0,
+    newCustomersRateChange: 0,
+    purchasesThisMonth: 0,
+    purchasesAmountThisMonth: 0,
+    purchasesRateChange: 0,
+    activeCashbacks: 0,
+    activeCashbacksAmount: 0,
+    activeCashbacksRateChange: 0,
+    returnRateThisMonth: 0,
+    returnRateChange: 0
   };
 
+  constructor(private customerService: CustomerService) { }
+
   ngOnInit(): void {
-    // TODO: Integração com API
-    // Chamar loadStatsData() quando a API estiver disponível
-    // this.loadStatsData();
+    this.loadStats();
   }
 
-  /**
-   * Método para carregar dados do backend
-   * Endpoint sugerido: GET /api/dashboard/stats
-   * Resposta esperada: DashboardStats
-   *
-   * Exemplo de implementação:
-   * loadStatsData(): void {
-   *   this.dashboardService.getStats().subscribe({
-   *     next: (stats: DashboardStats) => {
-   *       this.stats = stats;
-   *     },
-   *     error: (error) => {
-   *       console.error('Erro ao carregar estatísticas:', error);
-   *       // Tratar erro (exibir mensagem, usar dados padrão, etc.)
-   *     }
-   *   });
-   * }
-   */
-  // loadStatsData(): void {
-  //   // Implementar chamada HTTP aqui
-  // }
+  getTrendClass(value: number): string {
+    return value >= 0 ? 'trend-positive' : 'trend-negative';
+  }
 
-  /**
-   * Método para atualizar os stats manualmente
-   * Útil para atualizações em tempo real ou quando os dados vierem de outro componente
-   * @param newStats - Novos dados de estatísticas do dashboard
-   */
-  updateStats(newStats: DashboardStats): void {
-    this.stats = { ...newStats };
+  loadStats(): void {
+    this.customerService.getDashboardStats().subscribe({
+      next: (stats: DashboardStats) => {
+        this.stats = stats;
+      },
+      error: (err) => {
+        console.error('Erro ao tentar carregar estatísticas:', err);
+      }
+    })
   }
 }

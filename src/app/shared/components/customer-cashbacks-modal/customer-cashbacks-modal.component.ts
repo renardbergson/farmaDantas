@@ -1,7 +1,7 @@
-import {Component, Input, OnChanges } from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Customer} from '../../models/customer.model';
-import {Cashback, CashbackStatus} from '../../models/cashback.model';
+import { Component, Input, OnChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Customer } from '../../models/customer.model';
+import { Cashback, CashbackStatus } from '../../models/cashback.model';
 
 @Component({
   selector: 'app-customer-cashbacks-modal',
@@ -37,7 +37,7 @@ export class CustomerCashbacksModal implements OnChanges {
     }
 
     const totalEnumStatusCount = Object.values(CashbackStatus).length;
-    if(this.selectedStatus.size === totalEnumStatusCount) {
+    if (this.selectedStatus.size === totalEnumStatusCount) {
       this.selectedStatus.clear();
     }
 
@@ -46,7 +46,7 @@ export class CustomerCashbacksModal implements OnChanges {
 
   getFilterClass(status: CashbackStatus): string {
     switch (status) {
-      case CashbackStatus.AVAILABLE: return 'filter-available';
+      case CashbackStatus.ACTIVE: return 'filter-available';
       case CashbackStatus.USED: return 'filter-used';
       case CashbackStatus.EXPIRED: return 'filter-expired';
       default: return '';
@@ -55,7 +55,7 @@ export class CustomerCashbacksModal implements OnChanges {
 
   getStatusClass(status: CashbackStatus): string {
     switch (status) {
-      case CashbackStatus.AVAILABLE: return 'status-available';
+      case CashbackStatus.ACTIVE: return 'status-available';
       case CashbackStatus.USED: return 'status-used';
       case CashbackStatus.EXPIRED: return 'status-expired';
       default: return '';
@@ -63,10 +63,10 @@ export class CustomerCashbacksModal implements OnChanges {
   }
 
   applyFilters(): void {
-    if(!this.customer?.cashbacks) return;
+    if (!this.customer?.cashbacks) return;
 
     this.filteredCashbacks = this.selectedStatus.size === 0
-    ? this.customer.cashbacks
-    : this.customer.cashbacks.filter(cb => this.selectedStatus.has(cb.status));
+      ? this.customer.cashbacks
+      : this.customer.cashbacks.filter(cb => this.selectedStatus.has(cb.status));
   }
 }

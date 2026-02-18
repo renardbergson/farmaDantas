@@ -34,6 +34,10 @@
   margin: 0;
 }
 
+.dashboard-card-title i {
+  color: var(--accent-gold);
+}
+
 .dashboard-card-subtitle {
   font-size: 0.875rem;
   color: var(--text-muted);

@@ -5,7 +5,13 @@ import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
 import { DashboardStats } from '../models/dashboard-stats.model';
 import { CashbackStatus } from '../models/cashback.model';
-
+import { getInitials } from '../utils/getInitials';
+export interface TopCustomer {
+  name: string;
+  avatar: string;
+  purchases: number;
+  totalInCashback: number;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -88,7 +94,7 @@ export class CustomerService {
   getDashboardStats() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    // zera as horas, minutos, segundos e milissegundos, 
+    // zera as horas, minutos, segundos e milissegundos,
     // para levar em consideração apenas a data
 
     const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -272,5 +278,53 @@ export class CustomerService {
     }
 
     return of(stats);
+  }
+
+  getTop5CustomersThisMonth(): Observable<TopCustomer[]> {
+    const now = new Date();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+
+    const purchasesThisMonth = (customer: Customer) => {
+      return customer.purchases?.filter(pc =>
+        pc.date.getMonth() === month &&
+        pc.date.getFullYear() === year
+      ).length || 0;
+    };
+
+    const top5 = this.customers
+      .map(customer => {
+        const purchasesCount = purchasesThisMonth(customer);
+
+        return {
+          name: customer.name,
+          avatar: getInitials(customer.name),
+          purchases: purchasesCount,
+          totalInCashback: customer.totalActiveCashback
+        }
+      })
+      .filter(ct => ct.purchases > 0)
+      .sort((a, b) => b.purchases - a.purchases)
+      .slice(0, 5);
+    // O sort recebe uma função de comparação:
+    // - Se retornar valor negativo → 'a' vem antes de 'b'
+    // - Se retornar valor positivo → 'b' vem antes de 'a'
+    /*
+      Exemplo 1:
+      a = 10
+      b = 5
+      10 - 5 = 5 (então 'b' vem antes de 'a')
+
+      Exemplo 2:
+      a = 5
+      b = 10
+      5 - 10 = -5 (então 'a' vem antes de 'b')
+    */
+    // Aqui fazemos (b - a) para ordenar em ordem decrescente,
+    // ou seja, quem tem mais compras no mês aparece primeiro.
+    // Do contrário, se fizermos (a - b), quem tiver menos compras
+    // aparecerá primeiro.
+    // Obs: o .sort() modifica o array original criado por .filter()
+    return of(top5);
   }
 }

@@ -1,27 +1,33 @@
 <div class="dashboard-card">
   <div class="dashboard-card-header">
     <div>
-      <h2 class="dashboard-card-title">Top Clientes</h2>
+      <h2 class="dashboard-card-title">
+        Top 5
+        <i class="bi bi-trophy-fill ms-2"></i>
+      </h2>
       <p class="dashboard-card-subtitle">Clientes com mais compras este mês</p>
     </div>
     <button class="btn-ghost" (click)="viewAllCustomers()">
       Ver todos <i class="bi bi-arrow-right ms-1"></i>
     </button>
   </div>
+
   <div class="dashboard-card-body">
     <div class="d-flex flex-column gap-2">
-      <div class="client-list-item" *ngFor="let customer of topCustomers; let i = index">
-        <div class="client-rank">{{ i + 1 }}</div>
+      @for(customer of top5CustomersThisMonth; track $index) {
+      <div class="client-list-item">
+        <div class="client-rank">{{ $index + 1 }}</div>
         <div class="client-avatar">{{ customer.avatar }}</div>
         <div class="client-info">
           <p class="client-name">{{ customer.name }}</p>
           <p class="client-purchases">{{ customer.purchases }} compras</p>
         </div>
         <div class="client-cashback">
-          <p class="client-cashback-value">R$ {{ customer.cashback | number:'1.2-2' }}</p>
+          <p class="client-cashback-value">R$ {{ customer.totalInCashback }}</p>
           <p class="client-cashback-label">em cashback</p>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>

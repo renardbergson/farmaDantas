@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { DashboardWrapper } from './pages/dashboard/dashboardWrapper';
-import { Dashboard, Customers, Cashbacks, Purchases } from './pages/dashboard/pages/index';
+import { Dashboard, Customers, Cashbacks, Purchases } from './pages/dashboard/sessions/index';
 
 export const routes: Routes = [
   {

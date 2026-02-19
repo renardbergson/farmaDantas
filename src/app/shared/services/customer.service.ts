@@ -12,6 +12,13 @@ export interface TopCustomer {
   purchases: number;
   totalInCashback: number;
 }
+export interface RecentCashback {
+  customerName: string;
+  createdAt: Date;
+  expiresIn: string;
+  finalStatus: CashbackStatus;
+  value: number;
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -91,7 +98,7 @@ export class CustomerService {
     throw new Error('Cliente não encontrado!');
   }
 
-  getDashboardStats() {
+  getDashboardStats(): Observable<DashboardStats> {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     // zera as horas, minutos, segundos e milissegundos,
@@ -326,5 +333,61 @@ export class CustomerService {
     // aparecerá primeiro.
     // Obs: o .sort() modifica o array original criado por .filter()
     return of(top5);
+  }
+
+  getLast4Cashbacks(): Observable<RecentCashback[]> {
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+    // 1000 ms = 1s, 60s = 1min, 60min = 1h, 24h = 1 dia
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const allCashbacks = this.customers.flatMap(customer => {
+      return (customer.cashbacks || []).map(cb => {
+        const validUntil = new Date(cb.validUntil);
+        validUntil.setHours(0, 0, 0, 0);
+
+        // Diferença em milissegundos entre a data de validade e hoje
+        const diffTime = validUntil.getTime() - today.getTime();
+
+        // Converte milissegundos para dias
+        const diffDays = Math.ceil(diffTime / MS_PER_DAY);
+
+        let expiresInText: string;
+        // Regra de negócio: validade máxima de 30 dias
+        if (diffDays < 0 || diffDays > 30) {
+          expiresInText = "Expirado";
+        } else if (diffDays === 0) {
+          expiresInText = "Expira hoje";
+        } else if (diffDays === 1) {
+          expiresInText = "Expira amanhã";
+        } else {
+          expiresInText = `Expira em ${diffDays} dias`;
+        }
+
+        const isExpired = diffDays < 0 || diffDays > 30;
+        let finalStatus = isExpired
+          ? CashbackStatus.EXPIRED
+          : cb.status;
+
+        return {
+          customerName: customer.name,
+          createdAt: cb.createdAt,
+          expiresIn: expiresInText,
+          finalStatus,
+          value: cb.value
+        }
+      })
+    });
+
+    // Filtra para garantir que só vamos obter cashbacks mais recentes E com status ativo
+    const activeCashbacks = allCashbacks.filter(cb => cb.finalStatus === CashbackStatus.ACTIVE);
+
+    const sortedCashbacks = activeCashbacks.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+
+    const last4Cashbacks = sortedCashbacks.slice(0, 4);
+    return of(last4Cashbacks);
   }
 }

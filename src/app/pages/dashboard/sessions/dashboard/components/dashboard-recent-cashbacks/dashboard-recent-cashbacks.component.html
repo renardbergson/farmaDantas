@@ -10,23 +10,25 @@
   </div>
   <div class="dashboard-card-body">
     <div class="d-flex flex-column gap-3">
-      <div class="cashback-list-item" *ngFor="let cashback of recentCashbacks">
+      @for(cashback of recentCashbacks; track $index) {
+      <div class="cashback-list-item">
         <div class="d-flex align-items-center">
           <div class="cashback-icon">
             <i class="bi bi-gift"></i>
           </div>
           <div class="cashback-info">
-            <p class="cashback-cliente">{{ cashback.customer }}</p>
-            <p class="cashback-expira">Expira em {{ cashback.expiresIn }}</p>
+            <p class="cashback-cliente">{{ cashback.customerName }}</p>
+            <p class="cashback-expira">{{ cashback.expiresIn }}</p>
           </div>
         </div>
         <div class="cashback-right">
-          <span class="badge-status" [class.badge-active]="cashback.status === 'active'" [class.badge-expired]="cashback.status === 'expired'">
-            {{ cashback.status }}
+          <span class="badge-status" [class.badge-active]="cashback.finalStatus === CashbackStatus.ACTIVE" [class.badge-expired]="cashback.finalStatus === CashbackStatus.EXPIRED">
+            {{ cashback.finalStatus }}
           </span>
           <span class="cashback-valor">R$ {{ cashback.value | number:'1.2-2' }}</span>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>

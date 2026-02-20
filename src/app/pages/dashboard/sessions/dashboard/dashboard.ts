@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { DashboardHeader, DashboardStatsGrid, DashboardCashbackMeasure, DashboardCashbackQuantity, DashboardTopCustomers, DashboardRecentCashbacks } from './components/index';
+import { DashboardHeader, DashboardStatsGrid, DashboardMonthlyCashbackValues, DashboardMonthlyCashbackCount, DashboardTopCustomers, DashboardRecentCashbacks } from './components/index';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [DashboardHeader, DashboardStatsGrid, DashboardCashbackMeasure, DashboardCashbackQuantity, DashboardTopCustomers, DashboardRecentCashbacks],
+  imports: [DashboardHeader, DashboardStatsGrid, DashboardMonthlyCashbackValues, DashboardMonthlyCashbackCount, DashboardTopCustomers, DashboardRecentCashbacks],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
@@ -17,8 +17,8 @@ export class Dashboard implements OnInit {
      * Toda a lógica de carregamento de dados está nos componentes individuais:
      *
      * - DashboardStatsGrid: Carrega estatísticas gerais (ngOnInit)
-     * - DashboardCashbackMeasure: Carrega dados do gráfico de evolução (ngOnInit)
-     * - DashboardCashbackQuantity: Carrega dados do gráfico de quantidade (ngOnInit)
+     * - DashboardMonthlyCashbackValues: Carrega dados do gráfico de evolução (ngOnInit)
+     * - DashboardMonthlyCashbackCount: Carrega dados do gráfico de quantidade (ngOnInit)
      * - DashboardTopCustomers: Carrega lista de top clientes (ngOnInit)
      * - DashboardRecentCashbacks: Carrega lista de cashbacks recentes (ngOnInit)
      *

@@ -27,7 +27,7 @@ export class DashboardRecentCashbacks implements OnInit {
   }
 
   getLast4Cashbacks() {
-    this.customerService.getLast4Cashbacks().subscribe({
+    this.customerService.getLastCashbacks().subscribe({
       next: (data) => {
         this.recentCashbacks = data;
       },

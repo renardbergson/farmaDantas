@@ -1,19 +1,18 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Chart } from 'chart.js/auto';
 
-declare var Chart: any;
-
-export interface CashbackQuantityData {
+export interface MonthlyCashbackCountData {
   labels: string[];
   quantities: number[];
 }
 
 @Component({
-  selector: 'app-dashboard-cashback-quantity',
+  selector: 'app-dashboard-monthly-cashback-count',
   imports: [],
-  templateUrl: './dashboard-cashback-quantity.component.html',
-  styleUrl: './dashboard-cashback-quantity.component.css',
+  templateUrl: './dashboard-monthly-cashback-count.component.html',
+  styleUrl: './dashboard-monthly-cashback-count.component.css',
 })
-export class DashboardCashbackQuantity implements OnInit, AfterViewInit, OnDestroy {
+export class DashboardMonthlyCashbackCount implements OnInit, AfterViewInit, OnDestroy {
   private barChart: any;
 
   /**
@@ -23,7 +22,7 @@ export class DashboardCashbackQuantity implements OnInit, AfterViewInit, OnDestr
    * - labels: Array de strings com os meses/períodos (ex: ['Jan', 'Fev', 'Mar'])
    * - quantidades: Array de números com a quantidade de cashbacks de cada período
    */
-  chartData: CashbackQuantityData = {
+  chartData: MonthlyCashbackCountData = {
     labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
     quantities: [120, 98, 145, 132, 167, 189]
   };
@@ -101,7 +100,6 @@ export class DashboardCashbackQuantity implements OnInit, AfterViewInit, OnDestr
               y: {
                 grid: {
                   color: '#e5e5e5',
-                  drawBorder: false
                 },
                 ticks: {
                   color: '#737373'
@@ -119,7 +117,7 @@ export class DashboardCashbackQuantity implements OnInit, AfterViewInit, OnDestr
    * Chamado automaticamente quando os dados vierem do backend
    * @param data - Dados do gráfico com labels e quantidades
    */
-  updateChartData(data: CashbackQuantityData): void {
+  updateChartData(data: MonthlyCashbackCountData): void {
     this.chartData = { ...data };
     if (this.barChart) {
       this.barChart.data.labels = data.labels;

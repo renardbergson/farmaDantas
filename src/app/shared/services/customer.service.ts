@@ -6,19 +6,27 @@ import { nanoid } from 'nanoid';
 import { DashboardStats } from '../models/dashboard-stats.model';
 import { CashbackStatus } from '../models/cashback.model';
 import { getInitials } from '../utils/getInitials';
+
 export interface TopCustomer {
   name: string;
   avatar: string;
   purchases: number;
   totalInCashback: number;
 }
+
 export interface RecentCashback {
   customerName: string;
   createdAt: Date;
   expiresIn: string;
-  finalStatus: CashbackStatus;
+  status: CashbackStatus;
   value: number;
 }
+
+export interface CashbackMeasureData {
+  labels: string[];
+  values: number[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -335,7 +343,7 @@ export class CustomerService {
     return of(top5);
   }
 
-  getLast4Cashbacks(): Observable<RecentCashback[]> {
+  getLastCashbacks(): Observable<RecentCashback[]> {
     const MS_PER_DAY = 1000 * 60 * 60 * 24;
     // 1000 ms = 1s, 60s = 1min, 60min = 1h, 24h = 1 dia
 
@@ -353,11 +361,12 @@ export class CustomerService {
         // Converte milissegundos para dias
         const diffDays = Math.ceil(diffTime / MS_PER_DAY);
 
-        let expiresInText: string;
         // Regra de negócio: validade máxima de 30 dias
-        if (diffDays < 0 || diffDays > 30) {
-          expiresInText = "Expirado";
-        } else if (diffDays === 0) {
+        const isExpired = diffDays < 0 || diffDays > 30;
+        if (isExpired) return null;
+
+        let expiresInText: string;
+        if (diffDays === 0) {
           expiresInText = "Expira hoje";
         } else if (diffDays === 1) {
           expiresInText = "Expira amanhã";
@@ -365,29 +374,95 @@ export class CustomerService {
           expiresInText = `Expira em ${diffDays} dias`;
         }
 
-        const isExpired = diffDays < 0 || diffDays > 30;
-        let finalStatus = isExpired
-          ? CashbackStatus.EXPIRED
-          : cb.status;
-
         return {
           customerName: customer.name,
           createdAt: cb.createdAt,
           expiresIn: expiresInText,
-          finalStatus,
+          status: cb.status,
           value: cb.value
         }
-      })
+      }).filter(Boolean) as RecentCashback[]; // remove os expirados (null)
     });
 
-    // Filtra para garantir que só vamos obter cashbacks mais recentes E com status ativo
-    const activeCashbacks = allCashbacks.filter(cb => cb.finalStatus === CashbackStatus.ACTIVE);
-
-    const sortedCashbacks = activeCashbacks.sort((a, b) => {
+    const sortedCashbacks = allCashbacks.sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
 
-    const last4Cashbacks = sortedCashbacks.slice(0, 4);
-    return of(last4Cashbacks);
+    const lastCashbacks = sortedCashbacks.slice(0, 4);
+    return of(lastCashbacks);
+  }
+
+  getCashbackMeasureData(): Observable<CashbackMeasureData> {
+    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const labels: string[] = [];
+    const values: number[] = [];
+
+    const now = new Date();
+
+    for(let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      /*
+        1. now.getMonth() retorna o mês atual de 0 a 11.
+           Ex: fevereiro = 1, pois os meses começam em 0.
+
+        2. No cálculo now.getMonth() - i, estamos voltando
+           mês a mês para obter os últimos 6 meses,
+           incluindo o mês atual.
+
+           Ex: se estamos em fevereiro (1), os valores serão:
+           -4, -3, -2, -1, 0, 1
+
+        3. Quando o mês fica negativo, o JavaScript ajusta
+           automaticamente para o ano anterior.
+
+           Ex: new Date(2026, -1, 1) → dezembro de 2025
+
+        4. O metodo date.getMonth() sempre retorna um valor
+           entre 0 e 11. Ou seja, o array "monthNames"
+           nunca é acessado com índice negativo.
+      */
+      const month = date.getMonth();
+      const year = date.getFullYear();
+
+      labels.push(monthNames[month]);
+
+      /*
+        Soma dos cashbacks do mês.
+
+        Estrutura dos dados:
+        - this.customers é um array de clientes.
+        - Cada cliente possui um array de cashbacks.
+
+        Exemplo:
+        customers = [
+          { cashbacks: [cb1, cb2] },
+          { cashbacks: [cb3] }
+        ]
+
+        Ou seja: um array de clientes contendo arrays de cashbacks.
+
+        O flatMap é usado para:
+        1. Pegar o array de cashbacks de cada cliente (map).
+        2. Unir todos esses arrays em um único array (flatten).
+
+        Resultado:
+        [cb1, cb2, cb3]
+
+        Depois disso:
+        - filter: mantém apenas os cashbacks do mês/ano atual do loop.
+        - reduce: soma os valores desses cashbacks.
+      */
+      const monthTotal = this.customers
+        .flatMap(customer => customer.cashbacks || [])
+        .filter(cb =>
+          cb.createdAt.getMonth() === month &&
+          cb.createdAt.getFullYear() === year
+        )
+        .reduce((sum, cb) => sum + cb.value, 0);
+
+      values.push(monthTotal);
+    }
+
+    return of({ labels, values });
   }
 }

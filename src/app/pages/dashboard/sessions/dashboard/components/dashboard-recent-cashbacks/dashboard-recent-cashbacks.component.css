@@ -77,6 +77,8 @@
   /* Scroll vertical quando necessário */
   overflow-x: hidden;
   /* Sem scroll horizontal */
+  gap: 16px;
+  /* Restaurado para gap-3 = 16px */
 }
 
 .cashback-list-item {

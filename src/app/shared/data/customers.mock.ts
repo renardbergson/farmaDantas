@@ -1,5 +1,6 @@
 import { Customer, CustomerStatus } from '../models/customer.model';
 import { CashbackStatus } from '../models/cashback.model';
+import { PurchaseCategory } from '../models/purchase.model';
 
 export const MOCK_CUSTOMERS: Customer[] = [
   {
@@ -20,26 +21,38 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p1a2',
-        customerId: 'k2w1',
         date: new Date('2026-02-05'),
-        totalValue: 100.00,
-        cashbackValueGenerated: 10.00
+        total: 100.00,
+        category: PurchaseCategory.ANTIBIOTIC,
+        customerId: 'k2w1',
+        customerName: "Maria Silva",
+        employeeId: 'e01',
+        employeeName: "Carlos Almeida",
+        generatedCashbackId: 'c1b3',
+        generatedCashbackAmount: 10.00
       },
       {
         id: 'p1a3',
-        customerId: 'k2w1',
         date: new Date('2026-02-12'),
-        totalValue: 50.00,
-        cashbackValueGenerated: 5.00
+        total: 50.00,
+        category: PurchaseCategory.CONTINUOUS,
+        customerId: 'k2w1',
+        customerName: "Maria Silva",
+        employeeId: 'e01',
+        employeeName: "Carlos Almeida",
+        generatedCashbackId: 'c1b4',
+        generatedCashbackAmount: 5.00
       }
     ],
     cashbacks: [
       {
         id: 'c1b3',
         customerId: 'k2w1',
+        customerName: "Maria Silva",
         originPurchaseId: 'p1a2',
         createdAt: new Date('2026-02-05'),
         validUntil: new Date('2026-03-05'),
+        timeLeft: '13 dias',
         value: 10.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 20.00
@@ -47,9 +60,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c1b4',
         customerId: 'k2w1',
+        customerName: "Maria Silva",
         originPurchaseId: 'p1a3',
         createdAt: new Date('2026-02-12'),
         validUntil: new Date('2026-03-12'),
+        timeLeft: '20 dias',
         value: 5.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 20.00
@@ -74,33 +89,48 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p3m9',
-        customerId: 'j8n4',
         date: new Date('2026-01-10'),
-        totalValue: 200.00,
-        cashbackValueGenerated: 20.00
+        total: 200.00,
+        category: PurchaseCategory.SUPPLEMENTS,
+        customerId: 'j8n4',
+        customerName: "João Santos",
+        employeeId: 'e02',
+        employeeName: "Fernanda Souza"
       },
       {
         id: 'p4k2',
-        customerId: 'j8n4',
         date: new Date('2026-02-02'),
-        totalValue: 150.00,
-        cashbackValueGenerated: 15.00
+        total: 150.00,
+        category: PurchaseCategory.CONTROLLED,
+        customerId: 'j8n4',
+        customerName: "João Santos",
+        employeeId: 'e02',
+        employeeName: "Fernanda Souza",
+        generatedCashbackId: 'c4x5',
+        generatedCashbackAmount: 15.00
       },
       {
         id: 'p5l1',
-        customerId: 'j8n4',
         date: new Date('2026-02-15'),
-        totalValue: 100.00,
-        cashbackValueGenerated: 10.00
+        total: 100.00,
+        category: PurchaseCategory.CONTRACEPTIVE,
+        customerId: 'j8n4',
+        customerName: "João Santos",
+        employeeId: 'e02',
+        employeeName: "Fernanda Souza",
+        generatedCashbackId: 'c5z2',
+        generatedCashbackAmount: 10.00
       }
     ],
     cashbacks: [
       {
         id: 'c4x5',
         customerId: 'j8n4',
+        customerName: "João Santos",
         originPurchaseId: 'p4k2',
         createdAt: new Date('2026-02-02'),
         validUntil: new Date('2026-03-02'),
+        timeLeft: '10 dias',
         value: 15.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 40.00
@@ -108,9 +138,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c5z2',
         customerId: 'j8n4',
+        customerName: "João Santos",
         originPurchaseId: 'p5l1',
         createdAt: new Date('2026-02-15'),
         validUntil: new Date('2026-03-15'),
+        timeLeft: '23 dias',
         value: 10.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 30.00
@@ -135,19 +167,26 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p6q7',
-        customerId: 'a1o9',
         date: new Date('2026-02-08'),
-        totalValue: 80.00,
-        cashbackValueGenerated: 8.00
+        total: 80.00,
+        category: PurchaseCategory.KIDS,
+        customerId: 'a1o9',
+        customerName: "Ana Oliveira",
+        employeeId: 'e03',
+        employeeName: "Marcos Lima",
+        generatedCashbackId: 'c6y8',
+        generatedCashbackAmount: 8.00
       }
     ],
     cashbacks: [
       {
         id: 'c6y8',
         customerId: 'a1o9',
+        customerName: "Ana Oliveira",
         originPurchaseId: 'p6q7',
         createdAt: new Date('2026-02-08'),
         validUntil: new Date('2026-03-08'),
+        timeLeft: '16 dias',
         value: 8.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 30.00
@@ -175,40 +214,62 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p24q0',
-        customerId: 'c7w0',
         date: new Date('2026-02-05'),
-        totalValue: 120.00,
-        cashbackValueGenerated: 12.00
+        total: 120.00,
+        category: PurchaseCategory.CONTINUOUS,
+        customerId: 'c7w0',
+        customerName: "Carla Dias",
+        employeeId: 'e04',
+        employeeName: "Patrícia Gomes",
+        generatedCashbackId: 'c18m2',
+        generatedCashbackAmount: 12.00
       },
       {
         id: 'p24q1',
-        customerId: 'c7w0',
         date: new Date('2026-02-10'),
-        totalValue: 90.00,
-        cashbackValueGenerated: 9.00
+        total: 90.00,
+        category: PurchaseCategory.SUPPLEMENTS,
+        customerId: 'c7w0',
+        customerName: "Carla Dias",
+        employeeId: 'e04',
+        employeeName: "Patrícia Gomes",
+        generatedCashbackId: 'c18m3',
+        generatedCashbackAmount: 9.00
       },
       {
         id: 'p24q2',
-        customerId: 'c7w0',
         date: new Date('2026-02-18'),
-        totalValue: 80.00,
-        cashbackValueGenerated: 8.00
+        total: 80.00,
+        category: PurchaseCategory.ELDERLY,
+        customerId: 'c7w0',
+        customerName: "Carla Dias",
+        employeeId: 'e04',
+        employeeName: "Patrícia Gomes",
+        generatedCashbackId: 'c18m4',
+        generatedCashbackAmount: 8.00
       },
       {
         id: 'p24q3',
-        customerId: 'c7w0',
         date: new Date('2026-02-17'), // corrigido
-        totalValue: 60.00,
-        cashbackValueGenerated: 6.00
+        total: 60.00,
+        category: PurchaseCategory.ANTIBIOTIC,
+        customerId: 'c7w0',
+        customerName: "Carla Dias",
+        employeeId: 'e04',
+        employeeName: "Patrícia Gomes",
+        generatedCashbackId: 'c18m5',
+        generatedCashbackAmount: 6.00
       }
     ],
     cashbacks: [
       {
         id: 'c18m2',
         customerId: 'c7w0',
+        customerName: "Carla Dias",
         originPurchaseId: 'p24q0',
         createdAt: new Date('2026-02-05'),
         validUntil: new Date('2026-03-05'),
+        timeLeft: '13 dias',
         value: 12.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 30.00
@@ -216,9 +277,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c18m3',
         customerId: 'c7w0',
+        customerName: "Carla Dias",
         originPurchaseId: 'p24q1',
         createdAt: new Date('2026-02-10'),
         validUntil: new Date('2026-03-10'),
+        timeLeft: '18 dias',
         value: 9.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 25.00
@@ -226,9 +289,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c18m4',
         customerId: 'c7w0',
+        customerName: "Carla Dias",
         originPurchaseId: 'p24q2',
         createdAt: new Date('2026-02-18'),
         validUntil: new Date('2026-03-18'),
+        timeLeft: '26 dias',
         value: 8.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 20.00
@@ -236,9 +301,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c18m5',
         customerId: 'c7w0',
+        customerName: "Carla Dias",
         originPurchaseId: 'p24q3',
         createdAt: new Date('2026-02-17'), // corrigido
         validUntil: new Date('2026-03-17'),
+        timeLeft: '25 dias',
         value: 6.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 15.00
@@ -263,33 +330,50 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p25r0',
-        customerId: 'r8s1',
         date: new Date('2026-02-08'),
-        totalValue: 140.00,
-        cashbackValueGenerated: 14.00
+        total: 140.00,
+        category: PurchaseCategory.CONTINUOUS,
+        customerId: 'r8s1',
+        customerName: "Roberto Lima",
+        employeeId: 'e05',
+        employeeName: "Rafael Costa",
+        generatedCashbackId: 'c19n0',
+        generatedCashbackAmount: 14.00
       },
       {
         id: 'p25r1',
-        customerId: 'r8s1',
         date: new Date('2026-02-16'),
-        totalValue: 85.00,
-        cashbackValueGenerated: 8.00
+        total: 85.00,
+        category: PurchaseCategory.CONTRACEPTIVE,
+        customerId: 'r8s1',
+        customerName: "Roberto Lima",
+        employeeId: 'e05',
+        employeeName: "Rafael Costa",
+        generatedCashbackId: 'c19n1',
+        generatedCashbackAmount: 8.00
       },
       {
         id: 'p25r2',
-        customerId: 'r8s1',
         date: new Date('2026-02-18'), // corrigido
-        totalValue: 60.00,
-        cashbackValueGenerated: 6.00
+        total: 60.00,
+        category: PurchaseCategory.ANTIBIOTIC,
+        customerId: 'r8s1',
+        customerName: "Roberto Lima",
+        employeeId: 'e05',
+        employeeName: "Rafael Costa",
+        generatedCashbackId: 'c19n2',
+        generatedCashbackAmount: 6.00
       }
     ],
     cashbacks: [
       {
         id: 'c19n0',
         customerId: 'r8s1',
+        customerName: "Roberto Lima",
         originPurchaseId: 'p25r0',
         createdAt: new Date('2026-02-08'),
         validUntil: new Date('2026-03-08'),
+        timeLeft: '16 dias',
         value: 14.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 35.00
@@ -297,9 +381,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c19n1',
         customerId: 'r8s1',
+        customerName: "Roberto Lima",
         originPurchaseId: 'p25r1',
         createdAt: new Date('2026-02-16'),
         validUntil: new Date('2026-03-16'),
+        timeLeft: '24 dias',
         value: 8.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 20.00
@@ -307,9 +393,11 @@ export const MOCK_CUSTOMERS: Customer[] = [
       {
         id: 'c19n2',
         customerId: 'r8s1',
+        customerName: "Roberto Lima",
         originPurchaseId: 'p25r2',
         createdAt: new Date('2026-02-18'), // corrigido
         validUntil: new Date('2026-03-18'),
+        timeLeft: '26 dias',
         value: 6.00,
         status: CashbackStatus.ACTIVE,
         minPurchaseValue: 15.00

@@ -1,9 +1,26 @@
+export enum PurchaseCategory {
+  ANTIBIOTIC = "Antibiótico",
+  CONTRACEPTIVE = "Anticoncepcional",
+  CONTINUOUS = "Contínuo",
+  CONTROLLED = "Controlado",
+  KIDS = "Infantil",
+  SUPPLEMENTS = "Suplementos",
+  ELDERLY = "Idoso",
+}
+
 export interface Purchase {
   id: string;
-  customerId: string;
   date: Date;
-  totalValue: number;
-  cashbackValueGenerated: number; // Valor de cashback gerado
-  cashbackUsed?: number;          // Cashback resgatado
-  usedCashbackId?: string;        // id do cashback resgatado
+  total: number;
+  category: PurchaseCategory;
+  customerId: string;
+  customerName: string;
+  employeeId: string,
+  employeeName: string,
+
+  // OPCIONAIS
+  generatedCashbackId?: string; // id do cashback gerado
+  generatedCashbackAmount?: number;
+  usedCashbackId?: string;     // id do cashback resgatado
+  usedCashbackAmount?: number;
 }

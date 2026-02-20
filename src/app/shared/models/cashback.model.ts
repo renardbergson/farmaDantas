@@ -6,11 +6,13 @@ export enum CashbackStatus {
 
 export interface Cashback {
   id: string;
+  value: number;
   customerId: string;
+  customerName: string;
   originPurchaseId: string;
   createdAt: Date;
   validUntil: Date;
-  value: number;
+  timeLeft: string;
   status: CashbackStatus;
   minPurchaseValue: number;
   usedInPurchaseId?: string;

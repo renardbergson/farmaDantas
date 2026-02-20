@@ -180,7 +180,7 @@ export class CustomerService {
 
         if (purchaseDate >= currentMonth && purchaseDate < nextMonth) {
           purchasesThisMonth++;
-          purchasesAmountThisMonth += p.totalValue;
+          purchasesAmountThisMonth += p.total;
         }
 
         if (purchaseDate >= lastMonth && purchaseDate < currentMonth) {

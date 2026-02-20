@@ -1,10 +1,6 @@
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { Chart } from 'chart.js/auto';
-
-export interface MonthlyCashbackCountData {
-  labels: string[];
-  quantities: number[];
-}
+import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import { Chart, TooltipItem } from 'chart.js/auto';
+import { CustomerService, MonthlyCashbackCountData } from '../../../../../../shared/services/customer.service';
 
 @Component({
   selector: 'app-dashboard-monthly-cashback-count',
@@ -12,140 +8,85 @@ export interface MonthlyCashbackCountData {
   templateUrl: './dashboard-monthly-cashback-count.component.html',
   styleUrl: './dashboard-monthly-cashback-count.component.css',
 })
-export class DashboardMonthlyCashbackCount implements OnInit, AfterViewInit, OnDestroy {
-  private barChart: any;
+export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
+  private barChart?: Chart<'bar', number[], string>;
 
-  /**
-   * Dados do gráfico de quantidade de cashbacks
-   * TODO: Substituir por dados do backend
-   * Estrutura esperada:
-   * - labels: Array de strings com os meses/períodos (ex: ['Jan', 'Fev', 'Mar'])
-   * - quantidades: Array de números com a quantidade de cashbacks de cada período
-   */
-  chartData: MonthlyCashbackCountData = {
-    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-    quantities: [120, 98, 145, 132, 167, 189]
-  };
-
-  ngOnInit(): void {
-    // TODO: Integração com API
-    // Chamar loadChartData() quando a API estiver disponível
-    // this.loadChartData();
-  }
+  constructor(private customerService: CustomerService) {}
 
   ngAfterViewInit(): void {
-    // Aguardar um pouco para garantir que o Chart.js está carregado
-    setTimeout(() => {
-      this.initChart();
-    }, 100);
+    this.customerService.getCashbackCountData()
+      .subscribe(data =>
+        this.initChart(data));
   }
 
   ngOnDestroy(): void {
-    if (this.barChart) {
-      this.barChart.destroy();
-    }
+    this.barChart?.destroy();
   }
 
-  private initChart(): void {
-    if (typeof Chart === 'undefined') {
-      console.error('Chart.js não está carregado. Certifique-se de incluir o script no index.html');
-      return;
-    }
-
+  private initChart(data: MonthlyCashbackCountData): void {
     const primaryColor = '#dc2626';
 
-    // Bar Chart - Quantidade de Cashbacks
+    // Bar Chart - Quantidade mensal de Cashbacks
     const barCanvas = document.getElementById('cashbackBarChart') as HTMLCanvasElement;
-    if (barCanvas) {
-      const barCtx = barCanvas.getContext('2d');
-      if (barCtx) {
-        this.barChart = new Chart(barCtx, {
-          type: 'bar',
-          data: {
-            labels: this.chartData.labels,
-            datasets: [{
-              label: 'Quantidade',
-              data: this.chartData.quantities,
-              backgroundColor: primaryColor,
-              borderRadius: 4,
-              borderSkipped: false
-            }]
+    if (!barCanvas) return;
+
+    const barCtx = barCanvas.getContext('2d');
+    if (!barCtx) return;
+
+    this.barChart = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Quantidade',
+          data: data.quantities,
+          backgroundColor: primaryColor,
+          borderRadius: 4,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
           },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false
-              },
-              tooltip: {
-                backgroundColor: '#fff',
-                titleColor: '#1f1f1f',
-                bodyColor: '#1f1f1f',
-                borderColor: '#e5e5e5',
-                borderWidth: 1,
-                padding: 12,
-                cornerRadius: 8
-              }
-            },
-            scales: {
-              x: {
-                grid: {
-                  display: false
-                },
-                ticks: {
-                  color: '#737373'
-                }
-              },
-              y: {
-                grid: {
-                  color: '#e5e5e5',
-                },
-                ticks: {
-                  color: '#737373'
-                }
+          tooltip: {
+            backgroundColor: '#fff',
+            titleColor: '#1f1f1f',
+            bodyColor: '#1f1f1f',
+            borderColor: '#e5e5e5',
+            borderWidth: 1,
+            padding: 12,
+            cornerRadius: 8,
+            callbacks: {
+              label: (context: TooltipItem<'bar'>) => {
+                const value = context.raw as number;
+                return `${value} cashbacks`;
               }
             }
           }
-        });
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              color: '#737373'
+            }
+          },
+          y: {
+            grid: {
+              color: '#e5e5e5',
+            },
+            ticks: {
+              color: '#737373'
+            }
+          }
+        }
       }
-    }
+    });
   }
-
-  /**
-   * Método para atualizar dados do gráfico
-   * Chamado automaticamente quando os dados vierem do backend
-   * @param data - Dados do gráfico com labels e quantidades
-   */
-  updateChartData(data: MonthlyCashbackCountData): void {
-    this.chartData = { ...data };
-    if (this.barChart) {
-      this.barChart.data.labels = data.labels;
-      this.barChart.data.datasets[0].data = data.quantities;
-      this.barChart.update();
-    }
-  }
-
-  /**
-   * Método para carregar dados do backend
-   * Endpoint sugerido: GET /api/dashboard/cashback-quantity
-   * Parâmetros opcionais: ?period=6 (quantidade de meses/períodos)
-   * Resposta esperada: { labels: string[], quantidades: number[] }
-   *
-   * Exemplo de implementação:
-   * loadChartData(): void {
-   *   this.cashbackService.getQuantityData({ period: 6 }).subscribe({
-   *     next: (data: CashbackQuantityData) => {
-   *       this.updateChartData(data);
-   *     },
-   *     error: (error) => {
-   *       console.error('Erro ao carregar dados do gráfico:', error);
-   *       // Manter dados mockados em caso de erro
-   *     }
-   *   });
-   * }
-   */
-  // loadChartData(): void {
-  //   // Implementar chamada HTTP aqui
-  // }
 }

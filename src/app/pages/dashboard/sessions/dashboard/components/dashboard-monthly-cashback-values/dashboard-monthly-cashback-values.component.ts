@@ -19,7 +19,7 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
   constructor(private customerService: CustomerService) {}
 
   ngAfterViewInit(): void {
-    this.customerService.getCashbackMeasureData()
+    this.customerService.getCashbackValuesData()
       .subscribe(data => {
       this.initChart(data);
     })
@@ -32,7 +32,7 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
   private initChart(data: MonthlyCashbackValuesData): void {
     const primaryColor = '#dc2626';
 
-    // Area Chart - Evolução de Cashbacks
+    // Area Chart - Valores mensais em Cashbacks
     const areaCanvas = document.getElementById('cashbackAreaChart') as HTMLCanvasElement;
     if (!areaCanvas) return;
 
@@ -79,7 +79,7 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
             callbacks: {
               label: function (context: TooltipItem<'line'>) {
                 const value =  context.raw as number;
-                return 'R$ ' + value.toLocaleString('pt-BR');
+                return `${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} em cashbacks`;
               }
             }
           }

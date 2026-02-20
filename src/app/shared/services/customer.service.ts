@@ -22,9 +22,14 @@ export interface RecentCashback {
   value: number;
 }
 
-export interface CashbackMeasureData {
+export interface MonthlyCashbackValueData {
   labels: string[];
   values: number[];
+}
+
+export interface MonthlyCashbackCountData {
+  labels: string[];
+  quantities: number[];
 }
 
 @Injectable({
@@ -392,7 +397,7 @@ export class CustomerService {
     return of(lastCashbacks);
   }
 
-  getCashbackMeasureData(): Observable<CashbackMeasureData> {
+  getCashbackValuesData(): Observable<MonthlyCashbackValueData> {
     const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const labels: string[] = [];
     const values: number[] = [];
@@ -464,5 +469,33 @@ export class CustomerService {
     }
 
     return of({ labels, values });
+  }
+
+  getCashbackCountData(): Observable<MonthlyCashbackCountData> {
+    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const labels: string[] = [];
+    const quantities: number[] = [];
+
+    const now = new Date();
+
+    for(let i = 5; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+
+      labels.push(monthNames[month]);
+
+      const monthCount = this.customers
+        .flatMap(customer => customer.cashbacks || [])
+        .filter(cb =>
+          cb.createdAt.getMonth() === month &&
+          cb.createdAt.getFullYear() === year
+        )
+        .length;
+
+      quantities.push(monthCount);
+    }
+
+    return of({ labels, quantities });
   }
 }

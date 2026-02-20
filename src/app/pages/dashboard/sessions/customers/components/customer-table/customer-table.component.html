@@ -12,7 +12,7 @@
           <th>Cliente</th>
           <th>Telefone Principal</th>
           <th class="text-center">Compras Realizadas</th>
-          <th class="text-end">Gasto em Compras</th>
+          <th class="text-end">Gasto no mês</th>
           <th class="text-center">Status</th>
           <th class="text-end">Ações</th>
         </tr>
@@ -30,8 +30,8 @@
               </div>
             </td>
             <td class="text-muted">{{ (customer.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
-            <td class="text-center fw-medium">{{ customer.purchasesCount }}</td>
-            <td class="text-end cashback-value">R$ calcular...</td>
+            <td class="text-center fw-medium">{{ customer.purchasesThisMonthCount }}</td>
+            <td class="text-end cashback-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</td>
             <td class="text-center">
               <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
                 {{ customer.status }}

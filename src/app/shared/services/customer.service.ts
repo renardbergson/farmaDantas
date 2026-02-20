@@ -69,9 +69,10 @@ export class CustomerService {
       ...customerData,
       id: nanoid(4),
       createdAt: new Date(),
-      purchasesCount: 0,
-      totalActiveCashback: 0,
-      totalCashbackValueGenerated: 0,
+      purchasesThisMonthCount: 0,
+      purchasesThisMonthAmount: 0,
+      activeCashbackCount: 0,
+      activeCashbackAmount: 0,
       status: CustomerStatus.NEW,
       cashbacks: []
     } as Customer;
@@ -320,7 +321,7 @@ export class CustomerService {
           name: customer.name,
           avatar: getInitials(customer.name),
           purchases: purchasesCount,
-          totalInCashback: customer.totalActiveCashback
+          totalInCashback: customer.activeCashbackAmount
         }
       })
       .filter(ct => ct.purchases > 0)

@@ -17,13 +17,14 @@ export interface Customer {
   phone: string;
   state: string;
   createdAt: Date;
-  purchasesCount: number;
-  totalActiveCashback: number;
-  totalCashbackValueGenerated: number;
+  purchasesThisMonthCount: number;
+  purchasesThisMonthAmount: number;
+  activeCashbackCount: number;
+  activeCashbackAmount: number;
   // opcionais
+  purchases?: Purchase[];
   email?: string;
   city?: string,
   dateOfBirth?: Date;
   cashbacks?: Cashback[];
-  purchases?: Purchase[];
 }

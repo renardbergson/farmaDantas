@@ -71,8 +71,8 @@
                       <i class="bi bi-bag-check"></i>
                     </div>
                     <div class="stat-details">
-                      <label>Total de Compras</label>
-                      <span class="stat-value">R$ calcular...</span>
+                      <label>Gasto no mês</label>
+                      <span class="stat-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
                     </div>
                   </div>
                   <div class="stat-card">
@@ -81,7 +81,7 @@
                     </div>
                     <div class="stat-details">
                       <label>Cashback Disponível</label>
-                      <span class="stat-value text-primary">R$ {{ customer.totalActiveCashback | number:'1.2-2' }}</span>
+                      <span class="stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
                     </div>
                   </div>
                 </div>

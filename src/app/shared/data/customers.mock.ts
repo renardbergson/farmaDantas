@@ -12,9 +12,10 @@ export const MOCK_CUSTOMERS: Customer[] = [
     state: "Paraíba",
     createdAt: new Date("2026-02-01"),
     dateOfBirth: new Date("1992-08-01"),
-    purchasesCount: 2,
-    totalActiveCashback: 15.00,
-    totalCashbackValueGenerated: 15.00,
+    purchasesThisMonthCount: 2,
+    purchasesThisMonthAmount: 150.00,
+    activeCashbackCount: 2,
+    activeCashbackAmount: 15.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -65,9 +66,10 @@ export const MOCK_CUSTOMERS: Customer[] = [
     state: "Paraíba",
     createdAt: new Date("2025-11-10"),
     dateOfBirth: new Date("1990-05-15"),
-    purchasesCount: 3,
-    totalActiveCashback: 20.00,
-    totalCashbackValueGenerated: 45.00,
+    purchasesThisMonthCount: 2,
+    purchasesThisMonthAmount: 250.00,
+    activeCashbackCount: 2,
+    activeCashbackAmount: 25.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -125,9 +127,10 @@ export const MOCK_CUSTOMERS: Customer[] = [
     state: "Paraíba",
     createdAt: new Date("2025-12-05"),
     dateOfBirth: new Date("1995-02-20"),
-    purchasesCount: 1,
-    totalActiveCashback: 8.00,
-    totalCashbackValueGenerated: 8.00,
+    purchasesThisMonthCount: 1,
+    purchasesThisMonthAmount: 80.00,
+    activeCashbackCount: 1,
+    activeCashbackAmount: 8.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -164,9 +167,10 @@ export const MOCK_CUSTOMERS: Customer[] = [
     state: "Paraíba",
     createdAt: new Date("2026-01-08"),
     dateOfBirth: new Date("1986-03-08"),
-    purchasesCount: 4,
-    totalActiveCashback: 35.00,
-    totalCashbackValueGenerated: 35.00,
+    purchasesThisMonthCount: 4,
+    purchasesThisMonthAmount: 350.00,
+    activeCashbackCount: 4,
+    activeCashbackAmount: 35.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -251,9 +255,10 @@ export const MOCK_CUSTOMERS: Customer[] = [
     state: "Paraíba",
     createdAt: new Date("2026-02-01"),
     dateOfBirth: new Date("1982-05-14"),
-    purchasesCount: 3,
-    totalActiveCashback: 28.00,
-    totalCashbackValueGenerated: 28.00,
+    purchasesThisMonthCount: 3,
+    purchasesThisMonthAmount: 285.00,
+    activeCashbackCount: 3,
+    activeCashbackAmount: 28.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {

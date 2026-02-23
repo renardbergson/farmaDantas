@@ -18,18 +18,18 @@
         </tr>
       </thead>
       <tbody>
-        @for (customer of customers; track customer.cpf) {
+        @for (customer of customers; track customer.person.cpf) {
           <tr>
             <td>
               <div class="d-flex align-items-center gap-3">
-                <div class="client-avatar">{{ getInitials(customer.name) }}</div>
+                <div class="client-avatar">{{ getInitials(customer.person.name) }}</div>
                 <div class="client-info">
-                  <p class="client-name">{{ customer.name }}</p>
-                  <p class="client-email">{{ customer.email }}</p>
+                  <p class="client-name">{{ customer.person.name }}</p>
+                  <p class="client-email">{{ customer.person.email }}</p>
                 </div>
               </div>
             </td>
-            <td class="text-muted">{{ (customer.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
+            <td class="text-muted">{{ (customer.person.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
             <td class="text-center fw-medium">{{ customer.purchasesThisMonthCount }}</td>
             <td class="text-end cashback-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</td>
             <td class="text-center">

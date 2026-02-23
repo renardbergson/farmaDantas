@@ -1,4 +1,4 @@
- <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
+<div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -7,87 +7,87 @@
       </div>
       <div class="modal-body p-0">
         @if(customer) {
-          <!-- Header do Perfil -->
-          <div class="profile-header">
-            <div class="d-flex align-items-center gap-3">
-              <div class="profile-avatar">{{ getInitials(customer.name) }}</div>
-              <div>
-                <h4 class="profile-name">{{ customer.name }}</h4>
-                <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
-                  {{ customer.status }}
-                </span>
+        <!-- Header do Perfil -->
+        <div class="profile-header">
+          <div class="d-flex align-items-center gap-3">
+            <div class="profile-avatar">{{ getInitials(customer.person.name) }}</div>
+            <div>
+              <h4 class="profile-name">{{ customer.person.name }}</h4>
+              <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
+                {{ customer.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-body-content">
+          <!-- Grid de Informações -->
+          <div class="row g-4">
+            <!-- Informações Pessoais -->
+            <div class="col-md-6">
+              <h6 class="section-title"><i class="bi bi-person me-2"></i>Informações Pessoais</h6>
+              <div class="info-item">
+                <label>E-mail</label>
+                <span>{{ customer.person.email }}</span>
+              </div>
+              <div class="info-item">
+                <label>Telefone</label>
+                <span>{{ customer.person.phone | mask: '(00) 00000-0000' }}</span>
+              </div>
+              <div class="info-item">
+                <label>CPF</label>
+                <span>{{ customer.person.cpf }}</span>
+              </div>
+              <div class="info-item">
+                <label>Data de Nascimento</label>
+                <span>{{ customer.person.dateOfBirth | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <!-- Localização e Outros -->
+            <div class="col-md-6">
+              <h6 class="section-title"><i class="bi bi-geo-alt me-2"></i>Localização</h6>
+              <div class="info-item">
+                <label>Cidade</label>
+                <span>{{ city?.nome || '--' }}</span>
+              </div>
+              <div class="info-item">
+                <label>Estado</label>
+                <span>{{ customer.person.state || '--' }}</span>
+              </div>
+
+              <h6 class="section-title mt-4"><i class="bi bi-calendar3 me-2"></i>Sistema</h6>
+              <div class="info-item">
+                <label>Cliente desde</label>
+                <span>{{ customer.person.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="col-12">
+              <div class="stats-container">
+                <div class="stat-card">
+                  <div class="stat-icon purchase-icon">
+                    <i class="bi bi-bag-check"></i>
+                  </div>
+                  <div class="stat-details">
+                    <label>Gasto no mês</label>
+                    <span class="stat-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
+                  </div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon cashback-icon">
+                    <i class="bi bi-coin"></i>
+                  </div>
+                  <div class="stat-details">
+                    <label>Cashback Disponível</label>
+                    <span class="stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="modal-body-content">
-            <!-- Grid de Informações -->
-            <div class="row g-4">
-              <!-- Informações Pessoais -->
-              <div class="col-md-6">
-                <h6 class="section-title"><i class="bi bi-person me-2"></i>Informações Pessoais</h6>
-                <div class="info-item">
-                  <label>E-mail</label>
-                  <span>{{ customer.email }}</span>
-                </div>
-                <div class="info-item">
-                  <label>Telefone</label>
-                  <span>{{ customer.phone | mask: '(00) 00000-0000' }}</span>
-                </div>
-                <div class="info-item">
-                  <label>CPF</label>
-                  <span>{{ customer.cpf }}</span>
-                </div>
-                <div class="info-item">
-                  <label>Data de Nascimento</label>
-                  <span>{{ customer.dateOfBirth | date:'dd/MM/yyyy' }}</span>
-                </div>
-              </div>
-
-              <!-- Localização e Outros -->
-              <div class="col-md-6">
-                <h6 class="section-title"><i class="bi bi-geo-alt me-2"></i>Localização</h6>
-                <div class="info-item">
-                  <label>Cidade</label>
-                  <span>{{ customer.city || 'Santa Luzia' }}</span>
-                </div>
-                <div class="info-item">
-                  <label>Estado</label>
-                  <span>{{ customer.state || 'Paraíba' }}</span>
-                </div>
-
-                <h6 class="section-title mt-4"><i class="bi bi-calendar3 me-2"></i>Sistema</h6>
-                <div class="info-item">
-                  <label>Cliente desde</label>
-                  <span>{{ customer.createdAt | date:'dd/MM/yyyy' }}</span>
-                </div>
-              </div>
-
-              <!-- Estatísticas -->
-              <div class="col-12">
-                <div class="stats-container">
-                  <div class="stat-card">
-                    <div class="stat-icon purchase-icon">
-                      <i class="bi bi-bag-check"></i>
-                    </div>
-                    <div class="stat-details">
-                      <label>Gasto no mês</label>
-                      <span class="stat-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
-                    </div>
-                  </div>
-                  <div class="stat-card">
-                    <div class="stat-icon cashback-icon">
-                      <i class="bi bi-coin"></i>
-                    </div>
-                    <div class="stat-details">
-                      <label>Cashback Disponível</label>
-                      <span class="stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        </div>
         }
       </div>
       <div class="modal-footer">

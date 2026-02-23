@@ -1,0 +1,154 @@
+.dashboard-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dashboard-card-body {
+  background: #ffffff;
+}
+
+.dashboard-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dashboard-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.dashboard-card-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 4px 0 0 0;
+}
+
+.table-responsive {
+  overflow: visible !important;
+}
+
+.table-custom {
+  margin-bottom: 0;
+}
+
+.table-custom thead th {
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  padding: 12px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-custom tbody tr td {
+  transition: background-color 0.2s ease;
+}
+
+.table-custom tbody tr:hover td {
+  background-color: #f0f0f0;
+}
+
+.table-custom tbody td {
+  padding: 16px 24px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.table-custom tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Avatar de cliente */
+.client-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(220, 38, 38, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.client-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.client-name {
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Badges */
+.badge-categoria {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid;
+}
+
+.badge-categoria.badge-antibiotic {
+  background: #fef3c7;
+  color: #d97706;
+  border-color: #d97706;
+}
+
+.badge-categoria.badge-contraceptive {
+  background: #fce7f3;
+  color: #db2777;
+  border-color: #db2777;
+}
+
+.badge-categoria.badge-continuous {
+  background: #dbeafe;
+  color: #2563eb;
+  border-color: #2563eb;
+}
+
+.badge-categoria.badge-controlled {
+  background: #fecaca;
+  color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.badge-categoria.badge-kids {
+  background: #f3e8ff;
+  color: #9333ea;
+  border-color: #9333ea;
+}
+
+.badge-categoria.badge-supplements {
+  background: #dcfce7;
+  color: #16a34a;
+  border-color: #16a34a;
+}
+
+.badge-categoria.badge-elderly {
+  background: #f1f5f9;
+  color: #64748b;
+  border-color: #64748b;
+}
+
+.cashback-value {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.fw-medium {
+  font-weight: 500;
+}

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomerStatus } from '../../../../../../shared/models/customer.model';
+import { CustomerStatus } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-customer-search-card',

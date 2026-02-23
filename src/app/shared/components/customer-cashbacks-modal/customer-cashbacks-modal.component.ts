@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Customer } from '../../models/customer.model';
-import { Cashback, CashbackStatus } from '../../models/cashback.model';
+import { Customer, Cashback, CashbackStatus } from '../../models';
 
 @Component({
   selector: 'app-customer-cashbacks-modal',

@@ -21,6 +21,7 @@ export interface Purchase {
   // OPCIONAIS
   generatedCashbackId?: string; // id do cashback gerado
   generatedCashbackAmount?: number;
+  cashbackPercent?: number;
   usedCashbackId?: string;     // id do cashback resgatado
   usedCashbackAmount?: number;
 }

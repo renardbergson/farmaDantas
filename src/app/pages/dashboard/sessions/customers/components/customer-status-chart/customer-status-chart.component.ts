@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Customer, CustomerStatus } from '../../../../../../shared/models/customer.model';
+import { Customer, CustomerStatus } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-customer-status-chart',

@@ -1,0 +1,10 @@
+export type { Person } from './person.model';
+export type { Customer } from './customer.model';
+export { CustomerStatus } from './customer.model';
+export type { Cashback } from './cashback.model';
+export { CashbackStatus } from './cashback.model';
+export type { Purchase } from './purchase.model';
+export { PurchaseCategory } from './purchase.model';
+export type { DashboardStats } from './dashboard-stats.model';
+export type { User } from './user';
+export { UserRole } from './user';

@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { AddressService } from '../../../../../../shared/services/address.service';
+import { AddressService, City } from '../../../../../../shared/services/address.service';
 import { CustomerService } from '../../../../../../shared/services/customer.service';
-import { Customer } from '../../../../../../shared/models/customer.model';
+import { Customer } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-customer-add-new-modal',
@@ -20,7 +20,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   @Input() customer?: Customer;
 
   customerForm!: FormGroup;
-  cities: string[] = [];
+  cities: City[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -68,12 +68,12 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     // O patchValue ignora campos que não exisem no formulário,
     // como id, status, etc
     this.customerForm.patchValue({
-      name: customer.name,
-      cpf: customer.cpf,
-      email: customer.email,
-      phone: customer.phone,
-      dateOfBirth: customer.dateOfBirth,
-      city: customer.city
+      name: customer.person.name,
+      cpf: customer.person.cpf,
+      email: customer.person.email,
+      phone: customer.person.phone,
+      dateOfBirth: customer.person.dateOfBirth,
+      city: customer.person.cityId
     })
   }
 

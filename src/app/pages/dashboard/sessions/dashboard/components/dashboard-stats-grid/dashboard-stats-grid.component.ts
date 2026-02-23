@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerService } from '../../../../../../shared/services/customer.service';
-import { DashboardStats } from '../../../../../../shared/models/dashboard-stats.model';
+import { DashboardStats } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-dashboard-stats-grid',

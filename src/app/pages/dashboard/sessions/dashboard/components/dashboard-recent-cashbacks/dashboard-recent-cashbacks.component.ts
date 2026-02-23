@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomerService, RecentCashback } from '../../../../../../shared/services/customer.service';
-import { CashbackStatus } from '../../../../../../shared/models/cashback.model';
+import { CashbackStatus } from '../../../../../../shared/models';
 @Component({
   selector: 'app-dashboard-recent-cashbacks',
   imports: [CommonModule],

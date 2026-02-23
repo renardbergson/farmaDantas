@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus } from '../models/customer.model';
+import { Customer, CustomerStatus, DashboardStats, CashbackStatus } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
-import { DashboardStats } from '../models/dashboard-stats.model';
-import { CashbackStatus } from '../models/cashback.model';
 import { getInitials } from '../utils/getInitials';
 
 export interface TopCustomer {
@@ -152,7 +150,7 @@ export class CustomerService {
     let returningCustomersLastMonth = 0;
 
     this.customers.forEach(ct => {
-      const createdAt = new Date(ct.createdAt);
+      const createdAt = new Date(ct.person.createdAt);
       createdAt.setHours(0, 0, 0, 0); // zeramos as horas para comparar apenas a data
 
       // --------------------
@@ -318,8 +316,8 @@ export class CustomerService {
         const purchasesCount = purchasesThisMonth(customer);
 
         return {
-          name: customer.name,
-          avatar: getInitials(customer.name),
+          name: customer.person.name,
+          avatar: getInitials(customer.person.name),
           purchases: purchasesCount,
           totalInCashback: customer.activeCashbackAmount
         }
@@ -381,7 +379,7 @@ export class CustomerService {
         }
 
         return {
-          customerName: customer.name,
+          customerName: customer.person.name,
           createdAt: cb.createdAt,
           expiresIn: expiresInText,
           status: cb.status,

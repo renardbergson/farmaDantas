@@ -6,7 +6,7 @@
           <h5 class="modal-title" id="customerCashbacksModalLabel">
             Histórico de Cashbacks
             @if (customer) {
-              <span class="text-primary ms-1">- {{ customer.name }}</span>
+            <span class="text-primary ms-1">- {{ customer.person.name }}</span>
             }
           </h5>
           <p class="modal-subtitle">Visualize o histórico de ganhos e utilização de cashbacks</p>
@@ -16,38 +16,32 @@
 
       <div class="modal-body">
         @if(customer) {
-          <!-- Resumo Rápido -->
-          <div class="cashback-summary mb-4">
-            <div class="summary-item">
-              <span class="summary-label">Disponível</span>
-              <span class="summary-value text-primary">R$ calcular...</span>
-            </div>
-            <div class="summary-divider"></div>
-            <div class="summary-item">
-              <span class="summary-label">Total Ganho</span>
-              <span class="summary-value text-success">R$ calcular...</span>
-            </div>
-            <div class="summary-divider"></div>
-            <div class="summary-item">
-              <span class="summary-label">Total Utilizado</span>
-              <span class="summary-value text-secondary">R$ calcular...</span>
-            </div>
+        <!-- Resumo Rápido -->
+        <div class="cashback-summary mb-4">
+          <div class="summary-item">
+            <span class="summary-label">Disponível</span>
+            <span class="summary-value text-primary">R$ calcular...</span>
           </div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <span class="summary-label">Total Ganho</span>
+            <span class="summary-value text-success">R$ calcular...</span>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="summary-item">
+            <span class="summary-label">Total Utilizado</span>
+            <span class="summary-value text-secondary">R$ calcular...</span>
+          </div>
+        </div>
         }
 
         <!-- Filtros -->
         <div class="filter-container">
           <span class="filter-label text-muted"><i class="bi bi-funnel me-1"></i> Filtrar:</span>
           @for(status of statuses; track status.value) {
-            <button
-              type="button"
-              class="btn-filter"
-              [ngClass]="status.class"
-              (click)="toggleStatus(status.value)"
-              [class.active]="selectedStatus.has(status.value)"
-            >
-              {{ status.value }}
-            </button>
+          <button type="button" class="btn-filter" [ngClass]="status.class" (click)="toggleStatus(status.value)" [class.active]="selectedStatus.has(status.value)">
+            {{ status.value }}
+          </button>
           }
         </div>
 
@@ -57,7 +51,7 @@
             <thead class="table-light sticky-top">
               <tr>
                 <th>Data de Criação</th>
-                <th>Origem</th>
+                <th>Compra de origem</th>
                 <th>Resgate</th>
                 <th class="text-center">Mín. Compra</th>
                 <th class="text-center">Status</th>
@@ -66,39 +60,36 @@
             </thead>
             <tbody>
               @for (item of filteredCashbacks; track item.id) {
-                <tr>
-                  <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
-                  <td>
-                    <span class="fw-medium">{{ item.originPurchaseId }}</span>
-                  </td>
-                  <td>
-                    @if (item.usedInPurchaseId) {
-                      <span class="fw-bold text-dark">{{ item.usedInPurchaseId }}</span>
-                    } @else {
-                      <span class="text-muted">-</span>
-                    }
-                  </td>
-                  <td class="text-center">
-                    @if (item.minPurchaseValue > 0) {
-                      <span class="text-muted">R$ {{ item.minPurchaseValue | number:'1.2-2' }}</span>
-                    } @else {
-                      <span class="text-muted">-</span>
-                    }
-                  </td>
-                  <td class="text-center">
-                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
-                      {{ item.status }}
-                    </span>
-                  </td>
-                  <td class="text-end">
-                    <span [class.text-success]="item.value > 0 && item.status !== 'Expirado'"
-                          [class.text-danger]="item.value < 0"
-                          [class.text-muted]="item.status === 'Expirado'"
-                          class="fw-bold">
-                      {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | number:'1.2-2' }}
-                    </span>
-                  </td>
-                </tr>
+              <tr>
+                <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+                <td>
+                  <span class="fw-medium">{{ item.originPurchaseId }}</span>
+                </td>
+                <td>
+                  @if (item.usedInPurchaseId) {
+                  <span class="fw-bold text-dark">{{ item.usedInPurchaseId }}</span>
+                  } @else {
+                  <span class="text-muted">-</span>
+                  }
+                </td>
+                <td class="text-center">
+                  @if (item.minPurchaseValue > 0) {
+                  <span class="text-muted">R$ {{ item.minPurchaseValue | number:'1.2-2' }}</span>
+                  } @else {
+                  <span class="text-muted">-</span>
+                  }
+                </td>
+                <td class="text-center">
+                  <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                    {{ item.status }}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <span [class.text-success]="item.value > 0 && item.status !== 'Expirado'" [class.text-danger]="item.value < 0" [class.text-muted]="item.status === 'Expirado'" class="fw-bold">
+                    {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | number:'1.2-2' }}
+                  </span>
+                </td>
+              </tr>
               }
             </tbody>
           </table>

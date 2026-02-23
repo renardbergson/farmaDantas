@@ -1,18 +1,20 @@
-import { Customer, CustomerStatus } from '../models/customer.model';
-import { CashbackStatus } from '../models/cashback.model';
-import { PurchaseCategory } from '../models/purchase.model';
+import { Customer, CustomerStatus, CashbackStatus, PurchaseCategory } from '../models';
 
 export const MOCK_CUSTOMERS: Customer[] = [
   {
     id: 'k2w1',
-    name: "Maria Silva",
-    email: "maria@email.com",
-    phone: "(83) 99999-9999",
-    cpf: "123.456.789-00",
-    city: "Santa Luzia",
-    state: "Paraíba",
-    createdAt: new Date("2026-02-01"),
-    dateOfBirth: new Date("1992-08-01"),
+    personId: 'pers-k2w1',
+    person: {
+      id: 'pers-k2w1',
+      name: "Maria Silva",
+      email: "maria@email.com",
+      phone: "(83) 99999-9999",
+      cpf: "123.456.789-00",
+      cityId: 2513406, // Santa Luzia
+      state: "Paraíba",
+      createdAt: new Date("2026-02-01"),
+      dateOfBirth: new Date("1992-08-01"),
+    },
     purchasesThisMonthCount: 2,
     purchasesThisMonthAmount: 150.00,
     activeCashbackCount: 2,
@@ -73,14 +75,18 @@ export const MOCK_CUSTOMERS: Customer[] = [
   },
   {
     id: 'j8n4',
-    name: "João Santos",
-    email: "joao@email.com",
-    phone: "(83) 98888-8888",
-    cpf: "234.567.890-11",
-    city: "João Pessoa",
-    state: "Paraíba",
-    createdAt: new Date("2025-11-10"),
-    dateOfBirth: new Date("1990-05-15"),
+    personId: 'pers-j8n4',
+    person: {
+      id: 'pers-j8n4',
+      name: "João Santos",
+      email: "joao@email.com",
+      phone: "(83) 98888-8888",
+      cpf: "234.567.890-11",
+      cityId: 2507507, // João Pessoa
+      state: "Paraíba",
+      createdAt: new Date("2025-11-10"),
+      dateOfBirth: new Date("1990-05-15"),
+    },
     purchasesThisMonthCount: 2,
     purchasesThisMonthAmount: 250.00,
     activeCashbackCount: 2,
@@ -151,14 +157,18 @@ export const MOCK_CUSTOMERS: Customer[] = [
   },
   {
     id: 'a1o9',
-    name: "Ana Oliveira",
-    email: "ana@email.com",
-    phone: "(83) 91111-1111",
-    cpf: "345.678.901-22",
-    city: "Campina Grande",
-    state: "Paraíba",
-    createdAt: new Date("2025-12-05"),
-    dateOfBirth: new Date("1995-02-20"),
+    personId: 'pers-a1o9',
+    person: {
+      id: 'pers-a1o9',
+      name: "Ana Oliveira",
+      email: "ana@email.com",
+      phone: "(83) 91111-1111",
+      cpf: "345.678.901-22",
+      cityId: 2504009, // Campina Grande
+      state: "Paraíba",
+      createdAt: new Date("2025-12-05"),
+      dateOfBirth: new Date("1995-02-20"),
+    },
     purchasesThisMonthCount: 1,
     purchasesThisMonthAmount: 80.00,
     activeCashbackCount: 1,
@@ -193,19 +203,20 @@ export const MOCK_CUSTOMERS: Customer[] = [
       }
     ]
   },
-
-  /* ... todos os outros clientes permanecem exatamente iguais ... */
-
   {
     id: 'c7w0',
-    name: "Carla Dias",
-    email: "carla@email.com",
-    phone: "(83) 92211-0099",
-    cpf: "456.789.012-34",
-    city: "Pombal",
-    state: "Paraíba",
-    createdAt: new Date("2026-01-08"),
-    dateOfBirth: new Date("1986-03-08"),
+    personId: 'pers-c7w0',
+    person: {
+      id: 'pers-c7w0',
+      name: "Carla Dias",
+      email: "carla@email.com",
+      phone: "(83) 92211-0099",
+      cpf: "456.789.012-34",
+      cityId: 2512101, // Pombal
+      state: "Paraíba",
+      createdAt: new Date("2026-01-08"),
+      dateOfBirth: new Date("1986-03-08"),
+    },
     purchasesThisMonthCount: 4,
     purchasesThisMonthAmount: 350.00,
     activeCashbackCount: 4,
@@ -250,7 +261,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p24q3',
-        date: new Date('2026-02-17'), // corrigido
+        date: new Date('2026-02-17'),
         total: 60.00,
         category: PurchaseCategory.ANTIBIOTIC,
         customerId: 'c7w0',
@@ -303,7 +314,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
         customerId: 'c7w0',
         customerName: "Carla Dias",
         originPurchaseId: 'p24q3',
-        createdAt: new Date('2026-02-17'), // corrigido
+        createdAt: new Date('2026-02-17'),
         validUntil: new Date('2026-03-17'),
         timeLeft: '25 dias',
         value: 6.00,
@@ -314,14 +325,18 @@ export const MOCK_CUSTOMERS: Customer[] = [
   },
   {
     id: 'r8s1',
-    name: "Roberto Lima",
-    email: "roberto@email.com",
-    phone: "(83) 91100-9988",
-    cpf: "567.890.123-45",
-    city: "Campina Grande",
-    state: "Paraíba",
-    createdAt: new Date("2026-02-01"),
-    dateOfBirth: new Date("1982-05-14"),
+    personId: 'pers-r8s1',
+    person: {
+      id: 'pers-r8s1',
+      name: "Roberto Lima",
+      email: "roberto@email.com",
+      phone: "(83) 91100-9988",
+      cpf: "567.890.123-45",
+      cityId: 2504009, // Campina Grande
+      state: "Paraíba",
+      createdAt: new Date("2026-02-01"),
+      dateOfBirth: new Date("1982-05-14"),
+    },
     purchasesThisMonthCount: 3,
     purchasesThisMonthAmount: 285.00,
     activeCashbackCount: 3,
@@ -354,7 +369,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p25r2',
-        date: new Date('2026-02-18'), // corrigido
+        date: new Date('2026-02-18'),
         total: 60.00,
         category: PurchaseCategory.ANTIBIOTIC,
         customerId: 'r8s1',
@@ -395,7 +410,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
         customerId: 'r8s1',
         customerName: "Roberto Lima",
         originPurchaseId: 'p25r2',
-        createdAt: new Date('2026-02-18'), // corrigido
+        createdAt: new Date('2026-02-18'),
         validUntil: new Date('2026-03-18'),
         timeLeft: '26 dias',
         value: 6.00,

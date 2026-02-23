@@ -1,7 +1,8 @@
-import {Component, Input} from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {Customer, CustomerStatus} from '../../../../../../shared/models/customer.model';
-import {NgxMaskPipe, provideNgxMask} from 'ngx-mask';
+import { Customer, CustomerStatus } from '../../../../../../shared/models';
+import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { AddressService, City } from '../../../../../../shared/services/address.service';
 
 @Component({
   selector: 'app-customer-details-modal',
@@ -11,8 +12,27 @@ import {NgxMaskPipe, provideNgxMask} from 'ngx-mask';
   templateUrl: './customer-details-modal.component.html',
   styleUrl: './customer-details-modal.component.css'
 })
-export class CustomerDetailsModal {
+export class CustomerDetailsModal implements OnChanges, OnInit {
   @Input() customer?: Customer;
+  cities: City[] = [];
+  city?: City;
+
+  constructor(private addressService: AddressService) { }
+
+  ngOnInit(): void {
+    this.addressService.getCities().subscribe({
+      next: (cities) => {
+        this.cities = cities;
+      },
+      error: (err) => console.error('Ocorreu um erro ao listar as cidades:', err)
+    })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['customer']?.currentValue) {
+      this.city = this.cities?.find(city => city.id === this.customer?.person?.cityId) || undefined;
+    }
+  }
 
   // Gera as iniciais do nome do cliente
   getInitials(name: string): string {

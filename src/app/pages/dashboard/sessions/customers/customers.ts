@@ -2,8 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
-import {Customer, CustomerStatus} from '../../../../shared/models/customer.model';
-import {CashbackStatus} from '../../../../shared/models/cashback.model';
+import { Customer, CustomerStatus, CashbackStatus } from '../../../../shared/models';
 import {CustomerService} from '../../../../shared/services/customer.service';
 
 @Component({
@@ -70,9 +69,9 @@ export class Customers implements OnInit {
     this.filteredCustomers = this.originalCustomers.filter(customer => {
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
-        customer.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        customer.cpf.includes(this.searchTerm) ||
-        customer.email?.toLowerCase().includes(this.searchTerm)
+        customer.person.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        customer.person.cpf.includes(this.searchTerm) ||
+        customer.person.email?.toLowerCase().includes(this.searchTerm)
 
       const matchesStatusSearch =
         // verifica se o status do cliente bate com os filtros selecionados

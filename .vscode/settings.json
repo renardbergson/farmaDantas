@@ -2,8 +2,8 @@
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features",
-    "editor.formatOnSave": true
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+    // "editor.formatOnSave": true
   },
   "typescript.preferences.semicolons": "always",
   "javascript.preferences.semicolons": "always",

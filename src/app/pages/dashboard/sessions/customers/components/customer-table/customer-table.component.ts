@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {Customer, CustomerStatus} from '../../../../../../shared/models/customer.model';
+import { Customer, CustomerStatus } from '../../../../../../shared/models';
 import {NgxMaskPipe, provideNgxMask} from 'ngx-mask';
 
 @Component({

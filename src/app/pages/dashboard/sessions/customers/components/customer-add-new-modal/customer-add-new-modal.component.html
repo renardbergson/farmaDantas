@@ -14,13 +14,7 @@
           <!-- NOME COMPLETO -->
           <div class="mb-3">
             <label class="form-label-custom">Nome completo*</label>
-            <input
-              formControlName="name"
-              type="text"
-              class="form-control form-control-custom"
-              [class.is-invalid]="isFieldInvalid('name')"
-              placeholder="Nome do cliente"
-            >
+            <input formControlName="name" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('name')" placeholder="Nome do cliente">
             <div class="invalid-feedback">
               O nome é obrigatório.
             </div>
@@ -30,14 +24,7 @@
           <div class="row mb-3">
             <div class="col-6">
               <label class="form-label-custom">CPF</label>
-              <input
-                formControlName="cpf"
-                [class.is-invalid]="isFieldInvalid('cpf')"
-                type="text"
-                mask="000.000.000-00"
-                class="form-control form-control-custom"
-                placeholder="000.000.000-00"
-              >
+              <input formControlName="cpf" [class.is-invalid]="isFieldInvalid('cpf')" type="text" mask="000.000.000-00" class="form-control form-control-custom" placeholder="000.000.000-00">
               <div class="invalid-feedback">
                 O CPF é obrigatório.
               </div>
@@ -46,18 +33,11 @@
             <!-- TELEFONE -->
             <div class="col-6">
               <label class="form-label-custom">Telefone*</label>
-              <input
-                formControlName="phone"
-                type="text"
-                class="form-control form-control-custom"
-                [class.is-invalid]="isFieldInvalid('phone')"
-                mask="(00) 00000-0000"
-                placeholder="Telefone"
-              >
+              <input formControlName="phone" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('phone')" mask="(00) 00000-0000" placeholder="Telefone">
               @if(isFieldInvalid('phone')) {
-                <div class="invalid-feedback d-block">
-                  O telefone é obrigatório.
-                </div>
+              <div class="invalid-feedback d-block">
+                O telefone é obrigatório.
+              </div>
               }
             </div>
           </div>
@@ -84,20 +64,12 @@
           <!-- CIDADE -->
           <div class="mb-3">
             <label class="form-label-custom">Cidade</label>
-            <ng-select
-              formControlName="city"
-              placeholder="Selecione ou busque a cidade"
-              class="custom-ng-select"
-              [class.is-invalid]="isFieldInvalid('city')"
-              [items]="cities"
-              [searchable]="true"
-              [clearable]="false"
-            >
+            <ng-select formControlName="city" bindLabel="nome" bindValue="id" placeholder="Selecione ou busque a cidade" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('city')" [items]="cities" [searchable]="true" [clearable]="false">
             </ng-select>
             @if(isFieldInvalid('city')) {
-              <div class="invalid-feedback d-block">
-                A cidade é obrigatória.
-              </div>
+            <div class="invalid-feedback d-block">
+              A cidade é obrigatória.
+            </div>
             }
           </div>
         </div>

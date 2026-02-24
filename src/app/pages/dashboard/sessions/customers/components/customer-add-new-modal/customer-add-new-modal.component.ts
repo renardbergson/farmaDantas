@@ -59,7 +59,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
       email: [''], // opcional
       phone: ['', Validators.required],
       dateOfBirth: [''], // opcional
-      city: ['', Validators.required],
+      cityId: ['', Validators.required],
     })
   }
 
@@ -73,7 +73,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
       email: customer.person.email,
       phone: customer.person.phone,
       dateOfBirth: customer.person.dateOfBirth,
-      city: customer.person.cityId
+      cityId: customer.person.cityId
     })
   }
 

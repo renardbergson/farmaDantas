@@ -36,11 +36,11 @@
               </div>
               <div class="info-item">
                 <label>CPF</label>
-                <span>{{ customer.person.cpf }}</span>
+                <span>{{ customer.person.cpf | mask: '000.000.000-00' }}</span>
               </div>
               <div class="info-item">
                 <label>Data de Nascimento</label>
-                <span>{{ customer.person.dateOfBirth | date:'dd/MM/yyyy' }}</span>
+                <span>{{ (customer.person.dateOfBirth | date:'dd/MM/yyyy') || '--' }}</span>
               </div>
             </div>
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, DashboardStats, CashbackStatus } from '../models';
+import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -42,67 +42,61 @@ export class CustomerService {
     return of(this.customers);
   }
 
-  addCustomer(customerData: Partial<Customer>): Observable<Customer> {
-    // 1. O que é o Partial<T>
-    // - O Partial é um Utility Type do TypeScript que pega todos
-    //   os campos de uma interface e os torna opcionais.
-    // - Ao usar Partial<Customer>, para o TypeScript, todos os
-    //   campos passam a ter um ? invisível:
-    // 2. Por que não usar direto customerData: Customer ?
-    // - Se definissemos o metodo como addCustomer(customer: Customer),
-    //   o TypeScript nos obrigaria a passar um objeto completo já na
-    //   chamada da função (no componente ou formulário). Isso geraria
-    //   dois problemas:
-    //   2.1. Campos Gerados pelo Servidor/Serviço: teriamos que inventar
-    //   um id, um createdAt e zerar todos os contadores (purchasesCount,
-    //   totalActiveCashback) manualmente no componente antes de enviar
-    //   para o serviço.
-    //   2.2 Responsabilidade: A responsabilidade de gerar o ID (nanoid)
-    //   e definir a data de criação deve ser do Serviço (simulando um Backend),
-    //   e não do formulário que o usuário preenche.
-    // 3. Quais as vantagens na prática?
-    // - Ao usar Partial<Customer>, permitimos que o componente de origem envie
-    //   apenas o que ele realmente tem (os dados vindos dos inputs do formulário)
-    const newCustomer: Customer = {
-      ...customerData,
+  addCustomer(customerData: Partial<Person>): Observable<Customer> {
+    // 1. O que é o Partial<Person>?
+    // - O Partial é um Utility Type do TypeScript que torna todos os
+    //   campos de Person opcionais. O formulário envia apenas os dados
+    //   da pessoa (name, cpf, email, phone, cityId, etc.) que o usuário preencheu.
+    // 2. Por que não receber Customer ou Person completo?
+    // - O formulário não tem id, createdAt nem state da Person; isso é
+    //   definido aqui no serviço (simulando um backend). O componente só
+    //   envia o que o usuário digitou.
+    // 3. Fluxo: a partir dos dados da pessoa (customerData), montamos a
+    //   Person (com id e createdAt gerados aqui) e o Customer (id próprio,
+    //   personId referenciando a Person, contadores zerados, status NEW).
+    const personId = nanoid(4);
+    const customer: Customer = {
       id: nanoid(4),
-      createdAt: new Date(),
+      personId: personId,
+      person: {
+        id: personId,
+        name: customerData.name,
+        cpf: customerData.cpf,
+        phone: customerData.phone,
+        state: customerData.state,
+        createdAt: new Date(),
+        email: customerData.email,
+        cityId: customerData.cityId,
+        dateOfBirth: customerData.dateOfBirth,
+      },
+      cashbacks: [],
+      purchases: [],
       purchasesThisMonthCount: 0,
       purchasesThisMonthAmount: 0,
       activeCashbackCount: 0,
       activeCashbackAmount: 0,
       status: CustomerStatus.NEW,
-      cashbacks: []
     } as Customer;
 
     // 4. Por que "as Customer"?
-    // - O trecho as Customer é um Type Assertion (Asserção de Tipo) no TypeScript.
-    //   Ele serve para "tranquilizar" o compilador. Vamos entender o porquê dele ser
-    //   necessário naquele contexto específico:
-    // - Como foi visto anteriormente, definimos o parâmetro da função como Partial<Customer>.
-    //   Isso significa que, para o TypeScript, todas as propriedades do objeto customerData
-    //   são opcionais (podem ser undefined).
-    //   No entanto, no final da função, queremos retornar um Customer completo (onde campos
-    //   como name, email e cpf são obrigatórios).
-    // - Mesmo que tenhamos preenchido manualmente os campos obrigatórios (como id, createdAt,
-    //   status, etc.) usando o spread operator (...customerData), o TypeScript ainda pode ficar
-    //   "na dúvida" se o objeto resultante realmente possui todos os campos obrigatórios da
-    //   interface Customer.
-    // - Ao usar "as Customer", estamos dizendo explicitamente ao compilador: "Eu sei o que
-    //   estou fazendo. Eu garanto que este objeto que acabei de montar possui todas as propriedades
-    //   necessárias para ser considerado um Customer completo."
-
-    this.customers.push(newCustomer);
-    return of(newCustomer);
+    // - customerData é Partial<Person>, então campos como name, cpf podem ser undefined.
+    //   Montamos manualmente Person e Customer com todos os campos necessários; mesmo assim
+    //   o TypeScript pode inferir o tipo de forma conservadora. O "as Customer" afirma
+    //   que o objeto montado está completo e atende à interface Customer.
+    this.customers.push(customer);
+    return of(customer);
   }
 
-  updateCustomer(id: string, customerData: Partial<Customer>): Observable<Customer> {
+  updateCustomer(id: string, customerData: Partial<Person>): Observable<Customer> {
     const index = this.customers.findIndex(c => c.id === id);
 
     if (index !== -1) {
       this.customers[index] = {
-        ...this.customers[index], // mantemos os dados antigos
-        ...customerData // sobrescrevemos apenas dados novos (parciais)
+        ...this.customers[index],
+        person: {
+          ...this.customers[index].person, // mantemos os dados antigos
+          ...customerData // sobrescrevemos apenas dados novos (parciais)
+        }
       }
       return of(this.customers[index]);
     }
@@ -403,7 +397,7 @@ export class CustomerService {
 
     const now = new Date();
 
-    for(let i = 5; i >= 0; i--) {
+    for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       /*
         1. now.getMonth() retorna o mês atual de 0 a 11.
@@ -477,7 +471,7 @@ export class CustomerService {
 
     const now = new Date();
 
-    for(let i = 5; i >= 0; i--) {
+    for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const month = date.getMonth();
       const year = date.getFullYear();

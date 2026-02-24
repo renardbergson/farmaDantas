@@ -18,66 +18,62 @@
         </tr>
       </thead>
       <tbody>
-        @for (customer of customers; track customer.person.cpf) {
-          <tr>
-            <td>
-              <div class="d-flex align-items-center gap-3">
-                <div class="client-avatar">{{ getInitials(customer.person.name) }}</div>
-                <div class="client-info">
-                  <p class="client-name">{{ customer.person.name }}</p>
-                  <p class="client-email">{{ customer.person.email }}</p>
-                </div>
+        @for (customer of customers; track $index) {
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <div class="client-avatar">{{ getInitials(customer.person.name) }}</div>
+              <div class="client-info">
+                <p class="client-name">{{ customer.person.name }}</p>
+                <p class="client-email">{{ customer.person.email }}</p>
               </div>
-            </td>
-            <td class="text-muted">{{ (customer.person.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
-            <td class="text-center fw-medium">{{ customer.purchasesThisMonthCount }}</td>
-            <td class="text-end cashback-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</td>
-            <td class="text-center">
-              <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
-                {{ customer.status }}
-              </span>
-            </td>
+            </div>
+          </td>
+          <td class="text-muted">{{ (customer.person.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
+          <td class="text-center fw-medium">{{ customer.purchasesThisMonthCount }}</td>
+          <td class="text-end cashback-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</td>
+          <td class="text-center">
+            <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
+              {{ customer.status }}
+            </span>
+          </td>
 
-            <!-- Actions -->
-            <td class="text-end">
-              <div class="dropdown">
-                <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
-                  <i class="bi bi-three-dots"></i>
-                </button>
+          <!-- Actions -->
+          <td class="text-end">
+            <div class="dropdown">
+              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                <i class="bi bi-three-dots"></i>
+              </button>
 
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
-                      <i class="bi bi-eye me-2"></i> Ver detalhes
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerCashbacksModal">
-                      <i class="bi bi-gift me-2"></i> Ver cashbacks
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      class="dropdown-item"
-                      (click)="$event.preventDefault(); onEditCustomer(customer)"
-                      data-bs-toggle="modal" data-bs-target="#newCustomerModal"
-                    >
-                      <i class="bi bi-pencil me-2"></i>
-                      Editar
-                    </a>
-                  </li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li>
-                    <a class="dropdown-item text-danger" (click)="$event.preventDefault(); onDeleteCustomer(customer)" data-bs-toggle="modal" data-bs-target="#customerDeleteModal">
-                      <i class="bi bi-trash me-2"></i> Excluir
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </td>
-          </tr>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerDetailsModal">
+                    <i class="bi bi-eye me-2"></i> Ver detalhes
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(customer)" data-bs-toggle="modal" data-bs-target="#customerCashbacksModal">
+                    <i class="bi bi-gift me-2"></i> Ver cashbacks
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" (click)="$event.preventDefault(); onEditCustomer(customer)" data-bs-toggle="modal" data-bs-target="#newCustomerModal">
+                    <i class="bi bi-pencil me-2"></i>
+                    Editar
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item text-danger" (click)="$event.preventDefault(); onDeleteCustomer(customer)" data-bs-toggle="modal" data-bs-target="#customerDeleteModal">
+                    <i class="bi bi-trash me-2"></i> Excluir
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
         }
       </tbody>
     </table>

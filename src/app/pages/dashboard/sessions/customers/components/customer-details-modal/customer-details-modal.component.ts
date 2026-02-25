@@ -1,8 +1,8 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer, CustomerStatus } from '../../../../../../shared/models';
 import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { AddressService, City, State } from '../../../../../../shared/services/address.service';
+import { CustomerService, PurchaseModeData } from '../../../../../../shared/services/customer.service';
 
 @Component({
   selector: 'app-customer-details-modal',
@@ -12,49 +12,23 @@ import { AddressService, City, State } from '../../../../../../shared/services/a
   templateUrl: './customer-details-modal.component.html',
   styleUrl: './customer-details-modal.component.css'
 })
-export class CustomerDetailsModal implements OnChanges, OnInit {
+export class CustomerDetailsModal implements OnChanges {
   @Input() customer?: Customer;
-  states: State[] = [];
-  state?: State;
-  cities: City[] = [];
-  city?: City;
+  protected readonly CustomerStatus = CustomerStatus;
+  customerPurchaseModeData: PurchaseModeData = {
+    in_store: 0,
+    delivery: 0
+  };
 
-  constructor(private addressService: AddressService) { }
-
-  ngOnInit(): void {
-    this.addressService.getStates().subscribe({
-      next: (states) => {
-        this.states = states;
-        this.updateStateAndCity();
-      },
-      error: (err) => console.error('Ocorreu um erro ao listar os estados:', err)
-    });
-  }
+  constructor(private customerService: CustomerService) { }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['customer']?.currentValue) {
-      this.updateStateAndCity();
+    const newCustomer = changes['customer']?.currentValue as Customer | undefined;
+    if (newCustomer) {
+      this.getPurchaseModeData(newCustomer);
     }
   }
 
-  private updateStateAndCity(): void {
-    if (!this.customer?.person) return;
-    this.state = this.states.find(s => s.id === this.customer!.person.address.stateId) || undefined;
-    if (this.state) {
-      this.addressService.getCities(this.state).subscribe({
-        next: (cities) => {
-          this.cities = cities;
-          this.city = this.cities.find(c => c.id === this.customer?.person?.address.cityId) || undefined;
-        },
-        error: (err) => console.error('Ocorreu um erro ao listar as cidades:', err)
-      });
-    } else {
-      this.cities = [];
-      this.city = undefined;
-    }
-  }
-
-  // Gera as iniciais do nome do cliente
   getInitials(name: string): string {
     if (!name) return '';
     return name
@@ -65,8 +39,6 @@ export class CustomerDetailsModal implements OnChanges, OnInit {
       .substring(0, 2);
   }
 
-  protected readonly CustomerStatus = CustomerStatus;
-
   getStatusClass(status: CustomerStatus): string {
     switch (status) {
       case CustomerStatus.NEW: return 'badge-new';
@@ -75,5 +47,19 @@ export class CustomerDetailsModal implements OnChanges, OnInit {
       case CustomerStatus.INACTIVE: return 'badge-inactive';
       default: return 'badge-inactive';
     }
+  }
+
+  getPurchaseModeData(customer: Customer): void {
+    this.customerService.getPurchaseModeData(customer).subscribe({
+      next: (data) => {
+        this.customerPurchaseModeData = data;
+      },
+      error: (err) => console.error('Ocorreu um erro ao tentar obter as modalidades de compra do cliente:', err)
+    })
+  }
+
+  getMonthlyAveragePerPurchase(customer: Customer): number {
+    if (!customer.purchasesThisMonthCount) return 0;
+    return customer.purchasesThisMonthAmount / customer.purchasesThisMonthCount;
   }
 }

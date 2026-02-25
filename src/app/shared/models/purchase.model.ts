@@ -1,3 +1,8 @@
+export enum PurchaseMode {
+  IN_STORE = "Presencial",
+  DELIVERY = "Delivery",
+}
+
 export enum PurchaseCategory {
   ANTIBIOTIC = "Antibiótico",
   CONTRACEPTIVE = "Anticoncepcional",
@@ -10,6 +15,7 @@ export enum PurchaseCategory {
 
 export interface Purchase {
   id: string;
+  mode: PurchaseMode;
   date: Date;
   total: number;
   category: PurchaseCategory;

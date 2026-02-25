@@ -1,4 +1,4 @@
-import { Customer, CustomerStatus, CashbackStatus, PurchaseCategory } from '../models';
+import { Customer, CustomerStatus, CashbackStatus, PurchaseCategory, PurchaseMode } from '../models';
 
 export const MOCK_CUSTOMERS: Customer[] = [
   {
@@ -11,7 +11,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         id: 'addr-k2w1',
         zipCode: '58600-000',
         stateId: 25,
+        stateName: 'Paraíba',
         cityId: 2513406,
+        cityName: 'Patos',
         neighborhood: 'Centro',
         street: 'Rua Coronel Antônio Pessoa',
         number: '100',
@@ -32,6 +34,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p1a2',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-05'),
         total: 100.00,
         category: PurchaseCategory.ANTIBIOTIC,
@@ -44,6 +47,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p1a3',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-12'),
         total: 50.00,
         category: PurchaseCategory.CONTINUOUS,
@@ -92,7 +96,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         id: 'addr-j8n4',
         zipCode: '58010-000',
         stateId: 25,
+        stateName: 'Paraíba',
         cityId: 2507507,
+        cityName: 'João Pessoa',
         neighborhood: 'Tambiá',
         street: 'Av. Epitácio Pessoa',
         number: '1500',
@@ -113,6 +119,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p3m9',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-01-10'),
         total: 200.00,
         category: PurchaseCategory.SUPPLEMENTS,
@@ -123,6 +130,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p4k2',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-02'),
         total: 150.00,
         category: PurchaseCategory.CONTROLLED,
@@ -135,6 +143,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p5l1',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-15'),
         total: 100.00,
         category: PurchaseCategory.CONTRACEPTIVE,
@@ -183,7 +192,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         id: 'addr-a1o9',
         zipCode: '58400-000',
         stateId: 25,
+        stateName: 'Paraíba',
         cityId: 2504009,
+        cityName: 'Campina Grande',
         neighborhood: 'Centro',
         street: 'Rua Maciel Pinheiro',
         number: '45',
@@ -204,6 +215,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p6q7',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-08'),
         total: 80.00,
         category: PurchaseCategory.KIDS,
@@ -240,7 +252,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         id: 'addr-c7w0',
         zipCode: '58840-000',
         stateId: 25,
+        stateName: 'Paraíba',
         cityId: 2512101,
+        cityName: 'São José de Piranhas',
         neighborhood: 'Centro',
         street: 'Rua Cel. Antônio Pires',
         number: '220',
@@ -261,6 +275,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p24q0',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-05'),
         total: 120.00,
         category: PurchaseCategory.CONTINUOUS,
@@ -273,6 +288,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p24q1',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-10'),
         total: 90.00,
         category: PurchaseCategory.SUPPLEMENTS,
@@ -285,6 +301,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p24q2',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-18'),
         total: 80.00,
         category: PurchaseCategory.ELDERLY,
@@ -297,6 +314,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p24q3',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-17'),
         total: 60.00,
         category: PurchaseCategory.ANTIBIOTIC,
@@ -369,7 +387,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         id: 'addr-r8s1',
         zipCode: '58415-000',
         stateId: 25,
+        stateName: 'Paraíba',
         cityId: 2504009,
+        cityName: 'Campina Grande',
         neighborhood: 'Bodocongó',
         street: 'Rua das Flores',
         number: '88',
@@ -390,6 +410,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
     purchases: [
       {
         id: 'p25r0',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-08'),
         total: 140.00,
         category: PurchaseCategory.CONTINUOUS,
@@ -402,6 +423,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p25r1',
+        mode: PurchaseMode.DELIVERY,
         date: new Date('2026-02-16'),
         total: 85.00,
         category: PurchaseCategory.CONTRACEPTIVE,
@@ -414,6 +436,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
       },
       {
         id: 'p25r2',
+        mode: PurchaseMode.IN_STORE,
         date: new Date('2026-02-18'),
         total: 60.00,
         category: PurchaseCategory.ANTIBIOTIC,

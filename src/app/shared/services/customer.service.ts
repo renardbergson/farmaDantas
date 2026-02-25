@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person, Address } from '../models';
+import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person, Address, PurchaseMode, Purchase } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -30,8 +30,13 @@ export interface MonthlyCashbackCountData {
   quantities: number[];
 }
 
+export interface PurchaseModeData {
+  in_store: number;
+  delivery: number;
+}
+
 export type createAddress = Pick<
-  Address, 'zipCode' | 'stateId' | 'cityId' | 'neighborhood' | 'street'
+  Address, 'zipCode' | 'stateId' | 'stateName' | 'cityId' | 'cityName' | 'neighborhood' | 'street'
 > & Partial<Pick<Address, 'number' | 'complement'>>;
 
 export type createPerson = Pick<Person, 'name' | 'cpf' | 'phone'> &
@@ -40,8 +45,7 @@ export type createPerson = Pick<Person, 'name' | 'cpf' | 'phone'> &
   }
 
 export type updateAddress = Partial<Pick<
-  // mesmo que alguns campos de Address sejam obrigatórios, no caso de update, podemos enviar somente o que queremos atualizar
-  Address, 'zipCode' | 'stateId' | 'cityId' | 'neighborhood' | 'street' | 'number' | 'complement'
+  Address, 'zipCode' | 'stateId' | 'stateName' | 'cityId' | 'cityName' | 'neighborhood' | 'street' | 'number' | 'complement'
 >>;
 
 export type updatePerson = Partial<Pick<Person, 'name' | 'cpf' | 'phone' | 'email' |
@@ -86,7 +90,9 @@ export class CustomerService {
           id: addressId,
           zipCode: customerData.address?.zipCode,
           stateId: customerData.address?.stateId,
+          stateName: customerData.address?.stateName,
           cityId: customerData.address?.cityId,
+          cityName: customerData.address?.cityName,
           neighborhood: customerData.address?.neighborhood,
           street: customerData.address?.street,
           number: customerData.address?.number,
@@ -544,5 +550,28 @@ export class CustomerService {
     }
 
     return of({ labels, quantities });
+  }
+
+  getPurchaseModeData(customer?: Customer): Observable<PurchaseModeData> {
+    // Retorna o total de compras por modo (Presencial ou Delivery) para o mês atual
+    // se não receber um cliente, significa que o intuito é obter os dados de todos os clientes
+
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const isThisMonth = (p: Purchase) =>
+      p.date.getMonth() === currentMonth && p.date.getFullYear() === currentYear;
+
+    if (customer) {
+      const purchasesThisMonth = (customer.purchases || []).filter(isThisMonth);
+      const inStore = purchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length;
+      const delivery = purchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length;
+      return of({ in_store: inStore, delivery: delivery });
+    }
+
+    const allPurchasesThisMonth = this.customers.flatMap(c => c.purchases || []).filter(isThisMonth);
+    const inStore = allPurchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length;
+    const delivery = allPurchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length;
+    return of({ in_store: inStore, delivery: delivery });
   }
 }

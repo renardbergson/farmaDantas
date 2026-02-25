@@ -1,89 +1,134 @@
 <div class="modal fade" id="customerDetailsModal" tabindex="-1" aria-labelledby="customerDetailsModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-custom">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="customerDetailsModalLabel">Detalhes do Cliente</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
-      <div class="modal-body p-0">
+      <div class="modal-body">
         @if(customer) {
-        <!-- Header do Perfil -->
+        <!-- Destaque do cliente: avatar, nome e status -->
         <div class="profile-header">
           <div class="d-flex align-items-center gap-3">
             <div class="profile-avatar">{{ getInitials(customer.person.name) }}</div>
             <div>
               <h4 class="profile-name">{{ customer.person.name }}</h4>
-              <span class="badge-status" [ngClass]="getStatusClass(customer.status)">
-                {{ customer.status }}
-              </span>
+              <span class="badge-status" [ngClass]="getStatusClass(customer.status)">{{ customer.status }}</span>
             </div>
           </div>
         </div>
 
-        <div class="modal-body-content">
-          <!-- Grid de Informações -->
-          <div class="row g-4">
-            <!-- Informações Pessoais -->
-            <div class="col-md-6">
-              <h6 class="section-title"><i class="bi bi-person me-2"></i>Informações Pessoais</h6>
-              <div class="info-item">
-                <label>E-mail</label>
-                <span>{{ customer.person.email }}</span>
-              </div>
-              <div class="info-item">
-                <label>Telefone</label>
-                <span>{{ customer.person.phone | mask: '(00) 00000-0000' }}</span>
-              </div>
-              <div class="info-item">
-                <label>CPF</label>
-                <span>{{ customer.person.cpf | mask: '000.000.000-00' }}</span>
-              </div>
-              <div class="info-item">
-                <label>Data de Nascimento</label>
-                <span>{{ (customer.person.dateOfBirth | date:'dd/MM/yyyy') || '--' }}</span>
+        <p class="text-muted form-intro">Informações do cliente.</p>
+
+        <div class="form-grid">
+          <!-- Cabeçalhos das seções -->
+          <h6 class="section-label form-grid-cell-left"><i class="bi bi-person me-2"></i>Dados pessoais</h6>
+          <h6 class="section-label form-grid-cell-right"><i class="bi bi-geo-alt me-2"></i>Endereço</h6>
+
+          <!-- Linha 1: ID (sozinho; idade ficará ao lado depois) | CEP + Estado + Número -->
+          <div class="form-grid-cell-left">
+            <div class="row g-2">
+              <div class="col-6 detail-field">
+                <label class="detail-label">ID</label>
+                <span class="detail-text detail-id">{{ customer.id }}</span>
               </div>
             </div>
-
-            <!-- Localização e Outros -->
-            <div class="col-md-6">
-              <h6 class="section-title"><i class="bi bi-geo-alt me-2"></i>Localização</h6>
-              <div class="info-item">
-                <label>Cidade</label>
-                <span>{{ city?.nome || '--' }}</span>
+          </div>
+          <div class="form-grid-cell-right">
+            <div class="row g-2">
+              <div class="col-5 detail-field">
+                <label class="detail-label">CEP</label>
+                <span class="detail-text">{{ (customer.person.address.zipCode | mask: '00000-000') || '--' }}</span>
               </div>
-              <div class="info-item">
-                <label>Estado</label>
-                <span>{{ state?.nome || '--' }}</span>
+              <div class="col-4 detail-field">
+                <label class="detail-label">Estado</label>
+                <span class="detail-text">{{ customer.person.address.stateName || '--' }}</span>
               </div>
-
-              <h6 class="section-title mt-4"><i class="bi bi-calendar3 me-2"></i>Sistema</h6>
-              <div class="info-item">
-                <label>Cliente desde</label>
-                <span>{{ customer.person.createdAt | date:'dd/MM/yyyy' }}</span>
+              <div class="col-3 detail-field">
+                <label class="detail-label">Número</label>
+                <span class="detail-text">{{ customer.person.address.number || '--' }}</span>
               </div>
             </div>
+          </div>
 
-            <!-- Estatísticas -->
-            <div class="col-12">
-              <div class="stats-container">
-                <div class="stat-card">
-                  <div class="stat-icon purchase-icon">
-                    <i class="bi bi-bag-check"></i>
-                  </div>
-                  <div class="stat-details">
-                    <label>Gasto no mês</label>
-                    <span class="stat-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
-                  </div>
-                </div>
-                <div class="stat-card">
-                  <div class="stat-icon cashback-icon">
-                    <i class="bi bi-coin"></i>
-                  </div>
-                  <div class="stat-details">
-                    <label>Cashback Disponível</label>
-                    <span class="stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
-                  </div>
-                </div>
+          <!-- Linha 2: CPF + Telefone | Logradouro -->
+          <div class="form-grid-cell-left">
+            <div class="row g-2">
+              <div class="col-6 detail-field">
+                <label class="detail-label">CPF</label>
+                <span class="detail-text">{{ customer.person.cpf | mask: '000.000.000-00' }}</span>
+              </div>
+              <div class="col-6 detail-field">
+                <label class="detail-label">Telefone</label>
+                <span class="detail-text">{{ (customer.person.phone | mask: '(00) 00000-0000') || '--' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-grid-cell-right detail-field">
+            <label class="detail-label">Logradouro</label>
+            <span class="detail-text">{{ customer.person.address.street || '--' }}</span>
+          </div>
+
+          <!-- Linha 3: E-mail | Bairro + Complemento -->
+          <div class="form-grid-cell-left detail-field">
+            <label class="detail-label">E-mail</label>
+            <span class="detail-text">{{ customer.person.email || '--' }}</span>
+          </div>
+          <div class="form-grid-cell-right">
+            <div class="row g-2">
+              <div class="col-6 detail-field">
+                <label class="detail-label">Bairro</label>
+                <span class="detail-text">{{ customer.person.address.neighborhood || '--' }}</span>
+              </div>
+              <div class="col-6 detail-field">
+                <label class="detail-label">Complemento</label>
+                <span class="detail-text">{{ customer.person.address.complement || '--' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Linha 4: Data de Nascimento + Cliente desde | Cidade -->
+          <div class="form-grid-cell-left">
+            <div class="row g-2">
+              <div class="col-6 detail-field">
+                <label class="detail-label">Data de Nascimento</label>
+                <span class="detail-text">{{ (customer.person.dateOfBirth | date:'dd/MM/yyyy') || '--' }}</span>
+              </div>
+              <div class="col-6 detail-field">
+                <label class="detail-label">Cliente desde</label>
+                <span class="detail-text">{{ customer.person.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-grid-cell-right detail-field">
+            <label class="detail-label">Cidade</label>
+            <span class="detail-text">{{ customer.person.address.cityName || '--' }}</span>
+          </div>
+
+          <!-- Linha 5: Estatísticas (Compras no mês, Gasto total no mês, Cashback disponível) -->
+          <div class="form-grid-cell-full detail-stats-row">
+            <h6 class="section-label"><i class="bi bi-bar-chart me-2"></i>Estatísticas do mês</h6>
+            <div class="detail-stats-grid">
+              <div class="detail-stat">
+                <label class="detail-label">Compras</label>
+                <span class="detail-text detail-stat-value">{{ customer.purchasesThisMonthCount }}</span>
+                <span class="detail-cashback-count">{{ customerPurchaseModeData.in_store }} presencial, {{ customerPurchaseModeData.delivery }} delivery</span>
+              </div>
+              <div class="detail-stat">
+                <label class="detail-label">Valor em compras</label>
+                <span class="detail-text detail-stat-value text-success-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
+                <span class="detail-cashback-count">
+                  @if (customer.purchasesThisMonthCount > 0) {
+                  Ticket médio: {{ getMonthlyAveragePerPurchase(customer) | currency:'BRL' }}
+                  } @else {
+                  Sem compras no mês
+                  }
+                </span>
+              </div>
+              <div class="detail-stat">
+                <label class="detail-label">Cashback total</label>
+                <span class="detail-text detail-stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
+                <span class="detail-cashback-count">{{ customer.activeCashbackCount }} ativo(s)</span>
               </div>
             </div>
           </div>
@@ -91,7 +136,7 @@
         }
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn" data-bs-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>

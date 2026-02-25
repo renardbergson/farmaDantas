@@ -156,6 +156,8 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   onSubmit() {
     if (this.customerForm.valid) {
       const raw = this.customerForm.getRawValue();
+      const stateName = this.states.find(s => s.id === raw.stateId)?.nome;
+      const cityName = this.cities.find(c => c.id === raw.cityId)?.nome;
       const customerData = {
         name: raw.name,
         cpf: raw.cpf,
@@ -165,7 +167,9 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
         address: {
           zipCode: raw.zipCode,
           stateId: raw.stateId,
+          stateName,
           cityId: raw.cityId,
+          cityName,
           street: raw.street,
           number: raw.number,
           complement: raw.complement,

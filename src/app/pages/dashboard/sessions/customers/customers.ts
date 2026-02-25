@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart} from './components';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart } from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
-import { Customer, CustomerStatus, CashbackStatus } from '../../../../shared/models';
-import {CustomerService} from '../../../../shared/services/customer.service';
+import { Customer, CustomerStatus } from '../../../../shared/models';
+import { CustomerService } from '../../../../shared/services/customer.service';
 
 @Component({
   selector: 'app-customers',
@@ -37,7 +37,27 @@ export class Customers implements OnInit {
   // Cliente para excluir
   customerToDelete: Customer | null = null;
 
-  constructor(private customerService: CustomerService) {}
+  @ViewChild(CustomerAddNewModal) customerAddNewModal?: CustomerAddNewModal;
+  /*  
+    1. ViewChild permite ao componente pai obter uma referência ao filho (componente, diretiva ou elemento DOM) declarado no template.
+    2. Com isso é possível:
+      - Chamar métodos do filho 
+      - Ler propriedades do filho
+      - Acessar o elemento DOM quando for um elemento nativo
+      * Importante: a referência só fica disponível depois que a view for inicializada (nfAfterViewInit)
+    3. @Input() / @Output() X ViewChild()
+      3.1. @Input() / @Output() 
+        - permite comunicação reativa e desacoplada
+        - quando o @Input() muda, o Angular atualiza o filho automaticamente
+        - facilita testes
+        - o componente pode ser usado em mais de um contexto
+      3.2. ViewChild()
+        - a comunicação é unidirecional: de pai para o filho
+        - deixa o código mais acoplado
+        - o pai precisa chamar métodos manualmente
+  */
+
+  constructor(private customerService: CustomerService) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -67,6 +87,12 @@ export class Customers implements OnInit {
 
   applyCustomerFilters(): void {
     this.filteredCustomers = this.originalCustomers.filter(customer => {
+      /*  
+        Por que este método pode ser chamado também na hora de excluir um cliente?
+        - "".toLowerCase() → "" 
+        - "qualquer texto".includes("") → true (string vazia está em qualquer string)
+        - ou seja: todos os clientes passam no filtro de busca
+      */
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
         customer.person.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
@@ -86,7 +112,8 @@ export class Customers implements OnInit {
   // Abre o modal de novo cliente
   onAddCustomer(): void {
     // abertura de modal gerenciada pelo bootstrap ***
-    this.customerToEdit = undefined; // garante que o modal inicie limpo
+    this.customerToEdit = undefined;
+    this.customerAddNewModal?.customerForm.reset(); // limpa o formulário do modal
   }
 
   // Atribui o cliente selecionado ao modal de detalhes
@@ -103,6 +130,13 @@ export class Customers implements OnInit {
   }
 
   confirmDelete(customer: Customer): void {
-    this.filteredCustomers = this.filteredCustomers.filter(c => c.id !== customer.id);
+    // this.filteredCustomers = this.filteredCustomers.filter(c => c.id !== customer.id);
+    this.customerService.deleteCustomer(customer).subscribe({
+      next: (data) => {
+        this.originalCustomers = this.originalCustomers.filter(c => c.id !== data.id)
+        this.applyCustomerFilters(); // ver comentários acima
+      },
+      error: (err) => console.error('Ocorreu um erro ao tentar excluir o cliente:', err),
+    })
   }
 }

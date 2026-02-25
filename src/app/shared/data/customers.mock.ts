@@ -6,12 +6,21 @@ export const MOCK_CUSTOMERS: Customer[] = [
     personId: 'pers-k2w1',
     person: {
       id: 'pers-k2w1',
+      addressId: 'addr-k2w1',
+      address: {
+        id: 'addr-k2w1',
+        zipCode: '58600-000',
+        stateId: 25,
+        cityId: 2513406,
+        neighborhood: 'Centro',
+        street: 'Rua Coronel Antônio Pessoa',
+        number: '100',
+        complement: 'Apto 201'
+      },
       name: "Maria Silva",
       email: "maria@email.com",
       phone: "83999999999",
       cpf: "12345678900",
-      cityId: 2513406, // Santa Luzia
-      state: "Paraíba",
       createdAt: new Date("2026-02-01"),
       dateOfBirth: new Date("1992-08-01"),
     },
@@ -78,12 +87,21 @@ export const MOCK_CUSTOMERS: Customer[] = [
     personId: 'pers-j8n4',
     person: {
       id: 'pers-j8n4',
+      addressId: 'addr-j8n4',
+      address: {
+        id: 'addr-j8n4',
+        zipCode: '58010-000',
+        stateId: 25,
+        cityId: 2507507,
+        neighborhood: 'Tambiá',
+        street: 'Av. Epitácio Pessoa',
+        number: '1500',
+        complement: ''
+      },
       name: "João Santos",
       email: "joao@email.com",
       phone: "83988888888",
       cpf: "23456789011",
-      cityId: 2507507, // João Pessoa
-      state: "Paraíba",
       createdAt: new Date("2025-11-10"),
       dateOfBirth: new Date("1990-05-15"),
     },
@@ -160,12 +178,21 @@ export const MOCK_CUSTOMERS: Customer[] = [
     personId: 'pers-a1o9',
     person: {
       id: 'pers-a1o9',
+      addressId: 'addr-a1o9',
+      address: {
+        id: 'addr-a1o9',
+        zipCode: '58400-000',
+        stateId: 25,
+        cityId: 2504009,
+        neighborhood: 'Centro',
+        street: 'Rua Maciel Pinheiro',
+        number: '45',
+        complement: 'Sala 3'
+      },
       name: "Ana Oliveira",
       email: "ana@email.com",
       phone: "83911111111",
       cpf: "34567890122",
-      cityId: 2504009, // Campina Grande
-      state: "Paraíba",
       createdAt: new Date("2025-12-05"),
       dateOfBirth: new Date("1995-02-20"),
     },
@@ -208,12 +235,21 @@ export const MOCK_CUSTOMERS: Customer[] = [
     personId: 'pers-c7w0',
     person: {
       id: 'pers-c7w0',
+      addressId: 'addr-c7w0',
+      address: {
+        id: 'addr-c7w0',
+        zipCode: '58840-000',
+        stateId: 25,
+        cityId: 2512101,
+        neighborhood: 'Centro',
+        street: 'Rua Cel. Antônio Pires',
+        number: '220',
+        complement: ''
+      },
       name: "Carla Dias",
       email: "carla@email.com",
       phone: "83922110099",
       cpf: "45678901234",
-      cityId: 2512101, // Pombal
-      state: "Paraíba",
       createdAt: new Date("2026-01-08"),
       dateOfBirth: new Date("1986-03-08"),
     },
@@ -328,12 +364,21 @@ export const MOCK_CUSTOMERS: Customer[] = [
     personId: 'pers-r8s1',
     person: {
       id: 'pers-r8s1',
+      addressId: 'addr-r8s1',
+      address: {
+        id: 'addr-r8s1',
+        zipCode: '58415-000',
+        stateId: 25,
+        cityId: 2504009,
+        neighborhood: 'Bodocongó',
+        street: 'Rua das Flores',
+        number: '88',
+        complement: 'Casa'
+      },
       name: "Roberto Lima",
       email: "roberto@email.com",
       phone: "83911009988",
       cpf: "56789012345",
-      cityId: 2504009, // Campina Grande
-      state: "Paraíba",
       createdAt: new Date("2026-02-01"),
       dateOfBirth: new Date("1982-05-14"),
     },

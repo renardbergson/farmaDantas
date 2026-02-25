@@ -2,10 +2,34 @@
   display: block;
 }
 
+/* Modal mais largo para formulário em duas colunas */
+.modal-dialog-custom {
+  max-width: 1000px;
+  width: 95%;
+}
+
 .modal-content {
   border-radius: 12px;
   border: none;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.form-intro {
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.section-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.section-label:first-of-type {
+  margin-top: 0;
 }
 
 .form-label-custom {
@@ -15,10 +39,26 @@
   margin-bottom: 6px;
 }
 
+/* Grid: mesma linha à esquerda e à direita = mesma altura quando erro aparece */
+.form-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 1rem 1rem;
+  align-items: start;
+}
+
+/* Reserva espaço para mensagens de erro e mantém alinhamento das colunas */
+.form-group-with-error-space .error-feedback-space {
+  min-height: 1.4rem;
+}
+
+/* Inputs na altura do ng-select (42px) */
 .form-control-custom {
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 6px 12px;
   border: 1px solid var(--border-color);
+  height: 42px;
+  box-sizing: border-box;
 }
 
 .form-control-custom:focus {
@@ -29,6 +69,41 @@
 .form-control-custom[readonly] {
   background-color: #f8fafc;
   cursor: not-allowed;
+}
+
+/* CEP: input-group em linha, mesma altura do ng-select */
+.input-group-cep {
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.input-group-cep input {
+  min-width: 140px;
+  flex: 1 1 auto;
+}
+
+.input-group-cep .btn {
+  height: 42px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+/* Botão de busca CEP: cinza como Cancelar, vermelho no hover */
+.btn-cep-search {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-cep-search:hover {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.btn-cep-search:hover>i {
+  cursor: pointer;
 }
 
 .btn-primary-gradient {
@@ -101,4 +176,3 @@
   border-color: #dc3545 !important;
   box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
 }
-

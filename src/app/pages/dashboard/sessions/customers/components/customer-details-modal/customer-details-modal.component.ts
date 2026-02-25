@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { Customer, CustomerStatus } from '../../../../../../shared/models';
 import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
-import { AddressService, City } from '../../../../../../shared/services/address.service';
+import { AddressService, City, State } from '../../../../../../shared/services/address.service';
 
 @Component({
   selector: 'app-customer-details-modal',
@@ -14,23 +14,43 @@ import { AddressService, City } from '../../../../../../shared/services/address.
 })
 export class CustomerDetailsModal implements OnChanges, OnInit {
   @Input() customer?: Customer;
+  states: State[] = [];
+  state?: State;
   cities: City[] = [];
   city?: City;
 
   constructor(private addressService: AddressService) { }
 
   ngOnInit(): void {
-    this.addressService.getCities().subscribe({
-      next: (cities) => {
-        this.cities = cities;
+    this.addressService.getStates().subscribe({
+      next: (states) => {
+        this.states = states;
+        this.updateStateAndCity();
       },
-      error: (err) => console.error('Ocorreu um erro ao listar as cidades:', err)
-    })
+      error: (err) => console.error('Ocorreu um erro ao listar os estados:', err)
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['customer']?.currentValue) {
-      this.city = this.cities?.find(city => city.id === this.customer?.person?.cityId) || undefined;
+      this.updateStateAndCity();
+    }
+  }
+
+  private updateStateAndCity(): void {
+    if (!this.customer?.person) return;
+    this.state = this.states.find(s => s.id === this.customer!.person.address.stateId) || undefined;
+    if (this.state) {
+      this.addressService.getCities(this.state).subscribe({
+        next: (cities) => {
+          this.cities = cities;
+          this.city = this.cities.find(c => c.id === this.customer?.person?.address.cityId) || undefined;
+        },
+        error: (err) => console.error('Ocorreu um erro ao listar as cidades:', err)
+      });
+    } else {
+      this.cities = [];
+      this.city = undefined;
     }
   }
 

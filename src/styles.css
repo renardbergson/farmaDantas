@@ -59,3 +59,16 @@ label[for],
 .logout-link {
   cursor: pointer;
 }
+
+/* Botões dos modais: mesmo tamanho */
+.modal-footer .btn,
+.modal-footer .btn-primary-gradient {
+  min-height: 44px;
+  padding: 10px 22px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

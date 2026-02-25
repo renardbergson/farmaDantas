@@ -21,17 +21,17 @@
         </div>
 
         @if(customer) {
-          <div class="customer-preview p-3 rounded-3 bg-light border">
-            <div class="d-flex align-items-center gap-3">
-              <div class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold">
-                {{ customer.person.name.substring(0, 2).toUpperCase() }}
-              </div>
-              <div class="overflow-hidden">
-                <h6 class="mb-0 text-truncate">{{ customer.person.name }}</h6>
-                <p class="mb-0 text-muted small text-truncate">{{ customer.person.email }}</p>
-              </div>
+        <div class="customer-preview p-3 rounded-3 bg-light border">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar-sm rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center fw-bold">
+              {{ customer.person.name.substring(0, 2).toUpperCase() }}
+            </div>
+            <div class="overflow-hidden">
+              <h6 class="mb-0 text-truncate">{{ customer.person.name }}</h6>
+              <p class="mb-0 text-muted small text-truncate">{{ customer.person.email }}</p>
             </div>
           </div>
+        </div>
         }
       </div>
       <div class="modal-footer border-top-0 pt-0 gap-2">

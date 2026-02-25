@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person } from '../models';
+import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person, Address } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -30,6 +30,26 @@ export interface MonthlyCashbackCountData {
   quantities: number[];
 }
 
+export type createAddress = Pick<
+  Address, 'zipCode' | 'stateId' | 'cityId' | 'neighborhood' | 'street'
+> & Partial<Pick<Address, 'number' | 'complement'>>;
+
+export type createPerson = Pick<Person, 'name' | 'cpf' | 'phone'> &
+  Partial<Pick<Person, 'email' | 'dateOfBirth'>> & {
+    address: createAddress;
+  }
+
+export type updateAddress = Partial<Pick<
+  // mesmo que alguns campos de Address sejam obrigatórios, no caso de update, podemos enviar somente o que queremos atualizar
+  Address, 'zipCode' | 'stateId' | 'cityId' | 'neighborhood' | 'street' | 'number' | 'complement'
+>>;
+
+export type updatePerson = Partial<Pick<Person, 'name' | 'cpf' | 'phone' | 'email' |
+  // mesmo que alguns campos de Person sejam obrigatórios, no caso de update, podemos enviar somente o que queremos atualizar
+  'dateOfBirth'>> & {
+    address: updateAddress;
+  };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -42,31 +62,41 @@ export class CustomerService {
     return of(this.customers);
   }
 
-  addCustomer(customerData: Partial<Person>): Observable<Customer> {
+  addCustomer(customerData: createPerson): Observable<Customer> {
     // 1. O que é o Partial<Person>?
     // - O Partial é um Utility Type do TypeScript que torna todos os
     //   campos de Person opcionais. O formulário envia apenas os dados
     //   da pessoa (name, cpf, email, phone, cityId, etc.) que o usuário preencheu.
     // 2. Por que não receber Customer ou Person completo?
-    // - O formulário não tem id, createdAt nem state da Person; isso é
+    // - O formulário não tem id, createdAt da Person; isso é
     //   definido aqui no serviço (simulando um backend). O componente só
     //   envia o que o usuário digitou.
     // 3. Fluxo: a partir dos dados da pessoa (customerData), montamos a
     //   Person (com id e createdAt gerados aqui) e o Customer (id próprio,
     //   personId referenciando a Person, contadores zerados, status NEW).
     const personId = nanoid(4);
+    const addressId = nanoid(4);
     const customer: Customer = {
       id: nanoid(4),
       personId: personId,
       person: {
         id: personId,
+        addressId: addressId,
+        address: {
+          id: addressId,
+          zipCode: customerData.address?.zipCode,
+          stateId: customerData.address?.stateId,
+          cityId: customerData.address?.cityId,
+          neighborhood: customerData.address?.neighborhood,
+          street: customerData.address?.street,
+          number: customerData.address?.number,
+          complement: customerData.address?.complement
+        },
         name: customerData.name,
         cpf: customerData.cpf,
         phone: customerData.phone,
-        state: customerData.state,
         createdAt: new Date(),
         email: customerData.email,
-        cityId: customerData.cityId,
         dateOfBirth: customerData.dateOfBirth,
       },
       cashbacks: [],
@@ -87,21 +117,45 @@ export class CustomerService {
     return of(customer);
   }
 
-  updateCustomer(id: string, customerData: Partial<Person>): Observable<Customer> {
+  updateCustomer(id: string, customerData: updatePerson): Observable<Customer> {
     const index = this.customers.findIndex(c => c.id === id);
 
-    if (index !== -1) {
-      this.customers[index] = {
-        ...this.customers[index],
-        person: {
-          ...this.customers[index].person, // mantemos os dados antigos
-          ...customerData // sobrescrevemos apenas dados novos (parciais)
-        }
-      }
-      return of(this.customers[index]);
+    if (index === -1) {
+      throw new Error('Cliente não encontrado!');
     }
 
-    throw new Error('Cliente não encontrado!');
+    const existingCustomer = this.customers[index];
+    const existingPerson = existingCustomer.person;
+    const existingAddress = existingPerson.address;
+
+    // Merge do endereço: dados antigos + novos (parciais)
+    const mergedAddress: Address = {
+      ...existingAddress,
+      ...customerData.address
+    }
+
+    // Merge dos dados da pessoa: dados antigos + novos (parciais)
+    const mergedPerson: Person = {
+      ...existingPerson,
+      ...customerData,
+      address: mergedAddress
+    }
+
+    // Merge do consumidor (completo agora)
+    const updatedCustomer: Customer = {
+      ...existingCustomer,
+      person: mergedPerson // pessoa + endereço
+    }
+    this.customers[index] = updatedCustomer;
+    return of(updatedCustomer);
+  }
+
+  deleteCustomer(customer: Customer): Observable<Customer> {
+    const index = this.customers.findIndex(c => c.id === customer.id);
+    if (index !== -1) {
+      this.customers.splice(index, 1);
+    }
+    return of(customer); // cliente que foi removido
   }
 
   getDashboardStats(): Observable<DashboardStats> {

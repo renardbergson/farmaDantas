@@ -1,5 +1,5 @@
 <div class="modal fade" id="newCustomerModal" tabindex="-1" aria-labelledby="novoClienteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-custom">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="novoClienteModalLabel">{{ customer ? 'Editar Cliente' : 'Cadastrar Cliente' }}</h5>
@@ -7,70 +7,131 @@
       </div>
       <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
         <div class="modal-body">
-          <p class="text-muted" style="font-size: 0.875rem;">
-            Preencha os dados abaixo. <br>
-          </p>
+          <p class="text-muted form-intro">Preencha os dados abaixo.</p>
 
-          <!-- NOME COMPLETO -->
-          <div class="mb-3">
-            <label class="form-label-custom">Nome completo*</label>
-            <input formControlName="name" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('name')" placeholder="Nome do cliente">
-            <div class="invalid-feedback">
-              O nome é obrigatório.
+          <div class="form-grid">
+            <!-- Linha 0: cabeçalhos -->
+            <h6 class="section-label form-grid-cell-left">Dados pessoais</h6>
+            <h6 class="section-label form-grid-cell-right">Endereço</h6>
+
+            <!-- Linha 1: Nome | CEP + Estado + Número -->
+            <div class="form-grid-cell-left form-group-with-error-space">
+              <label class="form-label-custom">Nome completo*</label>
+              <input formControlName="name" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('name')" placeholder="Nome do cliente">
+              <div class="error-feedback-space">
+                @if(isFieldInvalid('name')) {
+                <div class="invalid-feedback d-block">O nome é obrigatório.</div>
+                }
+              </div>
             </div>
-          </div>
-
-          <!-- CPF -->
-          <div class="row mb-3">
-            <div class="col-6">
-              <label class="form-label-custom">CPF</label>
-              <input formControlName="cpf" [class.is-invalid]="isFieldInvalid('cpf')" type="text" mask="000.000.000-00" class="form-control form-control-custom" placeholder="000.000.000-00">
-              <div class="invalid-feedback">
-                O CPF é obrigatório.
+            <div class="form-grid-cell-right">
+              <div class="row g-2 address-row">
+                <div class="col-5 form-group-with-error-space">
+                  <label class="form-label-custom">CEP*</label>
+                  <div class="input-group input-group-cep">
+                    <input formControlName="zipCode" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('zipCode')" mask="00000-000" placeholder="00000-000" (blur)="searchByCep()">
+                    <button type="button" class="btn btn-cep-search" (click)="searchByCep()" title="Buscar endereço">
+                      <i class="bi bi-search"></i>
+                    </button>
+                  </div>
+                  <div class="error-feedback-space">
+                    @if(isFieldInvalid('zipCode')) {
+                    <div class="invalid-feedback d-block">O CEP é obrigatório.</div>
+                    }
+                  </div>
+                </div>
+                <div class="col-4 form-group-with-error-space">
+                  <label class="form-label-custom">Estado*</label>
+                  <ng-select (change)="loadCities($event)" formControlName="stateId" bindLabel="nome" bindValue="id" placeholder="Estado" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('stateId')" [items]="states" [searchable]="true" [clearable]="false">
+                  </ng-select>
+                  <div class="error-feedback-space">
+                    @if(isFieldInvalid('stateId')) {
+                    <div class="invalid-feedback d-block">O estado é obrigatório.</div>
+                    }
+                  </div>
+                </div>
+                <div class="col-3 form-group-with-error-space">
+                  <label class="form-label-custom">Número</label>
+                  <input formControlName="number" type="text" class="form-control form-control-custom" placeholder="Nº">
+                  <div class="error-feedback-space"></div>
+                </div>
               </div>
             </div>
 
-            <!-- TELEFONE -->
-            <div class="col-6">
-              <label class="form-label-custom">Telefone*</label>
-              <input formControlName="phone" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('phone')" mask="(00) 00000-0000" placeholder="Telefone">
-              @if(isFieldInvalid('phone')) {
-              <div class="invalid-feedback d-block">
-                O telefone é obrigatório.
+            <!-- Linha 2: CPF + Telefone | Logradouro -->
+            <div class="form-grid-cell-left">
+              <div class="row g-2">
+                <div class="col-6 form-group-with-error-space">
+                  <label class="form-label-custom">CPF*</label>
+                  <input formControlName="cpf" [class.is-invalid]="isFieldInvalid('cpf')" type="text" mask="000.000.000-00" class="form-control form-control-custom" placeholder="000.000.000-00">
+                  <div class="error-feedback-space">
+                    @if(isFieldInvalid('cpf')) {
+                    <div class="invalid-feedback d-block">O CPF é obrigatório.</div>
+                    }
+                  </div>
+                </div>
+                <div class="col-6 form-group-with-error-space">
+                  <label class="form-label-custom">Telefone*</label>
+                  <input formControlName="phone" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('phone')" mask="(00) 00000-0000" placeholder="Telefone">
+                  <div class="error-feedback-space">
+                    @if(isFieldInvalid('phone')) {
+                    <div class="invalid-feedback d-block">O telefone é obrigatório.</div>
+                    }
+                  </div>
+                </div>
               </div>
-              }
             </div>
-          </div>
+            <div class="form-grid-cell-right form-group-with-error-space">
+              <label class="form-label-custom">Logradouro*</label>
+              <input formControlName="street" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('street')" placeholder="Nome da rua">
+              <div class="error-feedback-space">
+                @if(isFieldInvalid('street')) {
+                <div class="invalid-feedback d-block">O logradouro é obrigatório.</div>
+                }
+              </div>
+            </div>
 
-          <!-- E-MAIL -->
-          <div class="mb-3">
-            <label class="form-label-custom">E-mail</label>
-            <input formControlName="email" type="email" class="form-control form-control-custom" placeholder="email@exemplo.com">
-          </div>
+            <!-- Linha 3: E-mail | Bairro + Complemento -->
+            <div class="form-grid-cell-left form-group-with-error-space">
+              <label class="form-label-custom">E-mail</label>
+              <input formControlName="email" type="email" class="form-control form-control-custom" placeholder="email@exemplo.com">
+              <div class="error-feedback-space"></div>
+            </div>
+            <div class="form-grid-cell-right">
+              <div class="row g-2">
+                <div class="col-6 form-group-with-error-space">
+                  <label class="form-label-custom">Bairro*</label>
+                  <input formControlName="neighborhood" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('neighborhood')" placeholder="Bairro">
+                  <div class="error-feedback-space">
+                    @if(isFieldInvalid('neighborhood')) {
+                    <div class="invalid-feedback d-block">O bairro é obrigatório.</div>
+                    }
+                  </div>
+                </div>
+                <div class="col-6 form-group-with-error-space">
+                  <label class="form-label-custom">Complemento</label>
+                  <input formControlName="complement" type="text" class="form-control form-control-custom" placeholder="Apto, bloco, etc.">
+                  <div class="error-feedback-space"></div>
+                </div>
+              </div>
+            </div>
 
-          <!-- DATA DE NASCIMENTO -->
-          <div class="row mb-3">
-            <div class="col-6">
+            <!-- Linha 4: Data de Nascimento | Cidade -->
+            <div class="form-grid-cell-left form-group-with-error-space">
               <label class="form-label-custom">Data de Nascimento</label>
               <input formControlName="dateOfBirth" type="date" class="form-control form-control-custom">
+              <div class="error-feedback-space"></div>
             </div>
-            <!-- ESTADO (readonly) -->
-            <div class="col-6">
-              <label class="form-label-custom">Estado</label>
-              <input type="text" class="form-control form-control-custom" value="Paraíba">
+            <div class="form-grid-cell-right form-group-with-error-space">
+              <label class="form-label-custom">Cidade*</label>
+              <ng-select formControlName="cityId" bindLabel="nome" bindValue="id" placeholder="Selecione ou busque a cidade" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('cityId')" [items]="cities" [searchable]="true" [clearable]="false">
+              </ng-select>
+              <div class="error-feedback-space">
+                @if(isFieldInvalid('cityId')) {
+                <div class="invalid-feedback d-block">A cidade é obrigatória.</div>
+                }
+              </div>
             </div>
-          </div>
-
-          <!-- CIDADE -->
-          <div class="mb-3">
-            <label class="form-label-custom">Cidade</label>
-            <ng-select formControlName="cityId" bindLabel="nome" bindValue="id" placeholder="Selecione ou busque a cidade" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('cityId')" [items]="cities" [searchable]="true" [clearable]="false">
-            </ng-select>
-            @if(isFieldInvalid('cityId')) {
-            <div class="invalid-feedback d-block">
-              A cidade é obrigatória.
-            </div>
-            }
           </div>
         </div>
 

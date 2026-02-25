@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { AddressService, City } from '../../../../../../shared/services/address.service';
-import { CustomerService } from '../../../../../../shared/services/customer.service';
+import { AddressService, State, City } from '../../../../../../shared/services/address.service';
+import { CustomerService, createPerson, updatePerson } from '../../../../../../shared/services/customer.service';
 import { Customer } from '../../../../../../shared/models';
 
 @Component({
@@ -20,6 +20,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   @Input() customer?: Customer;
 
   customerForm!: FormGroup;
+  states: State[] = [];
   cities: City[] = [];
 
   constructor(
@@ -30,7 +31,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.initForm();
-    this.loadCities();
+    this.loadStates();
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -39,12 +40,14 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
       // 2. Verificamos se o formulário já foi inicializado
       // ngOnChanges pode rodar antes do ngOnInit ***
       if (!this.customerForm) return;
-
-      // 3. Verificamos se o valor atual de 'customer'
-      // para decidir se estamos em modo de edição ou criação
+      // 3. Verificamos o valor atual de 'customer'
       if (this.customer) {
         // MODO EDIÇÃO: o objeto existe
         this.fillForm(this.customer);
+        const state = this.states.find(s => s.id === this.customer?.person.address.stateId);
+        if (state) {
+          this.loadCities(state)
+        };
       } else {
         // MODO CRIAÇÃO: o objeto é undefined
         this.customerForm.reset();
@@ -56,33 +59,91 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.customerForm = this.fb.group({
       name: ['', Validators.required],
       cpf: ['', Validators.required],
-      email: [''], // opcional
+      email: [''],
       phone: ['', Validators.required],
-      dateOfBirth: [''], // opcional
+      dateOfBirth: [''],
+      zipCode: ['', Validators.required],
+      street: ['', Validators.required],
+      number: [''],
+      complement: [''],
+      neighborhood: ['', Validators.required],
+      stateId: ['', Validators.required],
       cityId: ['', Validators.required],
     })
+    this.customerForm.get('cityId')?.disable();
   }
 
   fillForm(customer: Customer): void {
-    // Preenche o restante do formulário com os dados do cliente
-    // O patchValue ignora campos que não exisem no formulário,
-    // como id, status, etc
+    // Preenche o formulário com os dados vindo do objeto Customer
     this.customerForm.patchValue({
       name: customer.person.name,
       cpf: customer.person.cpf,
       email: customer.person.email,
       phone: customer.person.phone,
       dateOfBirth: customer.person.dateOfBirth,
-      cityId: customer.person.cityId
+      zipCode: customer.person.address.zipCode,
+      street: customer.person.address.street,
+      number: customer.person.address.number,
+      complement: customer.person.address.complement,
+      neighborhood: customer.person.address.neighborhood,
+      stateId: customer.person.address.stateId,
+      cityId: customer.person.address.cityId
     })
   }
 
-  loadCities(): void {
-    this.addressService.getCities().subscribe({
+  loadStates(): void {
+    this.addressService.getStates().subscribe({
+      next: (data) => {
+        this.states = data;
+        if (this.customer) {
+          const state = this.states.find(s => s.id === this.customer?.person.address.stateId);
+          if (state) this.loadCities(state);
+          else {
+            this.customerForm.get('cityId')?.disable();
+          }
+        }
+      },
+      error: (err) => console.error('Ocorreu um erro ao tentar listar os estados:', err)
+    })
+  }
+
+  loadCities(state: State, selectedCityId?: number): void {
+    this.customerForm.get('cityId')?.enable();
+    this.addressService.getCities(state).subscribe({
       next: (data) => {
         this.cities = data;
+        if (selectedCityId) {
+          this.customerForm.patchValue({ cityId: selectedCityId });
+        }
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error('Ocorreu um erro ao tentar listar as cidades:', err)
+    })
+  }
+
+  searchByCep(): void {
+    const cep = this.customerForm.get('zipCode')?.value;
+    if (!cep || cep.replace(/\D/g, '').length !== 8) return;
+
+    this.addressService.getAddressByZipCode(cep).subscribe({
+      next: (data) => {
+        if (data.erro) {
+          console.warn('CEP não encontrado');
+          return;
+        }
+
+        const state = this.states.find(state => state.sigla === data.uf);
+        if (state) {
+          this.customerForm.patchValue({ stateId: state.id });
+          const cityId = data.ibge ? parseInt(data.ibge, 10) : undefined; // 10 significa: tenha certeza de converter para número em base 10
+          this.loadCities(state, cityId);
+        }
+
+        this.customerForm.patchValue({
+          street: data.logradouro || '',
+          neighborhood: data.bairro || ''
+        })
+      },
+      error: (err) => console.error('Ocorreu um erro ao tentar buscar o endereço pelo CEP:', err)
     })
   }
 
@@ -94,17 +155,33 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
 
   onSubmit() {
     if (this.customerForm.valid) {
-      const customerData = this.customerForm.value;
+      const raw = this.customerForm.getRawValue();
+      const customerData = {
+        name: raw.name,
+        cpf: raw.cpf,
+        email: raw.email,
+        phone: raw.phone,
+        dateOfBirth: raw.dateOfBirth,
+        address: {
+          zipCode: raw.zipCode,
+          stateId: raw.stateId,
+          cityId: raw.cityId,
+          street: raw.street,
+          number: raw.number,
+          complement: raw.complement,
+          neighborhood: raw.neighborhood
+        }
+      }
 
       if (this.customer) {
         // MODO EDIÇÃO
-        this.customerService.updateCustomer(this.customer.id, customerData).subscribe({
+        this.customerService.updateCustomer(this.customer.id, customerData as updatePerson).subscribe({
           next: () => this.handleSuccess(),
           error: (err) => console.error("Ocorreu um erro ao atualizar o cliente:", err)
         })
       } else {
         // MODO CRIAÇÃO
-        this.customerService.addCustomer(customerData).subscribe({
+        this.customerService.addCustomer(customerData as createPerson).subscribe({
           next: () => this.handleSuccess(),
           error: (err) => console.error("Ocorreu um erro ao salvar o cliente:", err)
         })

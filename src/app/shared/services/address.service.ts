@@ -1,6 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
+import { Address } from '../models';
+
+export interface ViaCepResponse {
+  cep: string;
+  logradouro: string;
+  complemento: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+  ibge: string;
+  erro?: boolean; // só existe quando o CEP não é encontrado
+}
+export interface State {
+  id: number;
+  sigla: string;
+  nome: string;
+}
 
 export interface City {
   id: number;
@@ -11,13 +28,22 @@ export interface City {
   providedIn: 'root', // serviço disponível em toda a aplicação
 })
 export class AddressService {
-  private readonly IBGE_URL = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados/PB/municipios';
+  private readonly VIACEP_URL = 'https://viacep.com.br/ws';
 
   constructor(private http: HttpClient) { }
 
-  getCities(): Observable<City[]> {
-    return this.http.get<City[]>(this.IBGE_URL).pipe(
-      map(cities => cities.map(city => city).sort())
-    )
+  getAddressByZipCode(zipCode: string) {
+    const flatZipCode = zipCode.replace(/\D/g, '');
+    return this.http.get<ViaCepResponse>(`${this.VIACEP_URL}/${flatZipCode}/json/`);
+  }
+
+  getStates(): Observable<State[]> {
+    const IBGE_STATES_URL = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados';
+    return this.http.get<State[]>(IBGE_STATES_URL)
+  }
+
+  getCities(state: State): Observable<City[]> {
+    const IBGE_CITIES_URL = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state.sigla}/municipios`;
+    return this.http.get<City[]>(IBGE_CITIES_URL)
   }
 }

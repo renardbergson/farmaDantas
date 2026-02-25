@@ -8,3 +8,4 @@ export { PurchaseCategory } from './purchase.model';
 export type { DashboardStats } from './dashboard-stats.model';
 export type { User } from './user';
 export { UserRole } from './user';
+export type { Address } from './adress.model';

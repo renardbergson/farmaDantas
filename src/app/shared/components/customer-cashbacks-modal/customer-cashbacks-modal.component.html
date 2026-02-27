@@ -9,7 +9,7 @@
             <span class="text-primary ms-1">- {{ customer.person.name }}</span>
             }
           </h5>
-          <p class="modal-subtitle">Visualize o histórico de ganhos e utilização de cashbacks</p>
+          <p class="modal-subtitle">Visualize o histórico completo de ganhos e utilização de cashbacks</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
@@ -19,18 +19,22 @@
         <!-- Resumo Rápido -->
         <div class="cashback-summary mb-4">
           <div class="summary-item">
-            <span class="summary-label">Disponível</span>
-            <span class="summary-value text-primary">R$ calcular...</span>
-          </div>
-          <div class="summary-divider"></div>
-          <div class="summary-item">
             <span class="summary-label">Total Ganho</span>
-            <span class="summary-value text-success">R$ calcular...</span>
+            <span class="summary-value text-summary-blue">{{ getTotalCashbackEarned() | currency:'BRL' }}</span>
           </div>
+
           <div class="summary-divider"></div>
+
+          <div class="summary-item">
+            <span class="summary-label">Disponível</span>
+            <span class="summary-value text-summary-green">{{ getTotalCashbackAvailable() | currency:'BRL' }}</span>
+          </div>
+
+          <div class="summary-divider"></div>
+
           <div class="summary-item">
             <span class="summary-label">Total Utilizado</span>
-            <span class="summary-value text-secondary">R$ calcular...</span>
+            <span class="summary-value text-secondary">{{ getTotalCashbackUsed() | currency:'BRL' }}</span>
           </div>
         </div>
         }

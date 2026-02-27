@@ -55,6 +55,14 @@
   font-weight: 700;
 }
 
+.text-summary-blue {
+  color: #2563eb;
+}
+
+.text-summary-green {
+  color: var(--success);
+}
+
 .summary-divider {
   width: 1px;
   height: 40px;

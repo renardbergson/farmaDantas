@@ -5,7 +5,7 @@ export type { Cashback } from './cashback.model';
 export { CashbackStatus } from './cashback.model';
 export type { Purchase } from './purchase.model';
 export { PurchaseCategory, PurchaseMode } from './purchase.model';
-export type { DashboardStats } from './dashboard-stats.model';
+export type { PurchasesStats } from './purchases-stats.model';
 export type { User } from './user';
 export { UserRole } from './user';
 export type { Address } from './adress.model';

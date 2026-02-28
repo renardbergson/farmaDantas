@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, DashboardStats, CashbackStatus, Person, Address, PurchaseMode, Purchase } from '../models';
+import { Customer, CustomerStatus, PurchasesStats, CashbackStatus, Person, Address, PurchaseMode, Purchase } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -164,11 +164,14 @@ export class CustomerService {
     return of(customer); // cliente que foi removido
   }
 
-  getDashboardStats(): Observable<DashboardStats> {
+  getPurchasesStats(): Observable<PurchasesStats> {
+    // Para comparar datas, o ideal é normalizar a 
+    // data para "a data à meia-noite", pois assim, 
+    // apenas a data é considerada, ignorando hora, minuto e    segundo.
+    // Para isso, é preciso zerar o horário de purchaseDate 
+    // antes da comparação
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    // zera as horas, minutos, segundos e milissegundos,
-    // para levar em consideração apenas a data
 
     const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     // cria uma data que representa o primeiro dia do mês atual, à meia-noite
@@ -189,6 +192,8 @@ export class CustomerService {
     let customersWithPurchasesThisMonth = 0;
 
     // Purchases
+    let purchasesToday = 0;
+    let purchasesAmountToday = 0;
     let purchasesThisMonth = 0;
     let purchasesLastMonth = 0;
     let purchasesAmountThisMonth = 0;
@@ -229,6 +234,12 @@ export class CustomerService {
 
       purchases.forEach(p => {
         const purchaseDate = new Date(p.date);
+        purchaseDate.setHours(0, 0, 0, 0);
+
+        if (purchaseDate.getTime() === today.getTime()) {
+          purchasesToday++;
+          purchasesAmountToday += p.total;
+        }
 
         if (purchaseDate >= currentMonth && purchaseDate < nextMonth) {
           purchasesThisMonth++;
@@ -336,10 +347,12 @@ export class CustomerService {
 
     const returnRateChange = calculateRateChange(returnRateThisMonth, returnRateLastMonth);
 
-    const stats: DashboardStats = {
+    const stats: PurchasesStats = {
       totalCustomers,
       newCustomersToday,
       newCustomersRateChange,
+      purchasesToday,
+      purchasesAmountToday,
       purchasesThisMonth,
       purchasesAmountThisMonth,
       purchasesRateChange,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerService } from '../../../../../../shared/services/customer.service';
-import { DashboardStats } from '../../../../../../shared/models';
+import { PurchasesStats } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-dashboard-stats-grid',
@@ -10,7 +10,7 @@ import { DashboardStats } from '../../../../../../shared/models';
   styleUrl: './dashboard-stats-grid.component.css',
 })
 export class DashboardStatsGrid implements OnInit {
-  stats: DashboardStats = {
+  stats: Partial<PurchasesStats> = {
     totalCustomers: 0,
     newCustomersToday: 0,
     newCustomersRateChange: 0,
@@ -35,8 +35,8 @@ export class DashboardStatsGrid implements OnInit {
   }
 
   loadStats(): void {
-    this.customerService.getDashboardStats().subscribe({
-      next: (stats: DashboardStats) => {
+    this.customerService.getPurchasesStats().subscribe({
+      next: (stats: PurchasesStats) => {
         this.stats = stats;
       },
       error: (err) => {

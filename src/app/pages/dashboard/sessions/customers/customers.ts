@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchCard, CustomerTable, CustomerStatusChart } from './components';
+import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchbar, CustomerTable, CustomerStatusChart } from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
 import { Customer, CustomerStatus } from '../../../../shared/models';
 import { CustomerService } from '../../../../shared/services/customer.service';
+import { CustomerFilters } from './components/customer-searchbar/customer-searchbar';
 
 @Component({
   selector: 'app-customers',
@@ -11,7 +12,7 @@ import { CustomerService } from '../../../../shared/services/customer.service';
   imports: [
     CommonModule,
     CustomerHeader,
-    CustomerSearchCard,
+    CustomerSearchbar,
     CustomerTable,
     CustomerAddNewModal,
     CustomerDeleteModal,
@@ -27,9 +28,6 @@ export class Customers implements OnInit {
   originalCustomers: Customer[] = [];
   // Lista filtrada de clientes
   filteredCustomers: Customer[] = [];
-  // Filtros de clientes
-  searchTerm: string = '';
-  customerStatusFilters: CustomerStatus[] = [];
   // Cliente selecionado na tabela
   selectedCustomer?: Customer;
   // Cliente para editar
@@ -73,19 +71,13 @@ export class Customers implements OnInit {
     })
   }
 
-  // Filtra os clientes com base no termo de busca
-  onSearch(term: string): void {
-    this.searchTerm = term;
-    this.applyFilters();
+  onFiltersChange(filters: CustomerFilters): void {
+    this.applyFilters(filters);
   }
 
-  // Filtra is clientes com base nos status selecionados
-  onFilterCustomerStatus(statuses: CustomerStatus[]): void {
-    this.customerStatusFilters = statuses;
-    this.applyFilters();
-  }
+  applyFilters(filters: CustomerFilters): void {
+    const { term, statuses } = filters;
 
-  applyFilters(): void {
     this.filteredCustomers = this.originalCustomers.filter(customer => {
       /*  
         Por que este método pode ser chamado também na hora de excluir um cliente?
@@ -95,14 +87,15 @@ export class Customers implements OnInit {
       */
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
-        customer.person.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        customer.person.cpf.includes(this.searchTerm) ||
-        customer.person.email?.toLowerCase().includes(this.searchTerm)
+        term === '' ||
+        customer.person.name.toLowerCase().includes(term.toLowerCase()) ||
+        customer.person.cpf.includes(term) ||
+        customer.person.email?.toLowerCase().includes(term.toLowerCase())
 
       const matchesStatusSearch =
         // verifica se o status do cliente bate com os filtros selecionados
-        this.customerStatusFilters.length === 0 ||
-        this.customerStatusFilters.includes(customer.status);
+        statuses.length === 0 ||
+        statuses.includes(customer.status);
 
       // retorno do filter
       return matchesSearchTerm && matchesStatusSearch;
@@ -134,7 +127,7 @@ export class Customers implements OnInit {
     this.customerService.deleteCustomer(customer).subscribe({
       next: (data) => {
         this.originalCustomers = this.originalCustomers.filter(c => c.id !== data.id)
-        this.applyFilters(); // ver comentários acima
+        this.applyFilters({ term: '', statuses: [] }); // ver comentários acima
       },
       error: (err) => console.error('Ocorreu um erro ao tentar excluir o cliente:', err),
     })

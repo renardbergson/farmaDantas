@@ -1,8 +1,8 @@
 <section class="purchases-page animate-fade-in">
   <app-purchases-header />
   <app-purchases-stats-cards />
-  <app-purchases-searchbar />
-  <app-purchases-table />
+  <app-purchases-searchbar (filtersChange)="onFiltersChange($event)" />
+  <app-purchases-table [purchases]="filteredPurchases" />
 </section>
 
 <app-purchase-add-new-modal />

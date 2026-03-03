@@ -13,7 +13,7 @@ export class CustomerSearchCard {
   @Output() search = new EventEmitter<string>();
   @Output() statusFilter = new EventEmitter<CustomerStatus[]>();
 
-  constructor() {}
+  constructor() { }
 
   // Mapeamento de status para classes CSS
   statusStyles: Record<CustomerStatus, string> = {
@@ -53,15 +53,11 @@ export class CustomerSearchCard {
 
     // 2. Se todos os filtros de status forem selecionados, removemos todos
     const totalEnumStatusCount = Object.values(CustomerStatus).length;
-    if(this.selectedStatuses.size === totalEnumStatusCount) {
-      this.selectedStatuses.clear();
+    if (this.selectedStatuses.size === totalEnumStatusCount) {
+      this.selectedStatuses = new Set();
     }
 
     // Notifica o pai
     this.statusFilter.emit(Array.from(this.selectedStatuses));
-  }
-
-  statusMustBeChecked(status: CustomerStatus): boolean {
-    return this.selectedStatuses.has(status);
   }
 }

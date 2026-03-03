@@ -113,8 +113,8 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 2,
     purchasesThisMonthAmount: 250.00,
-    activeCashbackCount: 2,
-    activeCashbackAmount: 25.00,
+    activeCashbackCount: 3,
+    activeCashbackAmount: 45.00,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -126,7 +126,9 @@ export const MOCK_CUSTOMERS: Customer[] = [
         customerId: 'j8n4',
         customerName: "João Santos",
         employeeId: 'e02',
-        employeeName: "Fernanda Souza"
+        employeeName: "Fernanda Souza",
+        generatedCashbackId: 'c3m9',
+        generatedCashbackAmount: 20.00
       },
       {
         id: 'p4k2',
@@ -156,6 +158,18 @@ export const MOCK_CUSTOMERS: Customer[] = [
       }
     ],
     cashbacks: [
+      {
+        id: 'c3m9',
+        customerId: 'j8n4',
+        customerName: "João Santos",
+        originPurchaseId: 'p3m9',
+        createdAt: new Date('2026-01-10'),
+        validUntil: new Date('2026-02-10'),
+        timeLeft: '5 dias',
+        value: 20.00,
+        status: CashbackStatus.ACTIVE,
+        minPurchaseValue: 50.00
+      },
       {
         id: 'c4x5',
         customerId: 'j8n4',

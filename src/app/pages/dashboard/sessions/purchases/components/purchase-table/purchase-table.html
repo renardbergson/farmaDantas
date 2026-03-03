@@ -6,91 +6,33 @@
   <div class="table-responsive">
     <table class="table table-custom">
       <thead>
-      <tr>
-        <th>Cliente</th>
-        <th>Data</th>
-        <th>Categoria</th>
-        <th class="text-end">Valor</th>
-        <th class="text-end">Cashback</th>
-        <th>Funcionário</th>
-      </tr>
+        <tr>
+          <th>Cliente</th>
+          <th>Data</th>
+          <th>Categoria</th>
+          <th class="text-end">Valor</th>
+          <th class="text-end">Cashback</th>
+          <th>Funcionário</th>
+        </tr>
       </thead>
       <tbody>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center gap-3">
-            <div class="client-avatar">MS</div>
-            <div class="client-info">
-              <p class="client-name">Maria Silva</p>
+        @for (purchase of purchases; track $index) {
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-3">
+              <div class="client-avatar">{{ getInitials(purchase.customerName) }}</div>
+              <div class="client-info">
+                <p class="client-name">{{ purchase.customerName }}</p>
+              </div>
             </div>
-          </div>
-        </td>
-        <td class="text-muted">06/01/2026</td>
-        <td><span class="badge-categoria badge-antibiotic">Antibiótico</span></td>
-        <td class="text-end fw-medium">R$ 150,00</td>
-        <td class="text-end cashback-value">R$ 15,00</td>
-        <td class="text-muted">João da Silva</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center gap-3">
-            <div class="client-avatar">JS</div>
-            <div class="client-info">
-              <p class="client-name">João Santos</p>
-            </div>
-          </div>
-        </td>
-        <td class="text-muted">05/01/2026</td>
-        <td><span class="badge-categoria badge-contraceptive">Anticoncepcional</span></td>
-        <td class="text-end fw-medium">R$ 225,00</td>
-        <td class="text-end cashback-value">R$ 22,50</td>
-        <td class="text-muted">Maria Souza</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center gap-3">
-            <div class="client-avatar">AO</div>
-            <div class="client-info">
-              <p class="client-name">Ana Oliveira</p>
-            </div>
-          </div>
-        </td>
-        <td class="text-muted">05/01/2026</td>
-        <td><span class="badge-categoria badge-continuous">Contínuo</span></td>
-        <td class="text-end fw-medium">R$ 80,00</td>
-        <td class="text-end cashback-value">R$ 8,00</td>
-        <td class="text-muted">João da Silva</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center gap-3">
-            <div class="client-avatar">CS</div>
-            <div class="client-info">
-              <p class="client-name">Carlos Souza</p>
-            </div>
-          </div>
-        </td>
-        <td class="text-muted">04/01/2026</td>
-        <td><span class="badge-categoria badge-controlled">Controlado</span></td>
-        <td class="text-end fw-medium">R$ 350,00</td>
-        <td class="text-end cashback-value">R$ 35,00</td>
-        <td class="text-muted">Maria Souza</td>
-      </tr>
-      <tr>
-        <td>
-          <div class="d-flex align-items-center gap-3">
-            <div class="client-avatar">PC</div>
-            <div class="client-info">
-              <p class="client-name">Paula Costa</p>
-            </div>
-          </div>
-        </td>
-        <td class="text-muted">04/01/2026</td>
-        <td><span class="badge-categoria badge-kids">Infantil</span></td>
-        <td class="text-end fw-medium">R$ 95,00</td>
-        <td class="text-end cashback-value">R$ 9,50</td>
-        <td class="text-muted">João da Silva</td>
-      </tr>
+          </td>
+          <td class="text-muted">{{ purchase.date | date: 'dd/MM/yyyy' }}</td>
+          <td><span class="badge-categoria" [ngClass]="getCategoryBadgeClass(purchase.category)">{{ purchase.category }}</span></td>
+          <td class="text-end fw-medium">{{ purchase.total | currency: 'BRL' }}</td>
+          <td class="text-end cashback-value">{{ purchase.generatedCashbackAmount | currency: 'BRL' }}</td>
+          <td class="text-muted">{{ purchase.employeeName }}</td>
+        </tr>
+        }
       </tbody>
     </table>
   </div>

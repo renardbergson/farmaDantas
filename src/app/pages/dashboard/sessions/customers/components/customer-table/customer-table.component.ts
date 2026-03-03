@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer, CustomerStatus } from '../../../../../../shared/models';
+import { getInitials } from '../../../../../../shared/utils/getInitials';
 import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 
 @Component({
@@ -13,18 +14,13 @@ import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 })
 export class CustomerTable {
   @Input() customers: Customer[] = [];
+  getInitials: (name: string) => string;
   @Output() viewDetails = new EventEmitter<Customer>();
   @Output() editCustomer = new EventEmitter<Customer>();
   @Output() deleteCustomer = new EventEmitter<Customer>();
 
-  // Gera as iniciais do nome do cliente
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .substring(0, 2);
+  constructor() {
+    this.getInitials = getInitials;
   }
 
   onViewDetails(customer: Customer): void {

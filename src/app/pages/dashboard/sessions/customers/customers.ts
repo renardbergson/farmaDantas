@@ -76,16 +76,16 @@ export class Customers implements OnInit {
   // Filtra os clientes com base no termo de busca
   onSearch(term: string): void {
     this.searchTerm = term;
-    this.applyCustomerFilters();
+    this.applyFilters();
   }
 
   // Filtra is clientes com base nos status selecionados
   onFilterCustomerStatus(statuses: CustomerStatus[]): void {
     this.customerStatusFilters = statuses;
-    this.applyCustomerFilters();
+    this.applyFilters();
   }
 
-  applyCustomerFilters(): void {
+  applyFilters(): void {
     this.filteredCustomers = this.originalCustomers.filter(customer => {
       /*  
         Por que este método pode ser chamado também na hora de excluir um cliente?
@@ -134,7 +134,7 @@ export class Customers implements OnInit {
     this.customerService.deleteCustomer(customer).subscribe({
       next: (data) => {
         this.originalCustomers = this.originalCustomers.filter(c => c.id !== data.id)
-        this.applyCustomerFilters(); // ver comentários acima
+        this.applyFilters(); // ver comentários acima
       },
       error: (err) => console.error('Ocorreu um erro ao tentar excluir o cliente:', err),
     })

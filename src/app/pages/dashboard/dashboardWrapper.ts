@@ -1,6 +1,7 @@
 import { Component, HostBinding } from '@angular/core';
+import { RouterModule } from '@angular/router';
+
 import { Sidebar } from './components/sidebar/sidebar';
-import { RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-dashboard-wrapper',

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, PurchasesStats, CashbackStatus, Person, Address, PurchaseMode, Purchase } from '../models';
+import { Customer, CustomerStatus, PurchasesStats, CashbackStatus, Person, Address, PurchaseMode, Purchase, PurchaseModeThisMonth, Cashback } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -30,11 +30,6 @@ export interface MonthlyCashbackCountData {
   quantities: number[];
 }
 
-export interface PurchaseModeData {
-  in_store: number;
-  delivery: number;
-}
-
 export type createAddress = Pick<
   Address, 'zipCode' | 'stateId' | 'stateName' | 'cityId' | 'cityName' | 'neighborhood' | 'street'
 > & Partial<Pick<Address, 'number' | 'complement'>>;
@@ -60,10 +55,81 @@ export type updatePerson = Partial<Pick<Person, 'name' | 'cpf' | 'phone' | 'emai
 export class CustomerService {
   private customers: Customer[] = [...MOCK_CUSTOMERS];
 
+  private getCustomerMonthlyPurchaseData(purchases: Purchase[]): {
+    count: number;
+    amount: number;
+    purchaseModeThisMonth: PurchaseModeThisMonth;
+    monthlyAveragePerPurchase: number;
+  } {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const purchasesThisMonth = (purchases || []).filter(p => {
+      const date = new Date(p?.date);
+      return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+    })
+
+    const count = purchasesThisMonth.length;
+    const amount = purchasesThisMonth.reduce((sum, p) => sum + p.total, 0);
+    const purchaseModeThisMonth = {
+      in_store: purchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length,
+      delivery: purchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length
+    }
+    const monthlyAveragePerPurchase = count > 0 ? amount / count : 0;
+
+    return {
+      count,
+      amount,
+      purchaseModeThisMonth,
+      monthlyAveragePerPurchase
+    }
+  }
+
+  private getCustomerMonthlyCashbackData(cashbacks: Cashback[]): {
+    activeCashbackCount: number;
+    activeCashbackAmount: number;
+    totalCashbackEarned: number;
+    totalCashbackUsed: number;
+  } {
+    const list = cashbacks || [];
+    const active = list.filter(cb => cb.status === CashbackStatus.ACTIVE);
+    const activeAmount = active.reduce((sum, cb) => sum + cb.value, 0);
+    const earned = list.reduce((sum, cb) => sum + cb.value, 0);
+    const used = list
+      .filter(cb => cb.status === CashbackStatus.USED)
+      .reduce((sum, cb) => sum + cb.value, 0);
+
+    return {
+      activeCashbackCount: active.length,
+      activeCashbackAmount: activeAmount,
+      totalCashbackEarned: earned,
+      totalCashbackUsed: used
+    }
+  }
+
   getCustomers(): Observable<Customer[]> {
+    const updated = this.customers.map(c => {
+      const purchaseStats = this.getCustomerMonthlyPurchaseData(c.purchases || []);
+
+      const cashbackStats = this.getCustomerMonthlyCashbackData(c.cashbacks || []);
+
+      return {
+        ...c,
+        purchasesThisMonthCount: purchaseStats.count,
+        purchasesThisMonthAmount: purchaseStats.amount,
+        purchaseModeThisMonth: purchaseStats.purchaseModeThisMonth,
+        activeCashbackCount: cashbackStats.activeCashbackCount,
+        activeCashbackAmount: cashbackStats.activeCashbackAmount,
+        totalCashbackEarned: cashbackStats.totalCashbackEarned,
+        totalCashbackUsed: cashbackStats.totalCashbackUsed,
+        monthlyAveragePerPurchase: purchaseStats.monthlyAveragePerPurchase
+      }
+    })
+
     // O operador of da biblioteca RxJS transforma
     // qualquer dado em um Observable
-    return of(this.customers);
+    return of(updated);
   }
 
   addCustomer(customerData: createPerson): Observable<Customer> {
@@ -109,8 +175,15 @@ export class CustomerService {
       purchases: [],
       purchasesThisMonthCount: 0,
       purchasesThisMonthAmount: 0,
+      purchaseModeThisMonth: {
+        in_store: 0,
+        delivery: 0
+      },
+      monthlyAveragePerPurchase: 0,
       activeCashbackCount: 0,
       activeCashbackAmount: 0,
+      totalCashbackEarned: 0,
+      totalCashbackUsed: 0,
       status: CustomerStatus.NEW,
     } as Customer;
 
@@ -381,12 +454,13 @@ export class CustomerService {
     const top5 = this.customers
       .map(customer => {
         const purchasesCount = purchasesThisMonth(customer);
+        const cashbackStats = this.getCustomerMonthlyCashbackData(customer.cashbacks || []);
 
         return {
           name: customer.person.name,
           avatar: getInitials(customer.person.name),
           purchases: purchasesCount,
-          totalInCashback: customer.activeCashbackAmount
+          totalInCashback: cashbackStats.activeCashbackAmount
         }
       })
       .filter(ct => ct.purchases > 0)
@@ -563,28 +637,5 @@ export class CustomerService {
     }
 
     return of({ labels, quantities });
-  }
-
-  getPurchaseModeData(customer?: Customer): Observable<PurchaseModeData> {
-    // Retorna o total de compras por modo (Presencial ou Delivery) para o mês atual
-    // se não receber um cliente, significa que o intuito é obter os dados de todos os clientes
-
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    const isThisMonth = (p: Purchase) =>
-      p.date.getMonth() === currentMonth && p.date.getFullYear() === currentYear;
-
-    if (customer) {
-      const purchasesThisMonth = (customer.purchases || []).filter(isThisMonth);
-      const inStore = purchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length;
-      const delivery = purchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length;
-      return of({ in_store: inStore, delivery: delivery });
-    }
-
-    const allPurchasesThisMonth = this.customers.flatMap(c => c.purchases || []).filter(isThisMonth);
-    const inStore = allPurchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length;
-    const delivery = allPurchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length;
-    return of({ in_store: inStore, delivery: delivery });
   }
 }

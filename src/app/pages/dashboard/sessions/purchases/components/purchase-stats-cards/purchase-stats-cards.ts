@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CustomerService } from '../../../../../../shared/services/customer.service';
-import { PurchasesStats } from '../../../../../../shared/models/purchases-stats.model';
 import { CommonModule } from '@angular/common';
+import { CustomerService } from '../../../../../../shared/services/customer.service';
+import { PurchasesStats } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-purchases-stats-cards',

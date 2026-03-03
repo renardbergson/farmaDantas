@@ -9,6 +9,11 @@ export enum CustomerStatus {
   INACTIVE = 'inativo'
 }
 
+export interface PurchaseModeThisMonth {
+  in_store: number;
+  delivery: number;
+}
+
 export interface Customer {
   id: string;
   personId: string;
@@ -18,6 +23,10 @@ export interface Customer {
   purchasesThisMonthAmount: number;
   activeCashbackCount: number;
   activeCashbackAmount: number;
+  totalCashbackEarned: number;
+  totalCashbackUsed: number;
+  purchaseModeThisMonth: PurchaseModeThisMonth;
+  monthlyAveragePerPurchase: number; // ticket médio de compras no mês
   purchases?: Purchase[];
   cashbacks?: Cashback[];
 }

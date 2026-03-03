@@ -112,23 +112,31 @@
               <div class="detail-stat">
                 <label class="detail-label">Compras</label>
                 <span class="detail-text detail-stat-value">{{ customer.purchasesThisMonthCount }}</span>
-                <span class="detail-cashback-count">{{ customerPurchaseModeData.in_store }} presencial, {{ customerPurchaseModeData.delivery }} delivery</span>
+                <span class="detail-cashback-count">{{ customer.purchaseModeThisMonth.in_store }} presencial, {{ customer.purchaseModeThisMonth.delivery }} delivery</span>
               </div>
+
               <div class="detail-stat">
                 <label class="detail-label">Valor em compras</label>
                 <span class="detail-text detail-stat-value text-success-value">{{ customer.purchasesThisMonthAmount | currency:'BRL' }}</span>
                 <span class="detail-cashback-count">
                   @if (customer.purchasesThisMonthCount > 0) {
-                  Ticket médio: {{ getMonthlyAveragePerPurchase(customer) | currency:'BRL' }}
+                  Ticket médio: {{ customer.monthlyAveragePerPurchase | currency:'BRL' }}
                   } @else {
                   Sem compras no mês
                   }
                 </span>
               </div>
+
               <div class="detail-stat">
                 <label class="detail-label">Cashback total</label>
                 <span class="detail-text detail-stat-value text-primary">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
-                <span class="detail-cashback-count">{{ customer.activeCashbackCount }} ativo(s)</span>
+                <span class="detail-cashback-count">
+                  @if (customer.activeCashbackCount > 0) {
+                  {{ customer.activeCashbackCount }} ativo(s)
+                  } @else {
+                  Sem cashbacks ativos
+                  }
+                </span>
               </div>
             </div>
           </div>

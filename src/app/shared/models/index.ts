@@ -9,3 +9,4 @@ export type { PurchasesStats } from './purchases-stats.model';
 export type { User } from './user';
 export { UserRole } from './user';
 export type { Address } from './adress.model';
+export type { PurchaseModeThisMonth } from './customer.model';

@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer, Cashback, CashbackStatus } from '../../models';
-import { CustomerService } from '../../services/customer.service';
 
 @Component({
   selector: 'app-customer-cashbacks-modal',
@@ -66,22 +65,5 @@ export class CustomerCashbacksModal implements OnChanges {
     this.filteredCashbacks = this.selectedStatus.size === 0
       ? this.customer.cashbacks
       : this.customer.cashbacks.filter(cb => this.selectedStatus.has(cb.status));
-  }
-
-  getTotalCashbackEarned(): number {
-    return this.customer?.cashbacks
-      ?.reduce((sum, cb) => sum + cb.value, 0) ?? 0;
-  }
-
-  getTotalCashbackAvailable(): number {
-    return this.customer?.cashbacks
-      ?.filter(cb => cb.status === CashbackStatus.ACTIVE)
-      ?.reduce((sum, cb) => sum + cb.value, 0) ?? 0;
-  }
-
-  getTotalCashbackUsed(): number {
-    return this.customer?.cashbacks
-      ?.filter(cb => cb.status === CashbackStatus.USED)
-      ?.reduce((sum, cb) => sum + cb.value, 0) ?? 0;
   }
 }

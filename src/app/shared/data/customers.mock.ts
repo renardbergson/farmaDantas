@@ -28,8 +28,12 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 2,
     purchasesThisMonthAmount: 150.00,
+    purchaseModeThisMonth: { in_store: 1, delivery: 1 },
+    monthlyAveragePerPurchase: 75.00,
     activeCashbackCount: 2,
     activeCashbackAmount: 15.00,
+    totalCashbackEarned: 15.00,
+    totalCashbackUsed: 0,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -113,8 +117,12 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 2,
     purchasesThisMonthAmount: 250.00,
+    purchaseModeThisMonth: { in_store: 1, delivery: 1 },
+    monthlyAveragePerPurchase: 125.00,
     activeCashbackCount: 3,
     activeCashbackAmount: 45.00,
+    totalCashbackEarned: 45.00,
+    totalCashbackUsed: 0,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -223,8 +231,12 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 1,
     purchasesThisMonthAmount: 80.00,
+    purchaseModeThisMonth: { in_store: 0, delivery: 1 },
+    monthlyAveragePerPurchase: 80.00,
     activeCashbackCount: 1,
     activeCashbackAmount: 8.00,
+    totalCashbackEarned: 8.00,
+    totalCashbackUsed: 0,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -283,8 +295,12 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 4,
     purchasesThisMonthAmount: 350.00,
+    purchaseModeThisMonth: { in_store: 2, delivery: 2 },
+    monthlyAveragePerPurchase: 87.50,
     activeCashbackCount: 4,
     activeCashbackAmount: 35.00,
+    totalCashbackEarned: 35.00,
+    totalCashbackUsed: 0,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {
@@ -418,8 +434,12 @@ export const MOCK_CUSTOMERS: Customer[] = [
     },
     purchasesThisMonthCount: 3,
     purchasesThisMonthAmount: 285.00,
+    purchaseModeThisMonth: { in_store: 2, delivery: 1 },
+    monthlyAveragePerPurchase: 95.00,
     activeCashbackCount: 3,
     activeCashbackAmount: 28.00,
+    totalCashbackEarned: 28.00,
+    totalCashbackUsed: 0,
     status: CustomerStatus.ACTIVE,
     purchases: [
       {

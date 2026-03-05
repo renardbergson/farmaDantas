@@ -3,6 +3,14 @@ export enum PurchaseMode {
   DELIVERY = "Delivery",
 }
 
+export enum PaymentMethod {
+  CASH = 'Dinheiro',
+  PIX = 'PIX',
+  DEBIT_CARD = 'Cartão de débito',
+  CREDIT_CARD = 'Cartão de crédito',
+  OTHER = 'Outro',
+}
+
 export enum PurchaseCategory {
   ANTIBIOTIC = "Antibiótico",
   CONTRACEPTIVE = "Anticoncepcional",
@@ -23,6 +31,7 @@ export interface Purchase {
   customerName: string;
   employeeId: string,
   employeeName: string,
+  paymentMethods: PaymentMethod[];
 
   // OPCIONAIS
   generatedCashbackId?: string; // id do cashback gerado

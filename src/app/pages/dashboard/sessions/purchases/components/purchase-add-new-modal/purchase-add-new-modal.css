@@ -1,23 +1,50 @@
 .purchases-modal-dialog {
-  max-width: 480px;
+  max-width: 1000px;
+  width: 95%;
 }
 
 .purchases-modal-content {
   border: 0;
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   overflow: hidden;
   background: var(--card-bg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 .modal-header-custom {
   border-bottom: 1px solid var(--border);
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(to bottom, rgba(220, 38, 38, 0.03) 0%, transparent 100%);
+}
+
+.modal-header-inner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.modal-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
 .modal-title-custom {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
+  margin: 0 0 0.25rem 0;
 }
 
 .modal-subtitle {
@@ -26,13 +53,56 @@
   margin: 0;
 }
 
+.btn-close-custom {
+  opacity: 0.6;
+}
+
+.btn-close-custom:hover {
+  opacity: 1;
+}
+
 .modal-body-custom {
   padding: 1.5rem;
+}
+
+/* Grid 2 colunas (como modal de cliente) */
+.purchase-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+.form-grid-cell-left,
+.form-grid-cell-right {
+  min-width: 0;
+}
+
+.form-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.form-grid-cell-right .form-section-title:not(:first-child) {
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .purchase-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .modal-footer {
   border-top: 1px solid var(--border);
   padding: 1rem 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.02) 0%, transparent 100%);
 }
 
 .btn-primary-gradient {
@@ -72,61 +142,66 @@
   height: 38px;
 }
 
+.form-textarea-custom {
+  height: auto !important;
+  min-height: 100px;
+  resize: vertical;
+  padding: 0.5rem 0.75rem;
+}
+
 .form-control-custom:focus,
-.form-select-custom:focus {
+.form-select-custom:focus,
+.form-textarea-custom:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   outline: none;
 }
 
-/* Slider percentual de cashback */
-.cashback-percent-value {
-  font-weight: 700;
+/* Opção de cashback no ng-select */
+.custom-ng-select ::ng-deep .ng-option .cashback-option,
+.custom-ng-select ::ng-deep .ng-option .cashback-option * {
+  cursor: pointer;
+}
+
+.custom-ng-select ::ng-deep .ng-option .cashback-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.custom-ng-select ::ng-deep .ng-option .cashback-option-value {
+  font-weight: 600;
   color: var(--primary);
 }
 
-.cashback-slider {
-  height: 0.5rem;
-  cursor: pointer;
+.custom-ng-select ::ng-deep .ng-option .cashback-option-meta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
 }
 
-.cashback-slider::-webkit-slider-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
-  background: var(--primary);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  -webkit-appearance: none;
-  appearance: none;
+/* Placeholder quando não há cashbacks */
+.cashback-preview-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px dashed var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
 }
 
-.cashback-slider::-moz-range-thumb {
-  width: 1.25rem;
-  height: 1.25rem;
-  background: var(--primary);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.cashback-slider::-webkit-slider-runnable-track {
-  height: 0.5rem;
-  background: var(--border);
-  border-radius: 0.25rem;
-}
-
-.cashback-slider::-moz-range-track {
-  height: 0.5rem;
-  background: var(--border);
-  border-radius: 0.25rem;
+.cashback-preview-placeholder i {
+  font-size: 1rem;
+  opacity: 0.7;
 }
 
 /* Preview cashback no modal */
 .cashback-preview {
-  background-color: rgba(234, 179, 8, 0.08);
-  border: 1px solid rgba(234, 179, 8, 0.2);
-  border-radius: 0.625rem;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.08) 0%, rgba(234, 179, 8, 0.04) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  border-radius: 0.75rem;
   padding: 1rem 1.25rem;
 }
 
@@ -147,6 +222,59 @@
   margin-top: 0.25rem;
 }
 
+/* Aviso: valor mínimo não atingido */
+.cashback-warning {
+  font-size: 0.8125rem;
+  color: #b45309;
+  background-color: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Desconto aplicado com sucesso */
+.cashback-applied {
+  font-size: 0.875rem;
+  background-color: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.final-value {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+/* Forma de pagamento - checkboxes em linha */
+.payment-methods-checkboxes {
+  min-height: 38px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  align-items: center;
+}
+
+.payment-method-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  cursor: pointer;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.payment-method-checkbox input {
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.payment-method-checkbox span {
+  margin-left: 5px;
+}
+
 /* Utility */
 .fw-500 {
   font-weight: 500;
@@ -158,6 +286,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -187,6 +316,12 @@
   border: 1px solid var(--border) !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
   margin-top: 4px;
+  z-index: 1060 !important; /* Acima do modal Bootstrap (1055) */
+}
+
+.custom-ng-select ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 180px !important;
+  overflow-y: auto !important;
 }
 
 .custom-ng-select ::ng-deep .ng-option {

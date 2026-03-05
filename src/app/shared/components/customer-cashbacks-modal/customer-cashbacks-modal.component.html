@@ -78,7 +78,7 @@
                 </td>
                 <td class="text-center">
                   @if (item.minPurchaseValue > 0) {
-                  <span class="text-muted">R$ {{ item.minPurchaseValue | number:'1.2-2' }}</span>
+                  <span class="text-muted">{{ item.minPurchaseValue | currency:'BRL' }}</span>
                   } @else {
                   <span class="text-muted">-</span>
                   }
@@ -90,7 +90,7 @@
                 </td>
                 <td class="text-end">
                   <span [class.text-success]="item.value > 0 && item.status !== 'Expirado'" [class.text-danger]="item.value < 0" [class.text-muted]="item.status === 'Expirado'" class="fw-bold">
-                    {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | number:'1.2-2' }}
+                    {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | currency:'BRL' }}
                   </span>
                 </td>
               </tr>

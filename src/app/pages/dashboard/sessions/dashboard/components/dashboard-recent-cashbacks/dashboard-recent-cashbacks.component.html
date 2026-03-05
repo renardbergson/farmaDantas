@@ -25,7 +25,7 @@
           <span class="badge-status" [class.badge-active]="cashback.status" [class.badge-expired]="cashback.status === CashbackStatus.EXPIRED">
             {{ cashback.status }}
           </span>
-          <span class="cashback-valor">R$ {{ cashback.value | number:'1.2-2' }}</span>
+          <span class="cashback-valor">{{ cashback.value | currency:'BRL' }}</span>
         </div>
       </div>
       }

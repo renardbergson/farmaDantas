@@ -77,8 +77,8 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
             padding: 12,
             cornerRadius: 8,
             callbacks: {
-              label: function (context: TooltipItem<'line'>) {
-                const value =  context.raw as number;
+              label: (context: TooltipItem<'line'>) => {
+                const value = context.raw as number;
                 return `${value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })} em cashbacks`;
               }
             }
@@ -99,12 +99,11 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
             },
             ticks: {
               color: '#737373',
-              callback: function (value: string | number) {
+              callback: (value: string | number) => {
                 const numericValue = typeof value === 'number'
                   ? value
                   : Number(value);
-
-                return 'R$ ' + numericValue.toLocaleString('pt-BR');
+                return numericValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
               }
             }
           }

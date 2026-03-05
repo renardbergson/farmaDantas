@@ -61,6 +61,12 @@ label[for],
   cursor: pointer;
 }
 
+/* Ng-select: dropdown com scroll para não estourar o modal */
+.ng-dropdown-panel .ng-dropdown-panel-items {
+  max-height: 180px !important;
+  overflow-y: auto !important;
+}
+
 /* Botões dos modais: mesmo tamanho */
 .modal-footer .btn,
 .modal-footer .btn-primary-gradient {

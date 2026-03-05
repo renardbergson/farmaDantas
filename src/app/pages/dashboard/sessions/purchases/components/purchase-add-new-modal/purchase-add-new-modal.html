@@ -1,72 +1,153 @@
 <div class="modal fade" id="modalNovaCompra" tabindex="-1" aria-labelledby="modalNovaCompraLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered purchases-modal-dialog">
     <div class="modal-content purchases-modal-content">
-      <div class="modal-header-custom d-flex align-items-center justify-content-between">
-        <div>
-          <p class="modal-title-custom mb-0" id="modalNovaCompraLabel">Registrar Compra</p>
-          <p class="modal-subtitle">Insira os dados da compra para gerar o cashback</p>
+      <div class="modal-header-custom">
+        <div class="modal-header-inner">
+          <div class="modal-header-icon">
+            <i class="bi bi-cart-plus"></i>
+          </div>
+          <div>
+            <h2 class="modal-title-custom" id="modalNovaCompraLabel">Registrar Compra</h2>
+            <p class="modal-subtitle">Preencha os dados a seguir.*</p>
+          </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
 
       <div class="modal-body-custom">
         <form #purchaseForm="ngForm">
-          <!-- Cliente -->
-          <div class="mb-3">
-            <label class="form-label-custom d-block">Cliente</label>
-            <ng-select [(ngModel)]="customer" name="client" placeholder="Selecione ou busque o cliente" class="custom-ng-select w-100" [items]="customers" bindLabel="name" [searchable]="true" [clearable]="true" required>
-            </ng-select>
-          </div>
+          <div class="purchase-form-grid">
+            <!-- Coluna esquerda: Dados da compra + Pagamento -->
+            <div class="form-grid-cell-left">
+              <h3 class="form-section-title">Dados da compra</h3>
+              <!-- Cliente -->
+              <div class="mb-3">
+                <label class="form-label-custom d-block">Cliente</label>
+                <ng-select [items]="customers" bindLabel="person.name" [(ngModel)]="selectedCustomer" (ngModelChange)="onCustomerChange()" name="customer" placeholder="Selecione ou busque o cliente" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" required>
+                </ng-select>
+              </div>
+              <!-- Data + Funcionário -->
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label-custom d-block">Data</label>
+                  <input type="date" class="form-control form-control-custom" [(ngModel)]="purchaseDateStr" name="purchaseDate" required>
+                </div>
+                <div class="col-6">
+                  <label class="form-label-custom d-block">Funcionário</label>
+                  <ng-select [items]="employees" bindLabel="person.name" bindValue="id" [(ngModel)]="selectedEmployee" name="employee" placeholder="Funcionário" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" required>
+                  </ng-select>
+                </div>
+              </div>
+              <!-- Valor da Compra + Categoria -->
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <label class="form-label-custom d-block">Valor da Compra</label>
+                  <input type="text" inputmode="decimal" [currencyMask]="{prefix: 'R$ ', thousands: '.', decimal: ','}" class="form-control form-control-custom" [(ngModel)]="purchaseInputValue" name="purchaseValue" required>
+                </div>
+                <div class="col-6">
+                  <label class="form-label-custom d-block">Categoria</label>
+                  <select name="category" [(ngModel)]="selectedCategory" class="form-select form-select-custom" required>
+                    <option value="" disabled selected>Categoria</option>
+                    @for(category of categories; track $index) {
+                    <option value="{{ category }}">{{ category }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
 
-          <!-- Data -->
-          <div class="row g-3 mb-3">
-            <div class="col-6">
-              <label class="form-label-custom d-block">Data</label>
-              <input type="date" class="form-control form-control-custom" [(ngModel)]="purchaseDateStr" name="purchaseDate" required>
+              <h3 class="form-section-title">Pagamento</h3>
+              <!-- Forma de pagamento + Modalidade -->
+              <div class="row g-2 mb-3">
+                <div class="col-7">
+                  <label class="form-label-custom d-block">Forma de pagamento</label>
+                  <div class="payment-methods-checkboxes">
+                    @for(method of paymentMethods; track method) {
+                    <label class="payment-method-checkbox">
+                      <input type="checkbox" [checked]="selectedPaymentMethods.has(method)" (change)="togglePaymentMethod(method)" name="paymentMethod">
+                      <span>{{ method }}</span>
+                    </label>
+                    }
+                  </div>
+                </div>
+                <div class="col-5">
+                  <label class="form-label-custom d-block">Modalidade</label>
+                  <select name="mode" [(ngModel)]="selectedMode" required class="form-select form-select-custom">
+                    @for(purchaseMode of purchaseModes; track $index) {
+                    <option [value]="purchaseMode">{{ purchaseMode }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <!-- Funcionário -->
-            <div class="col-6">
-              <label class="form-label-custom d-block">Funcionário</label>
-              <ng-select [(ngModel)]="employee" name="employee" placeholder="Selecione ou busque o funcionário" class="custom-ng-select w-100" [items]="employees" bindLabel="name" [searchable]="true" [clearable]="true" required>
-              </ng-select>
-            </div>
-          </div>
-
-          <!-- Valor -->
-          <div class="row g-3 mb-3">
-            <div class="col-6">
-              <label class="form-label-custom d-block">Valor da Compra</label>
-              <input type="text" inputmode="decimal" [currencyMask]="{prefix: 'R$ ', thousands: '.', decimal: ','}" class="form-control form-control-custom" [(ngModel)]="total" name="purchaseValue" required>
-            </div>
-
-            <!-- Categoria -->
-            <div class="col-6">
-              <label class="form-label-custom d-block">Categoria</label>
-              <select class="form-select form-select-custom" required>
-                <option value="" disabled selected>Categoria</option>
-                @for(category of categories; track $index) {
-                <option value="{{ category }}">{{ category }}</option>
+            <!-- Coluna direita: Cashback + Observações + Preview -->
+            <div class="form-grid-cell-right">
+              <h3 class="form-section-title">Cashback</h3>
+              <!-- Aplicar cashback -->
+              <div class="mb-3">
+                <label class="form-label-custom d-block">Aplicar cashback</label>
+                @if (activeCashbacksList.length > 0) {
+                <ng-select [items]="activeCashbacksList" [(ngModel)]="selectedCashback" name="selectedCashback" placeholder="Selecione um cashback" class="custom-ng-select w-100" [clearable]="true">
+                  <!-- exibido quando foi selecionado um cashback -->
+                  <ng-template ng-label-tmp let-item="item">
+                    @if (item) {
+                    {{ item.value | currency:'BRL' }}
+                    }
+                  </ng-template>
+                  <!-- exibido quando as opções do select são exibidas -->
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="cashback-option">
+                      <span class="cashback-option-value">{{ item.value | currency:'BRL' }}</span>
+                      <span class="cashback-option-meta">
+                        <i class="bi bi-bag-check me-1"></i> Mínimo: {{ item.minPurchaseValue | currency:'BRL' }}
+                        <i class="bi bi-calendar3 ms-2 me-1"></i> Validade: {{ item.validUntil | date:'dd/MM/yyyy' }}
+                      </span>
+                    </div>
+                  </ng-template>
+                </ng-select>
+                @if (selectedCashback && !isCashbackApplicable) {
+                <p class="cashback-warning mt-2 mb-0">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  O valor de compra mínimo para resgate é de {{ selectedCashback.minPurchaseValue | currency:'BRL' }}.
+                </p>
                 }
-              </select>
-            </div>
-          </div>
+                @if (isCashbackApplicable && selectedCashback) {
+                <div class="cashback-applied mt-2">
+                  <span class="text-success fw-medium">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Desconto de {{ selectedCashback.value | currency:'BRL' }} aplicado.
+                  </span>
+                  <p class="final-value mb-0 mt-1"><strong>Valor final: {{ finalValue | currency:'BRL' }}</strong></p>
+                </div>
+                }
+                } @else {
+                <div class="cashback-preview-placeholder">
+                  @if (!selectedCustomer) {
+                  <i class="bi bi-person-plus"></i>
+                  <span>Selecione um cliente para verificar cashbacks disponíveis</span>
+                  } @else {
+                  <i class="bi bi-inbox"></i>
+                  <span>Nenhum cashback disponível para este cliente</span>
+                  }
+                </div>
+                }
+              </div>
 
-          <!-- Percentual de cashback (slider) -->
-          <div class="mb-3">
-            <label class="form-label-custom d-block">
-              Percentual de cashback: <span class="cashback-percent-value">{{ cashbackPercent }}%</span>
-            </label>
-            <input type="range" class="form-range cashback-slider" min="0" max="100" step="1" [(ngModel)]="cashbackPercent" name="cashbackPercent">
-          </div>
+              <!-- Observações -->
+              <div class="mb-3">
+                <label class="form-label-custom d-block">Observações</label>
+                <textarea class="form-control form-control-custom form-textarea-custom" [(ngModel)]="observations" name="observations" placeholder="Ex.: medicamento de uso contínuo..." rows="4"></textarea>
+              </div>
 
-          <!-- Preview Cashback -->
-          <div class="cashback-preview mb-1">
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="cashback-preview-label">Cashback ({{ cashbackPercent }}%)</span>
-              <span class="cashback-preview-value">{{ cashbackValueFormatted }}</span>
+              <!-- Preview: novo cashback gerado -->
+              <div class="cashback-preview">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="cashback-preview-label">Novo cashback gerado</span>
+                  <span class="cashback-preview-value">{{ generatedCashbackValue | currency:'BRL' }}</span>
+                </div>
+                <p class="cashback-preview-hint mb-0">Taxa de {{ cashbackPercent }}% · Válido por 30 dias</p>
+              </div>
             </div>
-            <p class="cashback-preview-hint mb-0">O cashback será válido por 30 dias</p>
           </div>
         </form>
       </div>

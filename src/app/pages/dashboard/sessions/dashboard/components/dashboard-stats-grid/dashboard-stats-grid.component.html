@@ -25,7 +25,7 @@
         <div>
           <p class="stat-card-title">Compras no mês</p>
           <p class="stat-card-value">{{ (stats.purchasesThisMonth ?? 0) | number }}</p>
-          <p class="stat-card-subtitle">R$ {{ (stats.purchasesAmountThisMonth ?? 0) | number:'1.2-2' }} no total</p>
+          <p class="stat-card-subtitle">{{ (stats.purchasesAmountThisMonth ?? 0) | currency:'BRL' }} no total</p>
           <div class="stat-card-trend">
             <span [class]="getTrendClass(stats.purchasesRateChange ?? 0)">{{ (stats.purchasesRateChange ?? 0) | percent:'1.0-0' }}</span>
             <span class="trend-label">vs mês anterior</span>
@@ -44,7 +44,7 @@
         <div>
           <p class="stat-card-title">Cashbacks ativos</p>
           <p class="stat-card-value">{{ (stats.activeCashbacks ?? 0) | number }}</p>
-          <p class="stat-card-subtitle">R$ {{ (stats.activeCashbacksAmount ?? 0) | number:'1.2-2' }} no total</p>
+          <p class="stat-card-subtitle">{{ (stats.activeCashbacksAmount ?? 0) | currency:'BRL' }} no total</p>
           <div class="stat-card-trend">
             <span [class]="getTrendClass(stats.activeCashbacksRateChange ?? 0)">{{ (stats.activeCashbacksRateChange ?? 0) | percent:'1.0-0' }}</span>
             <span class="trend-label">vs mês anterior</span>

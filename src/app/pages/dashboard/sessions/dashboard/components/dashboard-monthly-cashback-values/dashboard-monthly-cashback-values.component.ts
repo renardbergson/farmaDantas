@@ -1,11 +1,6 @@
 import { Component, OnDestroy, AfterViewInit } from '@angular/core';
-import { CustomerService } from '../../../../../../shared/services/customer.service';
+import { CustomerService, CashbackService, MonthlyCashbackValueData } from '../../../../../../shared/services';
 import { Chart, TooltipItem } from 'chart.js/auto';
-
-export interface MonthlyCashbackValuesData {
-  labels: string[];
-  values: number[];
-}
 
 @Component({
   selector: 'app-dashboard-monthly-cashback-values',
@@ -16,12 +11,20 @@ export interface MonthlyCashbackValuesData {
 export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy {
   private areaChart?: Chart;
 
-  constructor(private customerService: CustomerService) {}
+  constructor(
+    private customerService: CustomerService,
+    private cashbackService: CashbackService
+  ) { }
 
   ngAfterViewInit(): void {
-    this.customerService.getCashbackValuesData()
-      .subscribe(data => {
-      this.initChart(data);
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        const data = this.cashbackService.getAllLastMonthsCashbackTotals(customers);
+        this.initChart(data);
+      },
+      error: (error) => {
+        console.error('Erro ao obter dados de cashbacks mensais:', error);
+      }
     })
   }
 
@@ -29,7 +32,7 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
     this.areaChart?.destroy();
   }
 
-  private initChart(data: MonthlyCashbackValuesData): void {
+  private initChart(data: MonthlyCashbackValueData): void {
     const primaryColor = '#dc2626';
 
     // Area Chart - Valores mensais em Cashbacks

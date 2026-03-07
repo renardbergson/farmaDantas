@@ -3,8 +3,14 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { AddressService, State, City } from '../../../../../../shared/services/address.service';
-import { CustomerService, createPerson, updatePerson } from '../../../../../../shared/services/customer.service';
+import {
+  AddressService,
+  State,
+  City,
+  CustomerService,
+  createPerson,
+  updatePerson,
+} from '../../../../../../shared/services';
 import { Customer } from '../../../../../../shared/models';
 
 @Component({

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchbar, CustomerTable, CustomerStatusChart } from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
 import { Customer } from '../../../../shared/models';
-import { CustomerService } from '../../../../shared/services/customer.service';
+import { CustomerService, CashbackService, PurchaseService } from '../../../../shared/services';
 import { CustomerFilters } from './components/customer-searchbar/customer-searchbar';
 
 @Component({
@@ -24,15 +24,10 @@ import { CustomerFilters } from './components/customer-searchbar/customer-search
   styleUrl: './customers.css',
 })
 export class Customers implements OnInit {
-  // Lista original de clientes
   originalCustomers: Customer[] = [];
-  // Lista filtrada de clientes
   filteredCustomers: Customer[] = [];
-  // Cliente selecionado na tabela
   selectedCustomer?: Customer;
-  // Cliente para editar
   customerToEdit?: Customer;
-  // Cliente para excluir
   customerToDelete: Customer | null = null;
 
   @ViewChild(CustomerAddNewModal) customerAddNewModal?: CustomerAddNewModal;
@@ -55,7 +50,11 @@ export class Customers implements OnInit {
         - o pai precisa chamar métodos manualmente
   */
 
-  constructor(private customerService: CustomerService) { }
+  constructor(
+    private customerService: CustomerService,
+    private cashbackService: CashbackService,
+    private purchaseService: PurchaseService
+  ) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -63,11 +62,22 @@ export class Customers implements OnInit {
 
   loadCustomers(): void {
     this.customerService.getCustomers().subscribe({
-      next: (data) => {
-        this.originalCustomers = data;
-        this.filteredCustomers = data;
+      next: (customers) => {
+        const withPurchaseStats = this.purchaseService.getPurchaseStatsByCustomer(customers);
+        const withCashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers);
+
+        const enriched = customers.map((customer, index) => {
+          return {
+            ...customer,
+            ...withPurchaseStats[index],
+            ...withCashbackStats[index]
+          } satisfies Customer;
+        })
+
+        this.originalCustomers = enriched;
+        this.filteredCustomers = enriched;
       },
-      error: (err) => console.error(err),
+      error: (err) => console.error('Ocorreu um erro ao tentar carregar os clientes e suas estatísticas:', err),
     })
   }
 

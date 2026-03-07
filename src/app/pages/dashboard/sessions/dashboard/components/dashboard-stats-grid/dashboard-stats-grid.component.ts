@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomerService } from '../../../../../../shared/services/customer.service';
-import { PurchasesStats } from '../../../../../../shared/models';
+import { CustomerService, PurchaseService, PurchasesStats } from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-dashboard-stats-grid',
@@ -24,7 +23,10 @@ export class DashboardStatsGrid implements OnInit {
     returnRateChange: 0
   };
 
-  constructor(private customerService: CustomerService) { }
+  constructor(
+    private customerService: CustomerService,
+    private purchaseService: PurchaseService
+  ) { }
 
   ngOnInit(): void {
     this.loadStats();
@@ -35,12 +37,12 @@ export class DashboardStatsGrid implements OnInit {
   }
 
   loadStats(): void {
-    this.customerService.getPurchasesStats().subscribe({
-      next: (stats: PurchasesStats) => {
-        this.stats = stats;
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        this.stats = this.purchaseService.getAllPurchaseStats(customers);
       },
       error: (err) => {
-        console.error('Erro ao tentar carregar estatísticas:', err);
+        console.error('Erro ao tentar carregar a visão geral de estatísticas do dashboard:', err);
       }
     })
   }

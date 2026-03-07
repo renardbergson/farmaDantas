@@ -1,6 +1,6 @@
 import { Component, OnDestroy, AfterViewInit } from '@angular/core';
 import { Chart, TooltipItem } from 'chart.js/auto';
-import { CustomerService, MonthlyCashbackCountData } from '../../../../../../shared/services/customer.service';
+import { CustomerService, CashbackService, MonthlyCashbackCountData } from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-dashboard-monthly-cashback-count',
@@ -11,12 +11,21 @@ import { CustomerService, MonthlyCashbackCountData } from '../../../../../../sha
 export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
   private barChart?: Chart<'bar', number[], string>;
 
-  constructor(private customerService: CustomerService) {}
+  constructor(
+    private customerService: CustomerService,
+    private cashbackService: CashbackService
+  ) { }
 
   ngAfterViewInit(): void {
-    this.customerService.getCashbackCountData()
-      .subscribe(data =>
-        this.initChart(data));
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        const data = this.cashbackService.getAllLastMonthsCashbackCount(customers);
+        this.initChart(data);
+      },
+      error: (error) => {
+        console.error('Erro ao obter a contagem de cashbacks mensais:', error);
+      }
+    })
   }
 
   ngOnDestroy(): void {

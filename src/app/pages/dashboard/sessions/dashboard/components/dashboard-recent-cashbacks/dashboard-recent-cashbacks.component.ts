@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { CustomerService, RecentCashback } from '../../../../../../shared/services/customer.service';
+import {
+  CustomerService,
+  CashbackService,
+  RecentCashback,
+} from '../../../../../../shared/services';
 import { CashbackStatus } from '../../../../../../shared/models';
+
 @Component({
   selector: 'app-dashboard-recent-cashbacks',
   imports: [CommonModule],
@@ -15,7 +20,8 @@ export class DashboardRecentCashbacks implements OnInit {
 
   constructor(
     private router: Router,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private cashbackService: CashbackService
   ) { }
 
   ngOnInit(): void {
@@ -27,9 +33,9 @@ export class DashboardRecentCashbacks implements OnInit {
   }
 
   getLast4Cashbacks() {
-    this.customerService.getLastCashbacks().subscribe({
-      next: (data) => {
-        this.recentCashbacks = data;
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        this.recentCashbacks = this.cashbackService.getAllLastCashbacks(customers);
       },
       error: (error) => {
         console.error('Erro ao obter cashbacks recentes:', error);

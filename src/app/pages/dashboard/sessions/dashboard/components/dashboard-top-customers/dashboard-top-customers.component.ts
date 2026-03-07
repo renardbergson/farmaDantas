@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { CustomerService, TopCustomer } from '../../../../../../shared/services/customer.service';
+import {
+  CustomerService,
+  CashbackService,
+  PurchaseService,
+  TopCustomer
+} from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-dashboard-top-customers',
@@ -14,24 +19,27 @@ export class DashboardTopCustomers implements OnInit {
 
   constructor(
     private router: Router,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private cashbackService: CashbackService,
+    private purchaseService: PurchaseService
   ) { }
 
   ngOnInit(): void {
-    this.loadTop5CustomesThisMonth();
+    this.loadTop5CustomersThisMonth();
   }
 
   viewAllCustomers(): void {
     this.router.navigate(['/user/customers']);
   }
 
-  loadTop5CustomesThisMonth() {
-    this.customerService.getTop5CustomersThisMonth().subscribe({
-      next: (data) => {
-        this.top5CustomersThisMonth = data;
+  loadTop5CustomersThisMonth() {
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        const enriched = this.cashbackService.getCashbackStatsByCustomer(customers);
+        this.top5CustomersThisMonth = this.purchaseService.getTop5CustomersThisMonth(enriched);
       },
       error: (error) => {
-        console.error('Erro ao carregar os top 5 clientes:', error);
+        console.error('Ocorreu um erro ao tentar carregar os top 5 clientes:', error);
       }
     });
   }

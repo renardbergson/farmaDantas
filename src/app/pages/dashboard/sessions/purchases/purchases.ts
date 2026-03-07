@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal } from './components'
 import { Purchase } from '../../../../shared/models';
-import { CustomerService } from '../../../../shared/services/customer.service';
+import { CustomerService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
 
 @Component({

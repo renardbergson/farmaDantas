@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal } from './components'
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal } from './components'
 import { Purchase } from '../../../../shared/models';
 import { CustomerService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
 
 @Component({
   selector: 'app-purchases',
-  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal],
+  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
 })
 export class Purchases implements OnInit {
   originalPurchases: Purchase[] = [];
   filteredPurchases: Purchase[] = [];
+  selectedPurchase?: Purchase;
+
+  @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
   constructor(private customerService: CustomerService) { }
 
@@ -30,6 +33,14 @@ export class Purchases implements OnInit {
         console.error('Ocorreu um erro ao tentar carregar as compras', err);
       }
     })
+  }
+
+  /** 
+   * Quando uma compra é adicionada, atualiza a tabela de compras e também os cards de estatísticas.
+  */
+  onPurchaseAdded(): void {
+    this.loadPurchases();
+    this.purchaseStatsCards?.loadStats();
   }
 
   onFiltersChange(filters: PurchaseFilters): void {
@@ -52,5 +63,17 @@ export class Purchases implements OnInit {
 
       return matchesSearchTerm && matchesCategory;
     })
+  }
+
+  onViewPurchaseDetails(purchase: Purchase): void {
+    this.selectedPurchase = purchase;
+  }
+
+  onEditPurchase(purchase: Purchase): void {
+    // TODO: abrir modal de edição da compra
+  }
+
+  onDeletePurchase(purchase: Purchase): void {
+    // TODO: abrir modal de exclusão da compra
   }
 }

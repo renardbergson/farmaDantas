@@ -27,6 +27,6 @@ export interface Customer {
   totalCashbackUsed: number;
   purchaseModeThisMonth: PurchaseModeThisMonth;
   monthlyAveragePerPurchase: number; // ticket médio de compras no mês
-  purchases?: Purchase[];
-  cashbacks?: Cashback[];
+  purchases: Purchase[] | null;
+  cashbacks: Cashback[] | null;
 }

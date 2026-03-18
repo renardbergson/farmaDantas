@@ -7,7 +7,7 @@ export interface Person {
   phone: string;
   address: Address;
   createdAt: Date;
-  // opcionais
-  email?: string;
-  dateOfBirth?: Date;
+  // opcionais (valor ou null)
+  email: string | null;
+  dateOfBirth: Date | null;
 }

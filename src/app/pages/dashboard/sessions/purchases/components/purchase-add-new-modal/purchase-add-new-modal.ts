@@ -1,46 +1,39 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CustomerService, UserService } from '../../../../../../shared/services';
+import { CustomerService, PurchaseService, UserService } from '../../../../../../shared/services';
 import { Customer, Purchase, PurchaseCategory, PurchaseMode, PaymentMethod, User, Cashback, CashbackStatus } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
+import { parseDateToLocalDate } from '../../../../../../shared/utils/parseDateToLocalDate';
 
 @Component({
   selector: 'app-purchase-add-new-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule, NgxCurrencyDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgSelectModule, NgxCurrencyDirective],
   templateUrl: './purchase-add-new-modal.html',
   styleUrl: './purchase-add-new-modal.css',
 })
 export class PurchaseAddNewModal implements OnInit {
   @Input() purchase?: Purchase;
+  @Output() purchaseAdded = new EventEmitter<void>();
+  @ViewChild('modalRef') modalRef!: ElementRef<HTMLDivElement>;
 
-  /* Dados da compra */
+  purchaseForm!: FormGroup;
+
+  /* Clientes, funcionários e categorias */
   customers: Customer[] = [];
-  selectedCustomer: Customer | null = null;
-  purchaseDate: Date = new Date();
   employees: User[] = [];
-  selectedEmployee: User | null = null;
-  purchaseInputValue = 0;
   categories: PurchaseCategory[] = Object.values(PurchaseCategory);
-  selectedCategory: PurchaseCategory | null = null;
 
   /* Pagamento */
   paymentMethods: PaymentMethod[] = Object.values(PaymentMethod);
   selectedPaymentMethods: Set<PaymentMethod> = new Set();
   purchaseModes: PurchaseMode[] = Object.values(PurchaseMode);
-  selectedMode: PurchaseMode = PurchaseMode.IN_STORE;
 
   /* Cashback */
   activeCashbacksList: Cashback[] = [];
-  selectedCashback: Cashback | null = null;
-  readonly cashbackPercent = CASHBACK_CONFIG.admin_cashbackPercent; // **** mockado por enquanto ****
-  readonly cashbackMinPurchaseValue = CASHBACK_CONFIG.temp_cashbackMinPurchaseValue; // **** mockado por enquanto ****
-
-  /* Observações */
-  observations = '';
 
   /* Utilitários */
   private dateToInputValue(date: Date): string {
@@ -50,18 +43,17 @@ export class PurchaseAddNewModal implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  private inputValueToDate(value: string): Date {
-    if (!value) return new Date();
-    const [year, month, day] = value.split('-').map(Number);
-    return new Date(year, month - 1, day);
-  }
-
   constructor(
+    private fb: FormBuilder,
     private customerService: CustomerService,
-    private userService: UserService
+    private userService: UserService,
+    private purchaseService: PurchaseService
   ) { }
 
   ngOnInit(): void {
+    this.initForm();
+    this.setupCustomerChangeListener();
+    this.syncTotalAndFinalValue();
     this.customerService.getCustomers().subscribe({
       next: (customers) => {
         this.customers = customers;
@@ -81,38 +73,65 @@ export class PurchaseAddNewModal implements OnInit {
     });
   }
 
-  /** Converte o valor em string para o input type="date" (YYYY-MM-DD). */
-  get purchaseDateStr(): string {
-    return this.dateToInputValue(this.purchaseDate);
+  initForm(): void {
+    this.purchaseForm = this.fb.group({
+      customer: [null, Validators.required],
+      purchaseDate: [this.dateToInputValue(new Date()), Validators.required],
+      employee: [null, Validators.required],
+      purchaseValue: [null, [Validators.required, (c: AbstractControl) => (!c.value && c.value !== 0) || c.value <= 0 ? { required: true } : null]],
+      totalValue: [{ value: 0, disabled: true }],
+      finalValue: [{ value: 0, disabled: true }],
+      selectedCashback: [null],
+      generateCashback: [true],
+      category: ['', Validators.required],
+      paymentMethods: [[], (c: AbstractControl) => (!c.value || c.value.length === 0) ? { required: true } : null],
+      mode: [PurchaseMode.IN_STORE, Validators.required],
+      observations: ['']
+    });
+    this.setupValueSyncListeners();
   }
 
-  /** Se o usuário alterar a data da compra, atualiza a data da compra e converte para o tipo Date. */
-  set purchaseDateStr(value: string) {
-    this.purchaseDate = this.inputValueToDate(value);
+  /**
+   * Configura o listener de mudança do campo cliente. Executado sempre que o usuário
+   * seleciona ou troca o cliente no formulário de adição de compra.
+   *
+   * Passos:
+   * 1. Limpa o cashback selecionado (emitEvent: false evita disparar valueChanges).
+   * 2. Filtra os cashbacks do cliente para exibir apenas os disponíveis para uso:
+   *    - status ACTIVE;
+   *    - validUntil >= hoje (não expirados).
+   * 3. Atualiza activeCashbacksList, usada no select "Aplicar cashback".
+   */
+  private setupCustomerChangeListener(): void {
+    this.purchaseForm.get('customer')?.valueChanges.subscribe((customer: Customer | null) => {
+      this.purchaseForm.patchValue({ selectedCashback: null }, { emitEvent: false });
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      this.activeCashbacksList = customer?.cashbacks?.filter((cb) => {
+        if (cb.status !== CashbackStatus.ACTIVE) return false;
+
+        const validUntil = new Date(cb.validUntil);
+        validUntil.setHours(0, 0, 0, 0);
+
+        return validUntil >= today;
+      }) ?? [];
+    });
   }
 
-  get generatedCashbackValue(): number {
-    return (this.finalValue * this.cashbackPercent) / 100;
+  private setupValueSyncListeners(): void {
+    this.purchaseForm.get('purchaseValue')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
+    this.purchaseForm.get('selectedCashback')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
   }
 
-  get isCashbackApplicable(): boolean {
-    if (!this.selectedCashback) return false;
-    return this.purchaseInputValue >= this.selectedCashback.minPurchaseValue;
-  }
-
-  get finalValue(): number {
-    if (this.isCashbackApplicable && this.selectedCashback) {
-      return this.purchaseInputValue - this.selectedCashback.value;
-    }
-    return this.purchaseInputValue;
-  }
-
-  /** Limpa o cashback e atualiza a lista ao trocar de cliente. */
-  onCustomerChange(): void {
-    this.selectedCashback = null;
-    this.activeCashbacksList = this.selectedCustomer?.cashbacks?.filter(
-      (cb) => cb.status === CashbackStatus.ACTIVE
-    ) ?? [];
+  private syncTotalAndFinalValue(): void {
+    const total = this.purchaseInputValue;
+    const cashback = this.purchaseForm.get('selectedCashback')?.value as Cashback | null;
+    const final = cashback && total >= (cashback.minPurchaseValue ?? 0)
+      ? total - cashback.value
+      : total;
+    this.purchaseForm.patchValue({ totalValue: total, finalValue: final }, { emitEvent: false });
   }
 
   togglePaymentMethod(method: PaymentMethod): void {
@@ -120,6 +139,100 @@ export class PurchaseAddNewModal implements OnInit {
       this.selectedPaymentMethods.delete(method);
     } else {
       this.selectedPaymentMethods.add(method);
+    }
+    this.purchaseForm.patchValue({ paymentMethods: Array.from(this.selectedPaymentMethods) });
+    this.purchaseForm.get('paymentMethods')?.updateValueAndValidity();
+  }
+
+  get purchaseInputValue(): number {
+    const val = this.purchaseForm?.get('purchaseValue')?.value;
+    return val != null ? Number(val) : 0;
+  }
+
+  get generateCashback(): boolean {
+    return this.purchaseForm?.get('generateCashback')?.value ?? true;
+  }
+
+  get generatedCashbackValue(): number | null {
+    if (!this.generateCashback) return null;
+    return this.finalValue * CASHBACK_CONFIG.cashbackGenerationRate;
+  }
+
+  get cashbackPercent(): number {
+    return CASHBACK_CONFIG.cashbackGenerationRate * 100;
+  }
+
+  get selectedCashback(): Cashback | null {
+    return this.purchaseForm?.get('selectedCashback')?.value ?? null;
+  }
+
+  get isCashbackApplicable(): boolean {
+    const cb = this.selectedCashback;
+    if (!cb) return false;
+    return this.purchaseInputValue >= cb.minPurchaseValue;
+  }
+
+  get finalValue(): number {
+    return Number(this.purchaseForm?.get('finalValue')?.value) ?? this.purchaseInputValue;
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.purchaseForm.get(fieldName);
+    return !!(field && field.invalid && (field.touched || field.dirty));
+  }
+
+  onSubmit(): void {
+    if (this.purchaseForm.valid) {
+      const raw = this.purchaseForm.getRawValue();
+
+      const purchase: Omit<Purchase, 'id' | 'generatedCashback'> & { generatedCashbackValue: number | null } = {
+        mode: raw.mode as PurchaseMode,
+        date: parseDateToLocalDate(raw.purchaseDate),
+        totalValue: Number(raw.totalValue),
+        finalValue: Number(raw.finalValue),
+        category: raw.category as PurchaseCategory,
+        customerId: raw.customer.id,
+        customerName: raw.customer.person.name,
+        employeeId: raw.employee.id,
+        employeeName: raw.employee.person.name,
+        paymentMethods: raw.paymentMethods as PaymentMethod[],
+        usedCashbackGenerationRate: raw.generateCashback ? CASHBACK_CONFIG.cashbackGenerationRate : null,
+        observations: raw.observations || null,
+        usedCashback: raw.selectedCashback as Cashback || null,
+        generatedCashbackValue: this.generatedCashbackValue || null,
+      };
+
+      this.purchaseService.addPurchase(raw.customer, purchase).subscribe({
+        next: () => this.handleSuccess(),
+        error: (err) => console.error('Erro ao registrar compra:', err)
+      });
+    } else {
+      this.purchaseForm.markAllAsTouched();
+    }
+  }
+
+  private handleSuccess(): void {
+    this.purchaseAdded.emit();
+    this.selectedPaymentMethods.clear();
+    this.purchaseForm.reset({
+      customer: null,
+      purchaseDate: this.dateToInputValue(new Date()),
+      employee: null,
+      purchaseValue: null,
+      totalValue: 0,
+      finalValue: 0,
+      selectedCashback: null,
+      generateCashback: true,
+      category: '',
+      paymentMethods: [],
+      mode: PurchaseMode.IN_STORE,
+      observations: ''
+    });
+
+    const modalElement = this.modalRef?.nativeElement;
+    if (modalElement) {
+      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
+      modalInstance?.hide();
     }
   }
 }

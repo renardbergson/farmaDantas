@@ -11,7 +11,7 @@ export interface ViaCepResponse {
   localidade: string;
   uf: string;
   ibge: string;
-  erro?: boolean; // só existe quando o CEP não é encontrado
+  erro: boolean | null; // só existe quando o CEP não é encontrado
 }
 export interface State {
   id: number;

@@ -84,13 +84,13 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.customerForm.patchValue({
       name: customer.person.name,
       cpf: customer.person.cpf,
-      email: customer.person.email,
+      email: customer.person.email ?? '',
       phone: customer.person.phone,
-      dateOfBirth: customer.person.dateOfBirth,
+      dateOfBirth: customer.person.dateOfBirth ?? null,
       zipCode: customer.person.address.zipCode,
       street: customer.person.address.street,
-      number: customer.person.address.number,
-      complement: customer.person.address.complement,
+      number: customer.person.address.number ?? '',
+      complement: customer.person.address.complement ?? '',
       neighborhood: customer.person.address.neighborhood,
       stateId: customer.person.address.stateId,
       cityId: customer.person.address.cityId

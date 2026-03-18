@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Customer, CashbackStatus, PurchasesStats, Purchase, PurchaseMode, PurchaseModeThisMonth } from '../models';
+import { Observable, of } from 'rxjs';
+import { nanoid } from 'nanoid';
+import { Customer, CashbackStatus, PurchasesStats, Purchase, PurchaseMode, PurchaseModeThisMonth, Cashback, PaymentMethod, PurchaseCategory } from '../models';
 import { getInitials } from '../utils/getInitials';
+import { CASHBACK_CONFIG } from '../constants/cashback.config';
 
 export interface TopCustomer {
   name: string;
@@ -8,7 +11,6 @@ export interface TopCustomer {
   purchases: number;
   totalInCashback: number;
 }
-
 @Injectable({
   providedIn: 'root',
 })
@@ -30,7 +32,7 @@ export class PurchaseService {
     });
 
     const count = purchasesThisMonth.length;
-    const amount = purchasesThisMonth.reduce((sum, p) => sum + p.total, 0);
+    const amount = purchasesThisMonth.reduce((sum, p) => sum + p.finalValue, 0);
     const purchaseModeThisMonth: PurchaseModeThisMonth = {
       in_store: purchasesThisMonth.filter(p => p.mode === PurchaseMode.IN_STORE).length,
       delivery: purchasesThisMonth.filter(p => p.mode === PurchaseMode.DELIVERY).length
@@ -137,11 +139,11 @@ export class PurchaseService {
         purchaseDate.setHours(0, 0, 0, 0);
         if (purchaseDate.getTime() === today.getTime()) {
           purchasesToday++;
-          purchasesAmountToday += p.total;
+          purchasesAmountToday += p.finalValue;
         }
         if (purchaseDate >= currentMonth && purchaseDate < nextMonth) {
           purchasesThisMonth++;
-          purchasesAmountThisMonth += p.total;
+          purchasesAmountThisMonth += p.finalValue;
         }
         if (purchaseDate >= lastMonth && purchaseDate < currentMonth) purchasesLastMonth++;
       });
@@ -293,5 +295,105 @@ export class PurchaseService {
       .sort((a, b) => b.purchases - a.purchases)
       .slice(0, 5);
     return top5 satisfies TopCustomer[];
+  }
+
+  /**
+   * Registra uma nova compra para um cliente e atualiza o estado de cashbacks.
+   *
+   * **Fluxo:**
+   * 1. Gera um ID único para a compra (`p${nanoid(4)}`).
+   * 2. Se houver cashback utilizado (`data.usedCashback`): marca o cashback como `USED` e associa ao `purchaseId`.
+   * 3. Se houver valor de cashback gerado (`data.generatedCashbackValue`): cria um novo cashback com validade de 30 dias a partir da data da compra e adiciona em `customer.cashbacks`.
+   * 4. Monta a compra completa com `generatedCashback` (ou `null`) e adiciona em `customer.purchases`.
+   *
+   * **Mutação do cliente:** O método altera o objeto `customer` in-place (adiciona compra e cashbacks).
+   * O cliente é a fonte de verdade; após o `subscribe`, o componente deve recarregar os dados para refletir
+   * as estatísticas atualizadas (ex.: `purchasesThisMonthCount`, `activeCashbackAmount`).
+   *
+   * **Quanto a uso do operador ??=**:
+   * ele atribui [] a customer.cashbacks apenas se customer.cashbacks for null/undefined; depois faz push.
+   * Usar (customer.cashbacks ?? []).push(...) não funcionaria: ?? só retorna um valor, não altera.
+   * Com ??, se cashbacks fosse null, o push iria para um array temporário que seria descartado — o cashback se perderia.
+   * 
+   * @param customer Cliente que receberá a compra (deve ser o objeto completo com `purchases` e `cashbacks`).
+   * @param data Dados da compra (sem `id` e `generatedCashback`). O `generatedCashbackValue` opcional
+   *             define o valor em R$ do cashback gerado; se omitido ou `null`, nenhum cashback é criado.
+   * @returns Observable que emite a compra criada.
+   *
+   * @example
+   * const data = {
+   *   mode: PurchaseMode.IN_STORE,
+   *   date: new Date(),
+   *   totalValue: 100,
+   *   finalValue: 90,
+   *   category: PurchaseCategory.CONTINUOUS,
+   *   customerId: customer.id,
+   *   customerName: customer.person.name,
+   *   employeeId: 'e01',
+   *   employeeName: 'Funcionário',
+   *   paymentMethods: [PaymentMethod.PIX],
+   *   observations: null,
+   *   usedCashbackGenerationRate: 0.10,
+   *   usedCashback: cashbackSelecionado, // opcional
+   *   generatedCashbackValue: 9.00       // opcional; gera cashback de R$ 9,00
+   * };
+   * this.purchaseService.addPurchase(customer, data).subscribe(purchase => {
+   *   this.loadPurchases(); // recarrega lista e stats
+   * });
+   */
+  addPurchase(customer: Customer, data: Omit<Purchase, 'id' | 'generatedCashback'> & { generatedCashbackValue?: number | null }): Observable<Purchase> {
+    const purchaseId = `p${nanoid(4)}`;
+
+    if (data.usedCashback) {
+      const cb = customer.cashbacks?.find(cb => cb.id === data.usedCashback!.id);
+      if (cb) {
+        cb.status = CashbackStatus.USED;
+        cb.usedInPurchaseId = purchaseId;
+      }
+    }
+
+    let generatedCashback: Cashback | null = null;
+
+    if (data.generatedCashbackValue != null) {
+      const validUntil = new Date(data.date);
+      validUntil.setDate(validUntil.getDate() + 30);
+
+      generatedCashback = {
+        id: `c${nanoid(4)}`,
+        value: data.generatedCashbackValue,
+        customerId: customer.id,
+        customerName: customer.person.name,
+        createdAt: data.date,
+        validUntil,
+        timeLeft: '30 dias',
+        originPurchaseId: purchaseId,
+        status: CashbackStatus.ACTIVE,
+        minPurchaseValue: data.generatedCashbackValue / CASHBACK_CONFIG.cashbackRedemptionRate,
+        usedInPurchaseId: null
+      };
+
+      (customer.cashbacks ??= []).push(generatedCashback);
+    }
+
+    const newPurchase: Purchase = {
+      id: purchaseId,
+      mode: data.mode,
+      date: data.date,
+      totalValue: data.totalValue,
+      finalValue: data.finalValue,
+      category: data.category,
+      customerId: customer.id,
+      customerName: customer.person.name,
+      employeeId: data.employeeId,
+      employeeName: data.employeeName,
+      paymentMethods: data.paymentMethods,
+      observations: data.observations ?? null,
+      usedCashbackGenerationRate: data.usedCashbackGenerationRate ?? null,
+      usedCashback: data.usedCashback ?? null,
+      generatedCashback,
+    };
+
+    (customer.purchases ??= []).push(newPurchase);
+    return of(newPurchase);
   }
 }

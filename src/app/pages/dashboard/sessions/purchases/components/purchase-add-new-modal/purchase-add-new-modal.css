@@ -78,6 +78,11 @@
   min-width: 0;
 }
 
+/* Reserva espaço para mensagens de erro e mantém alinhamento */
+.form-group-with-error-space .error-feedback-space {
+  min-height: 1.4rem;
+}
+
 .form-section-title {
   font-size: 0.75rem;
   font-weight: 600;
@@ -155,6 +160,11 @@
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   outline: none;
+}
+
+/* Evita sobreposição do ícone de inválido com o texto (ex.: R$ 0,00 no campo de valor) */
+.form-control-custom.is-invalid {
+  padding-right: calc(1.5em + 0.75rem);
 }
 
 /* Opção de cashback no ng-select */
@@ -273,6 +283,12 @@
 
 .payment-method-checkbox span {
   margin-left: 5px;
+}
+
+.payment-methods-checkboxes.is-invalid {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--primary);
 }
 
 /* Utility */

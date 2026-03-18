@@ -1,4 +1,6 @@
 export const CASHBACK_CONFIG = {
-  admin_cashbackPercent: 10, // **** mockado por enquanto ****
-  temp_cashbackMinPurchaseValue: 20, // **** mockado por enquanto ****
+  /** Porcentagem da compra que vira cashback (ex.: 10 = 10%) */
+  cashbackGenerationRate: 0.10,
+  /** Taxa para minPurchaseValue = cashbackValue / rate (0.10 = 10%) */
+  cashbackRedemptionRate: 0.10,
 } as const;

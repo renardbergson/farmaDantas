@@ -1,3 +1,5 @@
+import type { Cashback } from './cashback.model';
+
 export enum PurchaseMode {
   IN_STORE = "Presencial",
   DELIVERY = "Delivery",
@@ -25,7 +27,8 @@ export interface Purchase {
   id: string;
   mode: PurchaseMode;
   date: Date;
-  total: number;
+  totalValue: number;
+  finalValue: number;
   category: PurchaseCategory;
   customerId: string;
   customerName: string;
@@ -33,10 +36,9 @@ export interface Purchase {
   employeeName: string,
   paymentMethods: PaymentMethod[];
 
-  // OPCIONAIS
-  generatedCashbackId?: string; // id do cashback gerado
-  generatedCashbackAmount?: number;
-  cashbackPercent?: number;
-  usedCashbackId?: string;     // id do cashback resgatado
-  usedCashbackAmount?: number;
+  // opcionais (valor ou null)
+  observations: string | null;
+  usedCashbackGenerationRate: number | null;
+  usedCashback: Cashback | null;
+  generatedCashback: Cashback | null;
 }

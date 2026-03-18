@@ -1,36 +1,17 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Purchase, PurchaseCategory } from '../../../../../../shared/models';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
 
 @Component({
-  selector: 'app-purchases-table',
+  selector: 'app-purchase-details-modal',
   imports: [CommonModule],
-  templateUrl: './purchase-table.html',
-  styleUrl: './purchase-table.css',
+  templateUrl: './purchase-details-modal.html',
+  styleUrl: './purchase-details-modal.css',
 })
-export class PurchaseTable {
-  @Input() purchases: Purchase[] = [];
-  @Output() viewDetails = new EventEmitter<Purchase>();
-  @Output() editPurchase = new EventEmitter<Purchase>();
-  @Output() deletePurchase = new EventEmitter<Purchase>();
-  getInitials: (name: string) => string;
-
-  constructor() {
-    this.getInitials = getInitials;
-  }
-
-  onViewDetails(purchase: Purchase): void {
-    this.viewDetails.emit(purchase);
-  }
-
-  onEditPurchase(purchase: Purchase): void {
-    this.editPurchase.emit(purchase);
-  }
-
-  onDeletePurchase(purchase: Purchase): void {
-    this.deletePurchase.emit(purchase);
-  }
+export class PurchaseDetailsModal {
+  @Input() purchase?: Purchase;
+  protected readonly getInitials = getInitials;
 
   getCategoryBadgeClass(category: PurchaseCategory): string {
     switch (category) {
@@ -43,5 +24,9 @@ export class PurchaseTable {
       case PurchaseCategory.ELDERLY: return 'badge-elderly';
       default: return '';
     }
+  }
+
+  getPaymentMethodsDisplay(methods?: string[]): string {
+    return methods?.length ? methods.join(', ') : '--';
   }
 }

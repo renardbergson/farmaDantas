@@ -9,11 +9,11 @@ export interface Cashback {
   value: number;
   customerId: string;
   customerName: string;
-  originPurchaseId: string;
   createdAt: Date;
   validUntil: Date;
   timeLeft: string;
+  originPurchaseId: string;
   status: CashbackStatus;
   minPurchaseValue: number;
-  usedInPurchaseId?: string;
+  usedInPurchaseId: string | null;
 }

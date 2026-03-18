@@ -152,3 +152,21 @@
 .fw-medium {
   font-weight: 500;
 }
+
+.actions-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.actions-btn i {
+  cursor: pointer;
+}
+
+.actions-btn:hover {
+  background: #f1f5f9;
+  color: var(--text-dark);
+}

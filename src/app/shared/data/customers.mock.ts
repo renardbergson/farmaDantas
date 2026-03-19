@@ -182,7 +182,7 @@ export const MOCK_CUSTOMERS: Customer[] = [
           value: 20.00,
           status: CashbackStatus.USED,
           minPurchaseValue: 200.00,
-          usedInPurchaseId: null
+          usedInPurchaseId: 'p4k2'
         },
         usedCashbackGenerationRate: 0.10,
         usedCashback: null,

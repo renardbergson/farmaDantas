@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Purchase, PurchaseCategory } from '../../../../../../shared/models';
+import { Purchase, PurchaseCategory, CashbackStatus } from '../../../../../../shared/models';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
 
 @Component({
@@ -12,6 +12,7 @@ import { getInitials } from '../../../../../../shared/utils/getInitials';
 export class PurchaseDetailsModal {
   @Input() purchase?: Purchase;
   protected readonly getInitials = getInitials;
+  protected readonly CashbackStatus = CashbackStatus;
 
   getCategoryBadgeClass(category: PurchaseCategory): string {
     switch (category) {

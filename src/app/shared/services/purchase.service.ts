@@ -27,7 +27,7 @@ export class PurchaseService {
     const currentYear = today.getFullYear();
 
     const purchasesThisMonth = purchases.filter(p => {
-      const date = new Date(p?.date);
+      const date = new Date(p.date);
       return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     });
 
@@ -237,17 +237,16 @@ export class PurchaseService {
    *   const enriched = customers.map((c, i) => ({ ...c, ...withPurchaseStats[i], ...withCashbackStats[i] }));
    * });
   */
-  getPurchaseStatsByCustomer(customers: Customer[]): Customer[] {
+  getPurchaseStatsByCustomer(customers: Customer[]): Pick<Customer, 'purchasesThisMonthCount' | 'purchasesThisMonthAmount' | 'purchaseModeThisMonth' | 'monthlyAveragePerPurchase'>[] {
     return customers.map(customer => {
       const stats = this.getCustomerPurchaseStats(customer.purchases ?? []);
       return {
-        ...customer,
         purchasesThisMonthCount: stats.count,
         purchasesThisMonthAmount: stats.amount,
         purchaseModeThisMonth: stats.purchaseModeThisMonth,
         monthlyAveragePerPurchase: stats.monthlyAveragePerPurchase
       };
-    })
+    });
   }
 
   /**

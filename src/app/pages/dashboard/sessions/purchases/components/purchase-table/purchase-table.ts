@@ -11,6 +11,7 @@ import { getInitials } from '../../../../../../shared/utils/getInitials';
 })
 export class PurchaseTable {
   @Input() purchases: Purchase[] = [];
+  sortByDate: 'desc' | 'asc' = 'desc';
   @Output() viewDetails = new EventEmitter<Purchase>();
   @Output() editPurchase = new EventEmitter<Purchase>();
   @Output() deletePurchase = new EventEmitter<Purchase>();
@@ -18,6 +19,18 @@ export class PurchaseTable {
 
   constructor() {
     this.getInitials = getInitials;
+  }
+
+  get sortedPurchases(): Purchase[] {
+    return [...this.purchases].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return this.sortByDate === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }
+
+  toggleSortByDate(): void {
+    this.sortByDate = this.sortByDate === 'desc' ? 'asc' : 'desc';
   }
 
   onViewDetails(purchase: Purchase): void {

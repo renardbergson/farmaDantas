@@ -7,6 +7,7 @@ import {
   PurchaseService,
   TopCustomer
 } from '../../../../../../shared/services';
+import { Customer } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-dashboard-top-customers',
@@ -35,7 +36,7 @@ export class DashboardTopCustomers implements OnInit {
   loadTop5CustomersThisMonth() {
     this.customerService.getCustomers().subscribe({
       next: (customers) => {
-        const enriched = this.cashbackService.getCashbackStatsByCustomer(customers);
+        const enriched = this.cashbackService.getCashbackStatsByCustomer(customers) as Customer[];
         this.top5CustomersThisMonth = this.purchaseService.getTop5CustomersThisMonth(enriched);
       },
       error: (error) => {

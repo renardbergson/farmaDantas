@@ -67,7 +67,7 @@
               <tr>
                 <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
                 <td>
-                  <span class="fw-medium">{{ item.originPurchaseId }}</span>
+                  <span class="fw-bold">{{ item.originPurchaseId }}</span>
                 </td>
                 <td>
                   @if (item.usedInPurchaseId) {
@@ -89,8 +89,8 @@
                   </span>
                 </td>
                 <td class="text-end">
-                  <span [class.text-success]="item.value > 0 && item.status !== 'Expirado'" [class.text-danger]="item.value < 0" [class.text-muted]="item.status === 'Expirado'" class="fw-bold">
-                    {{ item.value > 0 && item.status !== 'Expirado' ? '+' : '' }}{{ item.value | currency:'BRL' }}
+                  <span class="cashback-value">
+                    {{ item.value | currency:'BRL' }}
                   </span>
                 </td>
               </tr>

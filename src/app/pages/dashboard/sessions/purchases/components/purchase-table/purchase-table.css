@@ -49,6 +49,29 @@
   border-bottom: 1px solid var(--border);
 }
 
+.sort-header-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.sort-header-btn:hover {
+  color: var(--primary);
+}
+
+.sort-header-btn i {
+  cursor: pointer;
+}
+
 .table-custom tbody tr td {
   transition: background-color 0.2s ease;
 }

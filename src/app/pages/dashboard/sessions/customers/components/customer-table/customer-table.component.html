@@ -10,7 +10,12 @@
       <thead>
         <tr>
           <th>Cliente</th>
-          <th>Telefone Principal</th>
+          <th>
+            <button type="button" class="sort-header-btn" (click)="toggleSortByCreatedAt()">
+              Cliente Desde
+              <i class="bi ms-1" [ngClass]="sortByCreatedAt === 'desc' ? 'bi-arrow-down' : 'bi-arrow-up'"></i>
+            </button>
+          </th>
           <th class="text-center">Compras este mês</th>
           <th>Cidade</th>
           <th class="text-center">Status</th>
@@ -18,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (customer of customers; track $index) {
+        @for (customer of sortedCustomers; track $index) {
         <tr>
           <td>
             <div class="d-flex align-items-center gap-3">
@@ -29,7 +34,7 @@
               </div>
             </div>
           </td>
-          <td class="text-muted">{{ (customer.person.phone || '(00) 00000-0000') | mask: '(00) 00000-0000' }}</td>
+          <td class="text-muted">{{ customer.person.createdAt | date:'dd/MM/yyyy' }}</td>
           <td class="text-center fw-medium">{{ customer.purchasesThisMonthCount }}</td>
           <td class="text-muted">{{ customer.person.address.cityName || '--' }}</td>
           <td class="text-center">
@@ -41,7 +46,7 @@
           <!-- Actions -->
           <td class="text-end">
             <div class="dropdown">
-              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-three-dots"></i>
               </button>
 

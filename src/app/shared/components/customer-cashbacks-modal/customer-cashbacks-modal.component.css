@@ -180,6 +180,11 @@
   border-color: #f1f5f9;
 }
 
+.cashback-value {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
 .status-badge {
   padding: 0.35rem 0.75rem;
   border-radius: 20px;

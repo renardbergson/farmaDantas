@@ -246,16 +246,15 @@ export class CashbackService {
    * @example
    * const withCashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers);
    */
-  getCashbackStatsByCustomer(customers: Customer[]): Customer[] {
+  getCashbackStatsByCustomer(customers: Customer[]): Pick<Customer, 'activeCashbackCount' | 'activeCashbackAmount' | 'totalCashbackEarned' | 'totalCashbackUsed'>[] {
     return customers.map(customer => {
       const stats = this.getCustomerCashbackStats(customer.cashbacks || []);
       return {
-        ...customer,
         activeCashbackCount: stats.activeCashbackCount,
         activeCashbackAmount: stats.activeCashbackAmount,
         totalCashbackEarned: stats.totalCashbackEarned,
         totalCashbackUsed: stats.totalCashbackUsed
-      } satisfies Customer;
+      };
     });
   }
 }

@@ -1,14 +1,19 @@
 <div class="dashboard-card">
   <div class="dashboard-card-header">
     <h2 class="dashboard-card-title">Histórico de Compras</h2>
-    <p class="dashboard-card-subtitle">5 compra(s) encontrada(s)</p>
+    <p class="dashboard-card-subtitle">{{ purchases.length }} compra(s) encontrada(s)</p>
   </div>
   <div class="table-responsive">
     <table class="table table-custom">
       <thead>
         <tr>
           <th>Cliente</th>
-          <th>Data</th>
+          <th>
+            <button type="button" class="sort-header-btn" (click)="toggleSortByDate()">
+              Data
+              <i class="bi ms-1" [ngClass]="sortByDate === 'desc' ? 'bi-arrow-down' : 'bi-arrow-up'"></i>
+            </button>
+          </th>
           <th>Categoria</th>
           <th class="text-end">Valor</th>
           <th class="text-end">Cashback</th>
@@ -16,7 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (purchase of purchases; track $index) {
+        @for (purchase of sortedPurchases; track $index) {
         <tr>
           <td>
             <div class="d-flex align-items-center gap-3">
@@ -32,7 +37,7 @@
           <td class="text-end cashback-value">{{ purchase.generatedCashback?.value | currency: 'BRL' }}</td>
           <td class="text-end">
             <div class="dropdown">
-              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-three-dots"></i>
               </button>
 

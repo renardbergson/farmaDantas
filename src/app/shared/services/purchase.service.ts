@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { nanoid } from 'nanoid';
-import { Customer, CashbackStatus, PurchasesStats, Purchase, PurchaseMode, PurchaseModeThisMonth, Cashback, PaymentMethod, PurchaseCategory } from '../models';
+import { Customer, CashbackStatus, PurchasesStats, Purchase, PurchaseMode, PurchaseModeThisMonth, Cashback } from '../models';
 import { getInitials } from '../utils/getInitials';
 import { CASHBACK_CONFIG } from '../constants/cashback.config';
 
@@ -152,13 +152,19 @@ export class PurchaseService {
       // CARD 3: CASHBACKS
       // --------------------
       const cashbacks = ct.cashbacks ?? [];
+      const MS_PER_DAY = 1000 * 60 * 60 * 24;
       cashbacks.forEach(cb => {
-        const cashbackDate = new Date(cb.createdAt);
-        if (cb.status === CashbackStatus.ACTIVE) {
+        const createdAt = new Date(cb.createdAt);
+        const validUntil = new Date(cb.validUntil);
+        validUntil.setHours(0, 0, 0, 0);
+        const diffTime = validUntil.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / MS_PER_DAY);
+        const isExpired = diffDays < 0 || diffDays > 30;
+        if (!isExpired) {
           activeCashbacks++;
           activeCashbacksAmount += cb.value;
-          if (cashbackDate >= lastMonth && cashbackDate < currentMonth) activeCashbacksLastMonth++;
-          if (cashbackDate >= currentMonth && cashbackDate < nextMonth) activeCashbacksThisMonth++;
+          if (createdAt >= lastMonth && createdAt < currentMonth) activeCashbacksLastMonth++;
+          if (createdAt >= currentMonth && createdAt < nextMonth) activeCashbacksThisMonth++;
         }
       });
 

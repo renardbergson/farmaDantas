@@ -1,15 +1,15 @@
 export interface PurchasesStats {
   totalCustomers: number;
   newCustomersToday: number;
-  newCustomersRateChange: number;
+  newCustomersChange: number;
   purchasesToday: number;
   purchasesAmountToday: number;
   purchasesThisMonth: number;
   purchasesAmountThisMonth: number;
-  purchasesRateChange: number;
+  purchasesChange: number;
   activeCashbacks: number;
   activeCashbacksAmount: number;
-  activeCashbacksRateChange: number;
+  activeCashbacksChange: number;
   returnRateThisMonth: number;
-  returnRateChange: number;
+  returningCustomersChange: number;
 }

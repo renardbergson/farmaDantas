@@ -75,10 +75,8 @@ export class PurchaseService {
    *    - returningCustomers: clientes que compraram mais de 1x no período
    *    - Taxa = returningCustomers / customersWithPurchases
    *
-   * 4. Cálculo de variação (calculateRateChange)
-   *    - lastMonth = 0 e thisMonth > 0: todo valor deste mês é crescimento (retorna thisMonth)
-   *    - lastMonth = 0 e thisMonth = 0: nenhum dado, nenhuma variação (retorna 0)
-   *    - Caso contrário: (thisMonth - lastMonth) / lastMonth
+   * 4. Variação vs mês anterior
+   *    - Deltas em contagem: newCustomersChange, purchasesChange, activeCashbacksChange, returningCustomersChange
    *
    * @param customers Array de clientes (obtido via CustomerService.getCustomers())
    * @returns Estatísticas para os cards do dashboard
@@ -194,47 +192,31 @@ export class PurchaseService {
       }
     });
 
-    // -------------------------
-    // FUNÇÃO - CALCULAR TAXAS
-    // -------------------------
-    function calculateRateChange(thisMonth: number, lastMonth: number): number {
-      if (lastMonth === 0 && thisMonth > 0) {
-        return thisMonth;
-      } else if (lastMonth === 0 && thisMonth === 0) {
-        return 0;
-      } else {
-        return (thisMonth - lastMonth) / lastMonth;
-      }
-    }
+    // --------------------
+    // VARIAÇÕES (DELTAS) VS MÊS ANTERIOR
+    // --------------------
+    const newCustomersChange = newCustomersThisMonth - newCustomersLastMonth;
+    const purchasesChange = purchasesThisMonth - purchasesLastMonth;
+    const activeCashbacksChange = activeCashbacksThisMonth - activeCashbacksLastMonth;
+    const returningCustomersChange = returningCustomersThisMonth - returningCustomersLastMonth;
 
-    // --------------------
-    // TAXAS DE VARIAÇÃO
-    // --------------------
-    const newCustomersRateChange = calculateRateChange(newCustomersThisMonth, newCustomersLastMonth);
-    const purchasesRateChange = calculateRateChange(purchasesThisMonth, purchasesLastMonth);
-    const activeCashbacksRateChange = calculateRateChange(activeCashbacksThisMonth, activeCashbacksLastMonth);
     const returnRateThisMonth = customersWithPurchasesThisMonth > 0
       ? (returningCustomersThisMonth / customersWithPurchasesThisMonth) : 0;
-
-    const returnRateLastMonth = customersWithPurchasesLastMonth > 0
-      ? (returningCustomersLastMonth / customersWithPurchasesLastMonth) : 0;
-
-    const returnRateChange = calculateRateChange(returnRateThisMonth, returnRateLastMonth);
 
     return {
       totalCustomers: customers.length,
       newCustomersToday,
-      newCustomersRateChange,
+      newCustomersChange,
       purchasesToday,
       purchasesAmountToday,
       purchasesThisMonth,
       purchasesAmountThisMonth,
-      purchasesRateChange,
+      purchasesChange,
       activeCashbacks,
       activeCashbacksAmount,
-      activeCashbacksRateChange,
+      activeCashbacksChange,
       returnRateThisMonth,
-      returnRateChange
+      returningCustomersChange
     } satisfies PurchasesStats;
   }
 

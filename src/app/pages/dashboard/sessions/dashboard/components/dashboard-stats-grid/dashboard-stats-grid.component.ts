@@ -12,15 +12,15 @@ export class DashboardStatsGrid implements OnInit {
   stats: Partial<PurchasesStats> = {
     totalCustomers: 0,
     newCustomersToday: 0,
-    newCustomersRateChange: 0,
+    newCustomersChange: 0,
     purchasesThisMonth: 0,
     purchasesAmountThisMonth: 0,
-    purchasesRateChange: 0,
+    purchasesChange: 0,
     activeCashbacks: 0,
     activeCashbacksAmount: 0,
-    activeCashbacksRateChange: 0,
+    activeCashbacksChange: 0,
     returnRateThisMonth: 0,
-    returnRateChange: 0
+    returningCustomersChange: 0
   };
 
   constructor(
@@ -32,8 +32,16 @@ export class DashboardStatsGrid implements OnInit {
     this.loadStats();
   }
 
-  getTrendClass(value: number): string {
-    return value >= 0 ? 'trend-positive' : 'trend-negative';
+  getActiveCashbackClass(value: number): string {
+    if (value === 0) return 'trend-neutral';
+    return value > 0 ? 'trend-positive' : 'trend-negative';
+  }
+
+  getActiveCashbackText(delta: number, singular: string, plural: string): string {
+    if (delta === 0) return 'igual ao mês anterior';
+    const n = Math.abs(delta); // retorna o valor absoluto de um número: remove o sinal, negativo ou positivo
+    const text = `${delta > 0 ? '+' : '-'} ${n} ${n === 1 ? singular : plural}`;
+    return text;
   }
 
   loadStats(): void {

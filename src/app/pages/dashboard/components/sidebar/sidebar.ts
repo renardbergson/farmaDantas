@@ -21,7 +21,7 @@ export class Sidebar implements OnInit {
 
   adminMenuItems = [
     { text: "Relatórios", icon: "bi bi-bar-chart", route: "/admin/reports" },
-    { text: "Funcionários", icon: "bi bi-people", route: "/admin/employees" },
+    { text: "Funcionários", icon: "bi bi-person-badge", route: "/admin/employees" },
   ];
 
   userInfo = {

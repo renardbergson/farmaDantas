@@ -72,7 +72,7 @@
   <!-- User Info Section -->
   <section class="sidebar-footer">
     <div class="user-info">
-      <div class="user-avatar">{{ userInfo.initials }}</div>
+      <div class="user-avatar">{{ getInitials(userInfo.name) }}</div>
       <div class="user-details">
         <p class="user-name">{{ userInfo.name }}</p>
         <p class="user-role">{{ userInfo.role }}</p>

@@ -1,6 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer } from '../../../../../../shared/models';
+import { getInitials } from '../../../../../../shared/utils/getInitials';
 
 @Component({
   selector: 'app-customer-delete-modal',
@@ -12,6 +13,8 @@ import { Customer } from '../../../../../../shared/models';
 export class CustomerDeleteModal {
   @Input() customer: Customer | null = null;
   @Output() confirmDelete = new EventEmitter<Customer>();
+
+  protected readonly getInitials = getInitials;
 
   onConfirm(): void {
     if(this.customer) {

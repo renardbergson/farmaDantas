@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Customer, CustomerStatus, Person, Address } from '../models';
+import { Customer, CustomerStatus, Person, Address, Purchase } from '../models';
 import { Observable, of } from 'rxjs';
 import { MOCK_CUSTOMERS } from '../data/customers.mock';
 import { nanoid } from 'nanoid';
@@ -158,5 +158,27 @@ export class CustomerService {
       this.customers.splice(index, 1);
     }
     return of(customer); // cliente que foi removido
+  }
+
+  /**
+   * Remove uma compra do cliente e o cashback gerado por ela (se houver).
+   * @param purchase Compra a ser excluída
+   * @returns Observable que emite a compra removida
+   */
+  deletePurchase(purchase: Purchase): Observable<Purchase> {
+    const customer = this.customers.find(c => c.id === purchase.customerId);
+    if (customer?.purchases) {
+      const purchaseIndex = customer.purchases.findIndex(p => p.id === purchase.id);
+      if (purchaseIndex !== -1) {
+        customer.purchases.splice(purchaseIndex, 1);
+      }
+      if (customer.cashbacks && purchase.generatedCashback) {
+        const generatedCashbackIndex = customer.cashbacks.findIndex(cb => cb.id === purchase.generatedCashback!.id);
+        if (generatedCashbackIndex !== -1) {
+          customer.cashbacks.splice(generatedCashbackIndex, 1);
+        }
+      }
+    }
+    return of(purchase);
   }
 }

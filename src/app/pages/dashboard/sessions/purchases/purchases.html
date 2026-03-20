@@ -7,3 +7,4 @@
 
 <app-purchase-add-new-modal (purchaseAdded)="onPurchaseAdded()" />
 <app-purchase-details-modal [purchase]="selectedPurchase" />
+<app-purchase-delete-modal [purchase]="purchaseToDelete" (confirmDelete)="confirmDelete($event)" />

@@ -1,12 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal } from './components'
+import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal, PurchaseDeleteModal } from './components'
 import { Purchase } from '../../../../shared/models';
 import { CustomerService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
 
 @Component({
   selector: 'app-purchases',
-  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal],
+  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal, PurchaseDeleteModal],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
 })
@@ -14,6 +14,7 @@ export class Purchases implements OnInit {
   originalPurchases: Purchase[] = [];
   filteredPurchases: Purchase[] = [];
   selectedPurchase?: Purchase;
+  purchaseToDelete: Purchase | null = null;
 
   @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
@@ -74,6 +75,17 @@ export class Purchases implements OnInit {
   }
 
   onDeletePurchase(purchase: Purchase): void {
-    // TODO: abrir modal de exclusão da compra
+    this.purchaseToDelete = purchase;
+  }
+
+  confirmDelete(purchase: Purchase): void {
+    this.customerService.deletePurchase(purchase).subscribe({
+      next: () => {
+        this.originalPurchases = this.originalPurchases.filter(p => p.id !== purchase.id);
+        this.applyFilters({ term: '', categories: [] });
+        this.purchaseStatsCards?.loadStats();
+      },
+      error: (err) => console.error('Ocorreu um erro ao tentar excluir a compra:', err),
+    });
   }
 }

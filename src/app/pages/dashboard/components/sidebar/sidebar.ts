@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { getInitials } from '../../../../shared/utils/getInitials';
 
 @Component({
   selector: 'app-sidebar',
@@ -27,8 +28,9 @@ export class Sidebar implements OnInit {
   userInfo = {
     name: 'João da Silva',
     role: 'Administrador',
-    initials: 'JD'
-  }
+  };
+
+  protected readonly getInitials = getInitials;
 
   @HostBinding('class.collapsed') get collapsedClass() {
     return this.isCollapsed;

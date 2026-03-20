@@ -19,7 +19,7 @@ export const routes: Routes = [
 
   // 3. Rota com layout (sidebar + conteúdo): "/user/*" e "/admin/*"
   //    path: '' com pathMatch: 'prefix' = "caso com qualquer URL que não casou nas rotas acima"
-  //    Assim, /user/dashboard, /admin/reports etc. renderizam o DashboardWrapper
+  //    Assim, /user/*, /admin/* renderizam o DashboardWrapper
   //    mantendo-o montado ao trocar entre user e admin, evitando blink na sidebar, ao trocar entre os paths: user e admin
   {
     path: '',

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -15,10 +15,14 @@ import { parseDateToLocalDate } from '../../../../../../shared/utils/parseDateTo
   templateUrl: './purchase-add-new-modal.html',
   styleUrl: './purchase-add-new-modal.css',
 })
-export class PurchaseAddNewModal implements OnInit {
+export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   @Input() purchase?: Purchase;
   @Output() purchaseAdded = new EventEmitter<void>();
   @ViewChild('modalRef') modalRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('purchaseInfoAlert') purchaseInfoAlert!: ElementRef<HTMLElement>;
+
+  private tooltipInstance: any = null;
+  private modalShownHandler?: () => void;
 
   purchaseForm!: FormGroup;
 
@@ -71,6 +75,39 @@ export class PurchaseAddNewModal implements OnInit {
         console.error('Erro ao listar funcionários:', error);
       },
     });
+  }
+
+  ngAfterViewInit(): void {
+    const modalEl = this.modalRef?.nativeElement;
+    const alertEl = this.purchaseInfoAlert?.nativeElement;
+    const Bootstrap = (window as any).bootstrap;
+
+    if (!modalEl || !alertEl || !Bootstrap?.Tooltip) return;
+
+    this.modalShownHandler = () => {
+      this.disposeTooltip();
+      this.tooltipInstance = new Bootstrap.Tooltip(alertEl, {
+        container: 'body',
+        customClass: 'purchase-info-tooltip'
+      });
+    };
+
+    modalEl.addEventListener('shown.bs.modal', this.modalShownHandler);
+  }
+
+  private disposeTooltip(): void {
+    if (this.tooltipInstance) {
+      this.tooltipInstance.dispose();
+      this.tooltipInstance = null;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.disposeTooltip();
+    const modalEl = this.modalRef?.nativeElement;
+    if (modalEl && this.modalShownHandler) {
+      modalEl.removeEventListener('shown.bs.modal', this.modalShownHandler);
+    }
   }
 
   initForm(): void {

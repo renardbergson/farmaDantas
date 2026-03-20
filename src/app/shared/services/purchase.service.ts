@@ -383,4 +383,41 @@ export class PurchaseService {
     (customer.purchases ??= []).push(newPurchase);
     return of(newPurchase);
   }
+
+  /**
+   * Remove uma compra do cliente e atualiza os cashbacks relacionados.
+   * O cliente deve ser o objeto obtido via CustomerService.getCustomers().
+   *
+   * 1. Remove a compra de customer.purchases.
+   * 2. Remove o cashback gerado por ela (generatedCashback) de customer.cashbacks.
+   * 3. Remove o voucher utilizado nela (usedCashback) de customer.cashbacks.
+   * 4. Limpa a referência generatedCashback nas compras que geraram esse voucher.
+   *
+   * @param customer Cliente que possui a compra
+   * @param purchase Compra a ser excluída
+   * @returns Observable que emite a compra removida
+ */
+  deletePurchase(customer: Customer, purchase: Purchase): Observable<Purchase> {
+    if (customer?.purchases) {
+      const purchaseIndex = customer.purchases.findIndex((p) => p.id === purchase.id);
+      if (purchaseIndex !== -1) {
+        customer.purchases.splice(purchaseIndex, 1);
+      }
+      if (customer.cashbacks) {
+        if (purchase.generatedCashback) {
+          const idx = customer.cashbacks.findIndex((cb) => cb.id === purchase.generatedCashback!.id);
+          if (idx !== -1) customer.cashbacks.splice(idx, 1);
+        }
+        if (purchase.usedCashback) {
+          const usedCashbackId = purchase.usedCashback.id;
+          const idx = customer.cashbacks.findIndex((cb) => cb.id === usedCashbackId);
+          if (idx !== -1) customer.cashbacks.splice(idx, 1);
+          customer.purchases.forEach((p) => {
+            if (p.generatedCashback?.id === usedCashbackId) p.generatedCashback = null;
+          });
+        }
+      }
+    }
+    return of(purchase);
+  }
 }

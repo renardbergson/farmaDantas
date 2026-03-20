@@ -65,6 +65,11 @@
   padding: 1.5rem;
 }
 
+.purchase-info-alert {
+  padding: 0.5rem 1rem;
+  cursor: default;
+}
+
 /* Grid 2 colunas (como modal de cliente) */
 .purchase-form-grid {
   display: grid;

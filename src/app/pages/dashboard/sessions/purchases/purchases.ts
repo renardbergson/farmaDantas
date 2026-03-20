@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal, PurchaseDeleteModal } from './components'
 import { Purchase } from '../../../../shared/models';
-import { CustomerService } from '../../../../shared/services';
+import { CustomerService, PurchaseService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
+import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-purchases',
@@ -18,7 +19,10 @@ export class Purchases implements OnInit {
 
   @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
-  constructor(private customerService: CustomerService) { }
+  constructor(
+    private customerService: CustomerService,
+    private purchaseService: PurchaseService
+  ) { }
 
   ngOnInit(): void {
     this.loadPurchases();
@@ -70,20 +74,36 @@ export class Purchases implements OnInit {
     this.selectedPurchase = purchase;
   }
 
-  onEditPurchase(purchase: Purchase): void {
-    // TODO: abrir modal de edição da compra
-  }
-
   onDeletePurchase(purchase: Purchase): void {
     this.purchaseToDelete = purchase;
   }
 
+  /**
+   * Orquestra a exclusão da compra entre CustomerService e PurchaseService.
+   *
+   * Fluxo:
+   * 1. getCustomers() emite o array de clientes.
+   * 2. switchMap recebe esse array, encontra o cliente e chama deletePurchase(customer, purchase).
+   * 3. deletePurchase retorna Observable<Purchase>; switchMap emite esse valor.
+   * 4. subscribe recebe a compra removida e atualiza a UI.
+   *
+   * Foi usado pipe() + switchMap em vez de subscribe aninhado para manter o fluxo linear e evitar
+   * callbacks dentro de callbacks. O pipe encadeia os operadores; o subscribe inicia a execução.
+   */
   confirmDelete(purchase: Purchase): void {
-    this.customerService.deletePurchase(purchase).subscribe({
-      next: () => {
-        this.originalPurchases = this.originalPurchases.filter(p => p.id !== purchase.id);
-        this.applyFilters({ term: '', categories: [] });
-        this.purchaseStatsCards?.loadStats();
+    this.customerService.getCustomers().pipe(
+      switchMap((customers) => {
+        const customer = customers.find((c) => c.id === purchase.customerId);
+        if (!customer) return of(null);
+        return this.purchaseService.deletePurchase(customer, purchase);
+      })
+    ).subscribe({
+      next: (result) => {
+        if (result) {
+          this.originalPurchases = this.originalPurchases.filter((p) => p.id !== purchase.id);
+          this.applyFilters({ term: '', categories: [] });
+          this.purchaseStatsCards?.loadStats();
+        }
       },
       error: (err) => console.error('Ocorreu um erro ao tentar excluir a compra:', err),
     });

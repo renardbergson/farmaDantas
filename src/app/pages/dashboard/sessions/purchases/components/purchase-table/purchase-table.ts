@@ -13,7 +13,6 @@ export class PurchaseTable {
   @Input() purchases: Purchase[] = [];
   sortByDate: 'desc' | 'asc' = 'desc';
   @Output() viewDetails = new EventEmitter<Purchase>();
-  @Output() editPurchase = new EventEmitter<Purchase>();
   @Output() deletePurchase = new EventEmitter<Purchase>();
   getInitials: (name: string) => string;
 
@@ -35,10 +34,6 @@ export class PurchaseTable {
 
   onViewDetails(purchase: Purchase): void {
     this.viewDetails.emit(purchase);
-  }
-
-  onEditPurchase(purchase: Purchase): void {
-    this.editPurchase.emit(purchase);
   }
 
   onDeletePurchase(purchase: Purchase): void {

@@ -2,7 +2,7 @@
   <app-purchases-header />
   <app-purchases-stats-cards />
   <app-purchases-searchbar (filtersChange)="onFiltersChange($event)" />
-  <app-purchases-table [purchases]="filteredPurchases" (viewDetails)="onViewPurchaseDetails($event)" (editPurchase)="onEditPurchase($event)" (deletePurchase)="onDeletePurchase($event)" />
+  <app-purchases-table [purchases]="filteredPurchases" (viewDetails)="onViewPurchaseDetails($event)" (deletePurchase)="onDeletePurchase($event)" />
 </section>
 
 <app-purchase-add-new-modal (purchaseAdded)="onPurchaseAdded()" />

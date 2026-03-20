@@ -14,7 +14,15 @@
         <button type="button" class="btn-close btn-close-custom" data-bs-dismiss="modal" aria-label="Fechar"></button>
       </div>
 
+      <!-- Tooltip de informação -->
       <div class="modal-body-custom">
+        <div #purchaseInfoAlert class="alert alert-info border-0 bg-info-subtle d-flex align-items-center gap-3 mb-4 rounded-3 purchase-info-alert" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Compras são registros históricos. Editar prejudicaria relatórios e auditoria. Alterar valor, voucher ou taxa exigiria recalcular cashbacks e devolver vouchers utilizados." role="button" tabindex="0">
+          <i class="bi bi-info-circle-fill fs-4 text-info"></i>
+          <p class="mb-0 small text-dark-emphasis">
+            Não é permitido editar os dados de uma compra e, quando excluída, o voucher utilizado também será removido.
+          </p>
+        </div>
+
         <form [formGroup]="purchaseForm" (ngSubmit)="onSubmit()">
           <div class="purchase-form-grid">
             <!-- Coluna esquerda: Dados da compra + Pagamento -->

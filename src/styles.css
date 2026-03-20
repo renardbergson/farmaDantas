@@ -11,6 +11,9 @@
   --text-muted: #737373;
   --bg-light: #fafafa;
   --border-color: #e5e5e5;
+  --card-bg: #ffffff;
+  --text: #1e293b;
+  --border: #e2e8f0;
 
   /* Sidebar Colors */
   --sidebar-bg: #dc2626;
@@ -65,6 +68,20 @@ label[for],
 .ng-dropdown-panel .ng-dropdown-panel-items {
   max-height: 180px !important;
   overflow-y: auto !important;
+}
+
+/* Tooltip customizado (Bootstrap anexa ao body, fora do componente) */
+.purchase-info-tooltip {
+  --bs-tooltip-bg: var(--card-bg);
+  --bs-tooltip-color: var(--text);
+}
+
+.purchase-info-tooltip .tooltip-inner {
+  max-width: 340px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 0.75rem 1rem;
+  text-align: left;
 }
 
 /* Botões dos modais: mesmo tamanho */

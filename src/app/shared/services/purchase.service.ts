@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { nanoid } from 'nanoid';
-import { Customer, CashbackStatus, PurchasesStats, Purchase, PurchaseMode, PurchaseModeThisMonth, Cashback } from '../models';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import {
+  Customer,
+  Cashback,
+  PurchasesStats,
+  Purchase,
+  PurchaseMode,
+  PurchaseModeThisMonth,
+  CreatePurchaseRequest,
+  CreatePurchaseResponse,
+  PurchaseDetailsResponse,
+} from '../models';
 import { getInitials } from '../utils/getInitials';
-import { CASHBACK_CONFIG } from '../constants/cashback.config';
-
+import type { CustomerCashbackStats } from './cashback.service';
 export interface TopCustomer {
   name: string;
   avatar: string;
@@ -15,6 +24,30 @@ export interface TopCustomer {
   providedIn: 'root',
 })
 export class PurchaseService {
+  private readonly PURCHASES_URL = 'http://localhost:8080/api/purchases';
+
+  constructor(private http: HttpClient) { }
+
+  getPurchases(): Observable<Purchase[]> {
+    return this.http.get<Purchase[]>(this.PURCHASES_URL);
+  }
+
+  getPurchasesByCustomer(customerId: string): Observable<Purchase[]> {
+    return this.http.get<Purchase[]>(`${this.PURCHASES_URL}?customerId=${customerId}`);
+  }
+
+  getPurchaseDetails(purchaseId: string): Observable<PurchaseDetailsResponse> {
+    return this.http.get<PurchaseDetailsResponse>(`${this.PURCHASES_URL}/${purchaseId}/details`);
+  }
+
+  addPurchase(body: CreatePurchaseRequest): Observable<CreatePurchaseResponse> {
+    return this.http.post<CreatePurchaseResponse>(`${this.PURCHASES_URL}/create`, body);
+  }
+
+  deletePurchase(purchaseId: string): Observable<void> {
+    return this.http.delete<void>(`${this.PURCHASES_URL}/${purchaseId}/delete`);
+  }
+
   /* UTILITÁRIOS */
   private getCustomerPurchaseStats(purchases: Purchase[]): {
     count: number;
@@ -47,17 +80,27 @@ export class PurchaseService {
     };
   }
 
+  private purchasesForCustomer(customer: Customer, allPurchases: Purchase[]): Purchase[] {
+    return (allPurchases || []).filter(p => p.customerName === customer.name);
+  }
+
+  private cashbacksForCustomer(customer: Customer, allCashbacks: Cashback[]): Cashback[] {
+    return (allCashbacks || []).filter(cb => cb.customerName === customer.name);
+  }
+
   /* SERVIÇOS */
   /**
    * Retorna estatísticas consolidadas de compras, cashbacks e taxa de retorno de TODOS os clientes.
    *
-   * NÃO é necessário passar clientes enriquecidos (CashbackService.getCashbackStatsByCustomer).
-   * Os dados brutos retornados por CustomerService.getCustomers() são suficientes.
+   * NÃO é necessário passar clientes “enriquecidos” com arrays aninhados: usa as listas já vindas da API
+   * (`CustomerService.getCustomers()`, `getPurchases()`, `CashbackService.getCashbacks()`) e cruza por nome
+   * (`customer.name` ↔ `customerName` em compras/cashbacks). Quando a API passar `customerId` nas listas,
+   * este cruzamento pode ser trocado por ID.
    *
-   * Dados utilizados de cada cliente:
-   * - customer.person.createdAt
-   * - customer.purchases
-   * - customer.cashbacks
+   * Dados utilizados por cliente:
+   * - `customer.createdAt` (listagem de clientes)
+   * - compras filtradas por `customerName`
+   * - cashbacks filtrados por `customerName`
    *
    * COMO FUNCIONA:
    *
@@ -79,13 +122,19 @@ export class PurchaseService {
    *    - Deltas em contagem: newCustomersChange, purchasesChange, activeCashbacksChange, returningCustomersChange
    *
    * @param customers Array de clientes (obtido via CustomerService.getCustomers())
+   * @param purchases Array de compras (obtido via PurchaseService.getPurchases())
+   * @param cashbacks Array de cashbacks (obtido via CashbackService.getCashbacks())
    * @returns Estatísticas para os cards do dashboard
    * @example
-   * this.customerService.getCustomers().subscribe(customers => {
-   *   this.stats = this.purchaseService.getAllPurchaseStats(customers);
+   * forkJoin({
+   *   customers: this.customerService.getCustomers(),
+   *   purchases: this.purchaseService.getPurchases(),
+   *   cashbacks: this.cashbackService.getCashbacks()
+   * }).subscribe(({ customers, purchases, cashbacks }) => {
+   *   this.stats = this.purchaseService.getAllPurchaseStats(customers, purchases, cashbacks);
    * });
-  */
-  getAllPurchaseStats(customers: Customer[]): PurchasesStats {
+   */
+  getAllPurchaseStats(customers: Customer[], purchases: Purchase[], cashbacks: Cashback[]): PurchasesStats {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -118,7 +167,7 @@ export class PurchaseService {
     let returningCustomersLastMonth = 0;
 
     customers.forEach(ct => {
-      const createdAt = new Date(ct.person.createdAt);
+      const createdAt = new Date(ct.createdAt);
       createdAt.setHours(0, 0, 0, 0);
 
       // --------------------
@@ -131,8 +180,8 @@ export class PurchaseService {
       // --------------------
       // CARD 2: PURCHASES
       // --------------------
-      const purchases = ct.purchases ?? [];
-      purchases.forEach(p => {
+      const custPurchases = this.purchasesForCustomer(ct, purchases);
+      custPurchases.forEach(p => {
         const purchaseDate = new Date(p.date);
         purchaseDate.setHours(0, 0, 0, 0);
         if (purchaseDate.getTime() === today.getTime()) {
@@ -149,10 +198,10 @@ export class PurchaseService {
       // --------------------
       // CARD 3: CASHBACKS
       // --------------------
-      const cashbacks = ct.cashbacks ?? [];
+      const custCashbacks = this.cashbacksForCustomer(ct, cashbacks);
       const MS_PER_DAY = 1000 * 60 * 60 * 24;
-      cashbacks.forEach(cb => {
-        const createdAt = new Date(cb.createdAt);
+      custCashbacks.forEach(cb => {
+        const cashbackCreatedAt = new Date(cb.createdAt);
         const validUntil = new Date(cb.validUntil);
         validUntil.setHours(0, 0, 0, 0);
         const diffTime = validUntil.getTime() - today.getTime();
@@ -161,8 +210,8 @@ export class PurchaseService {
         if (!isExpired) {
           activeCashbacks++;
           activeCashbacksAmount += cb.value;
-          if (createdAt >= lastMonth && createdAt < currentMonth) activeCashbacksLastMonth++;
-          if (createdAt >= currentMonth && createdAt < nextMonth) activeCashbacksThisMonth++;
+          if (cashbackCreatedAt >= lastMonth && cashbackCreatedAt < currentMonth) activeCashbacksLastMonth++;
+          if (cashbackCreatedAt >= currentMonth && cashbackCreatedAt < nextMonth) activeCashbacksThisMonth++;
         }
       });
 
@@ -172,7 +221,7 @@ export class PurchaseService {
       let purchasesCountThisMonth = 0;
       let purchasesCountLastMonth = 0;
 
-      purchases.forEach(p => {
+      custPurchases.forEach(p => {
         const purchaseDate = new Date(p.date);
         if (purchaseDate >= currentMonth && purchaseDate < nextMonth) purchasesCountThisMonth++;
         if (purchaseDate >= lastMonth && purchaseDate < currentMonth) purchasesCountLastMonth++;
@@ -220,26 +269,14 @@ export class PurchaseService {
     } satisfies PurchasesStats;
   }
 
-  /**
-   * Recebe uma lista de clientes crua de (customers.mock.ts) e enriquece cada cliente com as suas estatísticas de compras para o mês atual.
-   * Calcula: 
-   * - purchasesThisMonthCount,
-   * - purchasesThisMonthAmount,
-   * - purchaseModeThisMonth,
-   * - monthlyAveragePerPurchase.
-   *
-   * @param customers Array de clientes (obtido via CustomerService.getCustomers())
-   * @returns Array de clientes com as estatísticas de compras do mês atual
-   * @example
-   * this.customerService.getCustomers().subscribe(customers => {
-   *   const withPurchaseStats = this.purchaseService.getPurchaseStatsByCustomer(customers);
-   *   const withCashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers);
-   *   const enriched = customers.map((c, i) => ({ ...c, ...withPurchaseStats[i], ...withCashbackStats[i] }));
-   * });
-  */
-  getPurchaseStatsByCustomer(customers: Customer[]): Pick<Customer, 'purchasesThisMonthCount' | 'purchasesThisMonthAmount' | 'purchaseModeThisMonth' | 'monthlyAveragePerPurchase'>[] {
+  getPurchaseStatsByCustomer(customers: Customer[], allPurchases: Purchase[]): Array<{
+    purchasesThisMonthCount: number;
+    purchasesThisMonthAmount: number;
+    purchaseModeThisMonth: PurchaseModeThisMonth;
+    monthlyAveragePerPurchase: number;
+  }> {
     return customers.map(customer => {
-      const stats = this.getCustomerPurchaseStats(customer.purchases ?? []);
+      const stats = this.getCustomerPurchaseStats(this.purchasesForCustomer(customer, allPurchases));
       return {
         purchasesThisMonthCount: stats.count,
         purchasesThisMonthAmount: stats.amount,
@@ -249,175 +286,33 @@ export class PurchaseService {
     });
   }
 
-  /**
-   * Retorna os 5 clientes com mais compras no mês atual.
-   * Espera receber clientes já enriquecidos com activeCashbackAmount
-   * (o componente deve chamar CashbackService.getCashbackStatsByCustomer antes).
-   *
-   * @param customers Array de clientes (com activeCashbackAmount preenchido)
-   * @returns Top 5 ordenados por quantidade de compras (decrescente)
-   * @example
-   * const top5 = this.purchaseService.getTop5CustomersThisMonth(enrichedCustomers);
-  */
-  getTop5CustomersThisMonth(customers: Customer[]): TopCustomer[] {
+  getTop5CustomersThisMonth(
+    customers: Customer[],
+    allPurchases: Purchase[],
+    cashbackStats: CustomerCashbackStats[],
+  ): TopCustomer[] {
     const now = new Date();
     const month = now.getMonth();
     const year = now.getFullYear();
 
     const purchasesThisMonth = (customer: Customer) =>
-      customer.purchases?.filter(pc =>
-        pc.date.getMonth() === month && pc.date.getFullYear() === year
-      ).length || 0;
+      this.purchasesForCustomer(customer, allPurchases).filter(pc => {
+        const d = new Date(pc.date);
+        return d.getMonth() === month && d.getFullYear() === year;
+      }).length;
 
     const top5 = customers
-      .map(customer => {
+      .map((customer, i) => {
         return {
-          name: customer.person.name,
-          avatar: getInitials(customer.person.name),
+          name: customer.name,
+          avatar: getInitials(customer.name),
           purchases: purchasesThisMonth(customer),
-          totalInCashback: customer.activeCashbackAmount
+          totalInCashback: cashbackStats[i]?.activeCashbackAmount ?? 0
         } satisfies TopCustomer;
       })
       .filter(ct => ct.purchases > 0)
       .sort((a, b) => b.purchases - a.purchases)
       .slice(0, 5);
     return top5 satisfies TopCustomer[];
-  }
-
-  /**
-   * Registra uma nova compra para um cliente e atualiza o estado de cashbacks.
-   *
-   * **Fluxo:**
-   * 1. Gera um ID único para a compra (`p${nanoid(4)}`).
-   * 2. Se houver cashback utilizado (`data.usedCashback`): marca o cashback como `USED` e associa ao `purchaseId`.
-   * 3. Se houver valor de cashback gerado (`data.generatedCashbackValue`): cria um novo cashback com validade de 30 dias a partir da data da compra e adiciona em `customer.cashbacks`.
-   * 4. Monta a compra completa com `generatedCashback` (ou `null`) e adiciona em `customer.purchases`.
-   *
-   * **Mutação do cliente:** O método altera o objeto `customer` in-place (adiciona compra e cashbacks).
-   * O cliente é a fonte de verdade; após o `subscribe`, o componente deve recarregar os dados para refletir
-   * as estatísticas atualizadas (ex.: `purchasesThisMonthCount`, `activeCashbackAmount`).
-   *
-   * **Quanto a uso do operador ??=**:
-   * ele atribui [] a customer.cashbacks apenas se customer.cashbacks for null/undefined; depois faz push.
-   * Usar (customer.cashbacks ?? []).push(...) não funcionaria: ?? só retorna um valor, não altera.
-   * Com ??, se cashbacks fosse null, o push iria para um array temporário que seria descartado — o cashback se perderia.
-   * 
-   * @param customer Cliente que receberá a compra (deve ser o objeto completo com `purchases` e `cashbacks`).
-   * @param data Dados da compra (sem `id` e `generatedCashback`). O `generatedCashbackValue` opcional
-   *             define o valor em R$ do cashback gerado; se omitido ou `null`, nenhum cashback é criado.
-   * @returns Observable que emite a compra criada.
-   *
-   * @example
-   * const data = {
-   *   mode: PurchaseMode.IN_STORE,
-   *   date: new Date(),
-   *   totalValue: 100,
-   *   finalValue: 90,
-   *   category: PurchaseCategory.CONTINUOUS,
-   *   customerId: customer.id,
-   *   customerName: customer.person.name,
-   *   employeeId: 'e01',
-   *   employeeName: 'Funcionário',
-   *   paymentMethods: [PaymentMethod.PIX],
-   *   observations: null,
-   *   usedCashbackGenerationRate: 0.10,
-   *   usedCashback: cashbackSelecionado, // opcional
-   *   generatedCashbackValue: 9.00       // opcional; gera cashback de R$ 9,00
-   * };
-   * this.purchaseService.addPurchase(customer, data).subscribe(purchase => {
-   *   this.loadPurchases(); // recarrega lista e stats
-   * });
-   */
-  addPurchase(customer: Customer, data: Omit<Purchase, 'id' | 'generatedCashback'> & { generatedCashbackValue?: number | null }): Observable<Purchase> {
-    const purchaseId = `p${nanoid(4)}`;
-
-    if (data.usedCashback) {
-      const cb = customer.cashbacks?.find(cb => cb.id === data.usedCashback!.id);
-      if (cb) {
-        cb.status = CashbackStatus.USED;
-        cb.usedInPurchaseId = purchaseId;
-      }
-    }
-
-    let generatedCashback: Cashback | null = null;
-
-    if (data.generatedCashbackValue != null) {
-      const validUntil = new Date(data.date);
-      validUntil.setDate(validUntil.getDate() + 30);
-
-      generatedCashback = {
-        id: `c${nanoid(4)}`,
-        value: data.generatedCashbackValue,
-        customerId: customer.id,
-        customerName: customer.person.name,
-        createdAt: data.date,
-        validUntil,
-        timeLeft: '30 dias',
-        originPurchaseId: purchaseId,
-        status: CashbackStatus.ACTIVE,
-        minPurchaseValue: data.generatedCashbackValue / CASHBACK_CONFIG.cashbackRedemptionRate,
-        usedInPurchaseId: null
-      };
-
-      (customer.cashbacks ??= []).push(generatedCashback);
-    }
-
-    const newPurchase: Purchase = {
-      id: purchaseId,
-      mode: data.mode,
-      date: data.date,
-      totalValue: data.totalValue,
-      finalValue: data.finalValue,
-      category: data.category,
-      customerId: customer.id,
-      customerName: customer.person.name,
-      employeeId: data.employeeId,
-      employeeName: data.employeeName,
-      paymentMethods: data.paymentMethods,
-      observations: data.observations ?? null,
-      usedCashbackGenerationRate: data.usedCashbackGenerationRate ?? null,
-      usedCashback: data.usedCashback ?? null,
-      generatedCashback,
-    };
-
-    (customer.purchases ??= []).push(newPurchase);
-    return of(newPurchase);
-  }
-
-  /**
-   * Remove uma compra do cliente e atualiza os cashbacks relacionados.
-   * O cliente deve ser o objeto obtido via CustomerService.getCustomers().
-   *
-   * 1. Remove a compra de customer.purchases.
-   * 2. Remove o cashback gerado por ela (generatedCashback) de customer.cashbacks.
-   * 3. Remove o voucher utilizado nela (usedCashback) de customer.cashbacks.
-   * 4. Limpa a referência generatedCashback nas compras que geraram esse voucher.
-   *
-   * @param customer Cliente que possui a compra
-   * @param purchase Compra a ser excluída
-   * @returns Observable que emite a compra removida
- */
-  deletePurchase(customer: Customer, purchase: Purchase): Observable<Purchase> {
-    if (customer?.purchases) {
-      const purchaseIndex = customer.purchases.findIndex((p) => p.id === purchase.id);
-      if (purchaseIndex !== -1) {
-        customer.purchases.splice(purchaseIndex, 1);
-      }
-      if (customer.cashbacks) {
-        if (purchase.generatedCashback) {
-          const idx = customer.cashbacks.findIndex((cb) => cb.id === purchase.generatedCashback!.id);
-          if (idx !== -1) customer.cashbacks.splice(idx, 1);
-        }
-        if (purchase.usedCashback) {
-          const usedCashbackId = purchase.usedCashback.id;
-          const idx = customer.cashbacks.findIndex((cb) => cb.id === usedCashbackId);
-          if (idx !== -1) customer.cashbacks.splice(idx, 1);
-          customer.purchases.forEach((p) => {
-            if (p.generatedCashback?.id === usedCashbackId) p.generatedCashback = null;
-          });
-        }
-      }
-    }
-    return of(purchase);
   }
 }

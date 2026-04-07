@@ -1,6 +1,6 @@
 import { Component, OnDestroy, AfterViewInit } from '@angular/core';
 import { Chart, TooltipItem } from 'chart.js/auto';
-import { CustomerService, CashbackService, MonthlyCashbackCountData } from '../../../../../../shared/services';
+import { CashbackService, MonthlyCashbackCountData } from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-dashboard-monthly-cashback-count',
@@ -12,14 +12,13 @@ export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
   private barChart?: Chart<'bar', number[], string>;
 
   constructor(
-    private customerService: CustomerService,
     private cashbackService: CashbackService
   ) { }
 
   ngAfterViewInit(): void {
-    this.customerService.getCustomers().subscribe({
-      next: (customers) => {
-        const data = this.cashbackService.getAllLastMonthsCashbackCount(customers);
+    this.cashbackService.getCashbacks().subscribe({
+      next: (cashbacks) => {
+        const data = this.cashbackService.getAllLastMonthsCashbackCount(cashbacks);
         this.initChart(data);
       },
       error: (error) => {

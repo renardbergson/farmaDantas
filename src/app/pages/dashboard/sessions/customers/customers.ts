@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchbar, CustomerTable, CustomerStatusChart } from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
 import { Customer } from '../../../../shared/models';
-import { CustomerService, CashbackService, PurchaseService } from '../../../../shared/services';
+import { CustomerService } from '../../../../shared/services';
 import { CustomerFilters } from './components/customer-searchbar/customer-searchbar';
 
 @Component({
@@ -26,34 +26,15 @@ import { CustomerFilters } from './components/customer-searchbar/customer-search
 export class Customers implements OnInit {
   originalCustomers: Customer[] = [];
   filteredCustomers: Customer[] = [];
+  currentFilters: CustomerFilters = { term: '', statuses: [] };
   selectedCustomer?: Customer;
   customerToEdit?: Customer;
   customerToDelete: Customer | null = null;
 
   @ViewChild(CustomerAddNewModal) customerAddNewModal?: CustomerAddNewModal;
-  /*  
-    1. ViewChild permite ao componente pai obter uma referência ao filho (componente, diretiva ou elemento DOM) declarado no template.
-    2. Com isso é possível:
-      - Chamar métodos do filho 
-      - Ler propriedades do filho
-      - Acessar o elemento DOM quando for um elemento nativo
-      * Importante: a referência só fica disponível depois que a view for inicializada (nfAfterViewInit)
-    3. @Input() / @Output() X ViewChild()
-      3.1. @Input() / @Output() 
-        - permite comunicação reativa e desacoplada
-        - quando o @Input() muda, o Angular atualiza o filho automaticamente
-        - facilita testes
-        - o componente pode ser usado em mais de um contexto
-      3.2. ViewChild()
-        - a comunicação é unidirecional: de pai para o filho
-        - deixa o código mais acoplado
-        - o pai precisa chamar métodos manualmente
-  */
 
   constructor(
-    private customerService: CustomerService,
-    private cashbackService: CashbackService,
-    private purchaseService: PurchaseService
+    private customerService: CustomerService
   ) { }
 
   ngOnInit(): void {
@@ -63,51 +44,39 @@ export class Customers implements OnInit {
   loadCustomers(): void {
     this.customerService.getCustomers().subscribe({
       next: (customers) => {
-        const withPurchaseStats = this.purchaseService.getPurchaseStatsByCustomer(customers);
-        const withCashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers);
-
-        const enriched = customers.map((customer, index) => {
-          return {
-            ...customer,
-            ...withPurchaseStats[index],
-            ...withCashbackStats[index]
-          } satisfies Customer;
-        })
-
-        this.originalCustomers = enriched;
-        this.filteredCustomers = enriched;
+        this.originalCustomers = customers;
+        this.applyFilters(this.currentFilters);
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar carregar os clientes e suas estatísticas:', err),
+      error: (err) => console.error('Ocorreu um erro ao tentar listar os clientes:', err),
     })
   }
 
   onFiltersChange(filters: CustomerFilters): void {
+    this.currentFilters = filters;
     this.applyFilters(filters);
+  }
+
+  get hasActiveFilters(): boolean {
+    return this.currentFilters.term.trim() !== '' || this.currentFilters.statuses.length > 0;
   }
 
   applyFilters(filters: CustomerFilters): void {
     const { term, statuses } = filters;
 
     this.filteredCustomers = this.originalCustomers.filter(customer => {
-      /*  
-        Por que este método pode ser chamado também na hora de excluir um cliente?
-        - "".toLowerCase() → "" 
-        - "qualquer texto".includes("") → true (string vazia está em qualquer string)
-        - ou seja: todos os clientes passam no filtro de busca
-      */
       const matchesSearchTerm =
         // verifica se o nome, cpf ou e-mail bate com a busca
         term === '' ||
-        customer.person.name.toLowerCase().includes(term.toLowerCase()) ||
-        customer.person.cpf.includes(term) ||
-        customer.person.email?.toLowerCase().includes(term.toLowerCase())
+        customer.name.toLowerCase().includes(term.toLowerCase()) ||
+        customer.cpf.includes(term) ||
+        customer.email?.toLowerCase().includes(term.toLowerCase())
 
       const matchesStatusSearch =
         // verifica se o status do cliente bate com os filtros selecionados
         statuses.length === 0 ||
         statuses.includes(customer.status);
 
-      // retorno do filter
+      // retorno interno do filter
       return matchesSearchTerm && matchesStatusSearch;
     });
   }
@@ -133,12 +102,8 @@ export class Customers implements OnInit {
   }
 
   confirmDelete(customer: Customer): void {
-    // this.filteredCustomers = this.filteredCustomers.filter(c => c.id !== customer.id);
     this.customerService.deleteCustomer(customer).subscribe({
-      next: (data) => {
-        this.originalCustomers = this.originalCustomers.filter(c => c.id !== data.id)
-        this.applyFilters({ term: '', statuses: [] }); // ver comentários acima
-      },
+      next: () => this.loadCustomers(),
       error: (err) => console.error('Ocorreu um erro ao tentar excluir o cliente:', err),
     })
   }

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Address } from '../models';
 
 export interface ViaCepResponse {
   cep: string;
@@ -32,7 +31,7 @@ export class AddressService {
 
   constructor(private http: HttpClient) { }
 
-  getAddressByZipCode(zipCode: string) {
+  getAddressByZipCode(zipCode: string): Observable<ViaCepResponse> {
     const flatZipCode = zipCode.replace(/\D/g, '');
     return this.http.get<ViaCepResponse>(`${this.VIACEP_URL}/${flatZipCode}/json/`);
   }

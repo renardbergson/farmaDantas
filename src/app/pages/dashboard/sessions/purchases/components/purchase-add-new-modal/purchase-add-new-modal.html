@@ -31,7 +31,7 @@
               <!-- Cliente -->
               <div class="mb-3 form-group-with-error-space">
                 <label class="form-label-custom d-block">Cliente</label>
-                <ng-select formControlName="customer" [items]="customers" bindLabel="person.name" placeholder="Selecione ou busque o cliente" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('customer')">
+                <ng-select formControlName="customer" [items]="customers" bindLabel="name" placeholder="Selecione ou busque o cliente" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('customer')">
                 </ng-select>
                 <div class="error-feedback-space">
                   @if (isFieldInvalid('customer')) {
@@ -52,7 +52,7 @@
                 </div>
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom d-block">Funcionário</label>
-                  <ng-select formControlName="employee" [items]="employees" bindLabel="person.name" placeholder="Funcionário" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('employee')">
+                  <ng-select formControlName="employee" [items]="employees" bindLabel="name" placeholder="Funcionário" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('employee')">
                   </ng-select>
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('employee')) {

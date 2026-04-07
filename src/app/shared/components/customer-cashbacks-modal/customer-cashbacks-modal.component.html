@@ -1,12 +1,12 @@
 <div class="modal fade" id="customerCashbacksModal" tabindex="-1" aria-labelledby="customerCashbacksModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-dialog modal-dialog-centered cashbacks-modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <div class="header-content">
           <h5 class="modal-title" id="customerCashbacksModalLabel">
             Histórico de Cashbacks
             @if (customer) {
-            <span class="text-primary ms-1">- {{ customer.person.name }}</span>
+            <span class="text-primary ms-1">- {{ customer.name }}</span>
             }
           </h5>
           <p class="modal-subtitle">Visualize o histórico <strong>completo</strong> de ganhos e utilização de cashbacks</p>
@@ -15,26 +15,29 @@
       </div>
 
       <div class="modal-body">
-        @if(customer) {
-        <!-- Resumo Rápido -->
+        @if (customer) {
+        <!--
+          TODO: Se a API passar totais “lifetime” no cliente (ex. CustomerDetailsResponse.cashbackLifetime),
+          preferir esses valores em vez de summary derivado só da lista GET cashbacks deste cliente.
+        -->
         <div class="cashback-summary mb-4">
           <div class="summary-item">
             <span class="summary-label">Total Ganho</span>
-            <span class="summary-value text-summary-blue">{{ customer.totalCashbackEarned | currency:'BRL' }}</span>
+            <span class="summary-value text-summary-blue">{{ summary.earned | currency:'BRL' }}</span>
           </div>
 
           <div class="summary-divider"></div>
 
           <div class="summary-item">
             <span class="summary-label">Disponível</span>
-            <span class="summary-value text-summary-green">{{ customer.activeCashbackAmount | currency:'BRL' }}</span>
+            <span class="summary-value text-summary-green">{{ summary.active | currency:'BRL' }}</span>
           </div>
 
           <div class="summary-divider"></div>
 
           <div class="summary-item">
             <span class="summary-label">Total Utilizado</span>
-            <span class="summary-value text-secondary">{{ customer.totalCashbackUsed | currency:'BRL' }}</span>
+            <span class="summary-value text-secondary">{{ summary.used | currency:'BRL' }}</span>
           </div>
         </div>
         }
@@ -43,61 +46,100 @@
         <div class="filter-container">
           <span class="filter-label text-muted"><i class="bi bi-funnel me-1"></i> Filtrar:</span>
           @for(status of statuses; track status.value) {
-          <button type="button" class="btn-filter" [ngClass]="status.class" (click)="toggleStatus(status.value)" [class.active]="selectedStatus.has(status.value)">
-            {{ status.value }}
+          <button 
+            type="button" 
+            class="btn-filter" 
+            [ngClass]="status.class" 
+            (click)="toggleStatus(status.value)" 
+            [class.active]="selectedStatus.has(status.value)"
+          >
+            {{ status.value | cashbackStatusLabel }}
           </button>
           }
         </div>
 
-        <!-- Tabela de Histórico -->
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-light sticky-top">
-              <tr>
-                <th>Data de Criação</th>
-                <th>Compra de origem</th>
-                <th>Resgate</th>
-                <th class="text-center">Mín. Compra</th>
-                <th class="text-center">Status</th>
-                <th class="text-end">Valor</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of filteredCashbacks; track item.id) {
-              <tr>
-                <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
-                <td>
-                  <span class="fw-bold">{{ item.originPurchaseId }}</span>
-                </td>
-                <td>
-                  @if (item.usedInPurchaseId) {
-                  <span class="fw-bold text-dark">{{ item.usedInPurchaseId }}</span>
-                  } @else {
-                  <span class="text-muted">-</span>
-                  }
-                </td>
-                <td class="text-center">
-                  @if (item.minPurchaseValue > 0) {
-                  <span class="text-muted">{{ item.minPurchaseValue | currency:'BRL' }}</span>
-                  } @else {
-                  <span class="text-muted">-</span>
-                  }
-                </td>
-                <td class="text-center">
-                  <span class="status-badge" [ngClass]="getStatusClass(item.status)">
-                    {{ item.status }}
-                  </span>
-                </td>
-                <td class="text-end">
-                  <span class="cashback-value">
-                    {{ item.value | currency:'BRL' }}
-                  </span>
-                </td>
-              </tr>
+        @if (filteredCashbacks.length > 0) {
+          <!-- Tabela -->
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light sticky-top">
+                <tr>
+                  <th>Data de Criação</th>
+                  <th>Compra de origem</th>
+                  <th>Compra de resgate</th>
+                  <th class="text-center">Mín. Compra</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-end">Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of filteredCashbacks; track item.id) {
+                <tr>
+                  <td class="text-muted">{{ item.createdAt | date:'dd/MM/yyyy' }}</td>
+                  <td>
+                    <button
+                      type="button"
+                      class="purchase-id-link"
+                      [title]="item.originPurchaseId"
+                      (click)="openPurchaseDetails(item.originPurchaseId)"
+                    >
+                      {{ shortPurchaseId(item.originPurchaseId) }}
+                    </button>
+                  </td>
+                  <td>
+                    @if (item.usedInPurchaseId) {
+                    <button
+                      type="button"
+                      class="purchase-id-link"
+                      [title]="item.usedInPurchaseId"
+                      (click)="openPurchaseDetails(item.usedInPurchaseId)"
+                    >
+                      {{ shortPurchaseId(item.usedInPurchaseId) }}
+                    </button>
+                    } @else {
+                    <span class="text-muted">--</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    @if (item.minPurchaseValue > 0) {
+                    <span class="text-muted">{{ item.minPurchaseValue | currency:'BRL' }}</span>
+                    } @else {
+                    <span class="text-muted">--</span>
+                    }
+                  </td>
+                  <td class="text-center">
+                    <span class="status-badge" [ngClass]="getStatusClass(item.status)">
+                      {{ item.status | cashbackStatusLabel }}
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <span class="cashback-value">
+                      {{ item.value | currency:'BRL' }}
+                    </span>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state-card">
+            <div class="empty-state-icon">
+              <i class="bi" [ngClass]="selectedStatus.size > 0 ? 'bi-funnel' : 'bi-inbox'"></i>
+            </div>
+            <h6 class="empty-state-title">
+              {{ selectedStatus.size > 0 ? 'Nenhum cashback para os filtros selecionados' : 'Nenhum cashback registrado' }}
+            </h6>
+            <p class="empty-state-text">
+              @if (selectedStatus.size > 0) {
+                Ajuste ou desative os filtros para ver outros resultados.
+              } @else {
+                Assim que houver cashbacks relacionados a <br> 
+                este cliente, os registros aparecerão aqui.
               }
-            </tbody>
-          </table>
-        </div>
+            </p>
+          </div>
+        }
       </div>
 
       <div class="modal-footer">
@@ -106,3 +148,6 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de detalhes da compra (filho, do modal pai) -->
+<app-purchase-details-modal [purchaseId]="selectedPurchaseId" />

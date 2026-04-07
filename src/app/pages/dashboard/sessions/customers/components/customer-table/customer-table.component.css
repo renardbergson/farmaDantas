@@ -10,7 +10,8 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  /* Permite que dropdowns da coluna "Ações" extrapolem o card sem serem cortados */
+  overflow: visible;
 }
 
 .dashboard-card-header {
@@ -29,6 +30,47 @@
   font-size: 0.875rem;
   color: var(--text-muted);
   margin: 4px 0 0 0;
+}
+
+.empty-state-card {
+  min-height: 260px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 1.25rem;
+  background: #f8fafc;
+}
+
+.empty-state-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: #6366f1;
+  margin-bottom: 0.85rem;
+}
+
+.empty-state-icon i {
+  font-size: 1.2rem;
+}
+
+.empty-state-title {
+  margin: 0 0 0.35rem;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.empty-state-text {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  max-width: 520px;
 }
 
 .table-responsive {
@@ -90,6 +132,15 @@
 
 .table-custom tbody tr:last-child td {
   border-bottom: none;
+}
+
+/* Mantém cantos inferiores arredondados mesmo com overflow visível no card */
+.table-custom tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.table-custom tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 12px;
 }
 
 .client-avatar {

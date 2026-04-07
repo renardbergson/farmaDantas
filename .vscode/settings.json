@@ -9,7 +9,7 @@
   "javascript.preferences.semicolons": "always",
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   },
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",

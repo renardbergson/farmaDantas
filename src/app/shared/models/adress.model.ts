@@ -1,12 +1,14 @@
-export interface Address {
-  id: string;
+/** Espelha {@code AddressResponse} da API. */
+export interface AddressResponse {
   zipCode: string;
-  stateId: number;
-  stateName: string;
-  cityId: number;
-  cityName: string;
-  neighborhood: string;
   street: string;
   number: string | null;
   complement: string | null;
+  neighborhood: string;
+  cityId: number;
+  cityName: string;
+  stateId: number;
+  stateName: string;
 }
+
+export type Address = AddressResponse;

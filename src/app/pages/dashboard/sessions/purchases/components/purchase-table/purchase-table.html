@@ -34,7 +34,7 @@
           <td class="text-muted">{{ purchase.date | date: 'dd/MM/yyyy' }}</td>
           <td><span class="badge-categoria" [ngClass]="getCategoryBadgeClass(purchase.category)">{{ purchase.category }}</span></td>
           <td class="text-end fw-medium">{{ purchase.finalValue | currency: 'BRL' }}</td>
-          <td class="text-end cashback-value">{{ purchase.generatedCashback ? (purchase.generatedCashback.value | currency: 'BRL') : '--' }}</td>
+          <td class="text-end cashback-value">--</td>
           <td class="text-end">
             <div class="dropdown">
               <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">

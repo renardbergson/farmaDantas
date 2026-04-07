@@ -1,26 +1,25 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal, PurchaseDeleteModal } from './components'
+import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDeleteModal } from './components'
+import { PurchaseDetailsModalComponent } from '../../../../shared/components/purchase-details-modal/purchase-details-modal.component';
 import { Purchase } from '../../../../shared/models';
-import { CustomerService, PurchaseService } from '../../../../shared/services';
+import { PurchaseService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
-import { switchMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-purchases',
-  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModal, PurchaseDeleteModal],
+  imports: [PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDetailsModalComponent, PurchaseDeleteModal],
   templateUrl: './purchases.html',
   styleUrl: './purchases.css',
 })
 export class Purchases implements OnInit {
   originalPurchases: Purchase[] = [];
   filteredPurchases: Purchase[] = [];
-  selectedPurchase?: Purchase;
+  selectedPurchaseId: string | null = null;
   purchaseToDelete: Purchase | null = null;
 
   @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
   constructor(
-    private customerService: CustomerService,
     private purchaseService: PurchaseService
   ) { }
 
@@ -29,10 +28,10 @@ export class Purchases implements OnInit {
   }
 
   loadPurchases(): void {
-    this.customerService.getCustomers().subscribe({
-      next: (data) => {
-        this.originalPurchases = data.flatMap(customer => customer.purchases ?? []);
-        this.filteredPurchases = this.originalPurchases;
+    this.purchaseService.getPurchases().subscribe({
+      next: (purchases) => {
+        this.originalPurchases = purchases;
+        this.filteredPurchases = purchases;
       },
       error: (err) => {
         console.error('Ocorreu um erro ao tentar carregar as compras', err);
@@ -40,9 +39,6 @@ export class Purchases implements OnInit {
     })
   }
 
-  /** 
-   * Quando uma compra é adicionada, atualiza a tabela de compras e também os cards de estatísticas.
-  */
   onPurchaseAdded(): void {
     this.loadPurchases();
     this.purchaseStatsCards?.loadStats();
@@ -56,11 +52,12 @@ export class Purchases implements OnInit {
     const { term, categories } = filters;
 
     this.filteredPurchases = this.originalPurchases.filter(purchase => {
+      const dateStr = new Date(purchase.date).toLocaleDateString('pt-BR');
       const matchesSearchTerm =
         term === '' ||
         purchase.customerName.toLowerCase().includes(term.toLowerCase()) ||
-        purchase.employeeName.toLowerCase().includes(term.toLowerCase()) ||
-        purchase.date.toLocaleDateString('pt-BR').includes(term)
+        purchase.userName.toLowerCase().includes(term.toLowerCase()) ||
+        dateStr.includes(term)
 
       const matchesCategory =
         categories.length === 0 ||
@@ -71,39 +68,18 @@ export class Purchases implements OnInit {
   }
 
   onViewPurchaseDetails(purchase: Purchase): void {
-    this.selectedPurchase = purchase;
+    this.selectedPurchaseId = purchase.id;
   }
 
   onDeletePurchase(purchase: Purchase): void {
     this.purchaseToDelete = purchase;
   }
 
-  /**
-   * Orquestra a exclusão da compra entre CustomerService e PurchaseService.
-   *
-   * Fluxo:
-   * 1. getCustomers() emite o array de clientes.
-   * 2. switchMap recebe esse array, encontra o cliente e chama deletePurchase(customer, purchase).
-   * 3. deletePurchase retorna Observable<Purchase>; switchMap emite esse valor.
-   * 4. subscribe recebe a compra removida e atualiza a UI.
-   *
-   * Foi usado pipe() + switchMap em vez de subscribe aninhado para manter o fluxo linear e evitar
-   * callbacks dentro de callbacks. O pipe encadeia os operadores; o subscribe inicia a execução.
-   */
   confirmDelete(purchase: Purchase): void {
-    this.customerService.getCustomers().pipe(
-      switchMap((customers) => {
-        const customer = customers.find((c) => c.id === purchase.customerId);
-        if (!customer) return of(null);
-        return this.purchaseService.deletePurchase(customer, purchase);
-      })
-    ).subscribe({
-      next: (result) => {
-        if (result) {
-          this.originalPurchases = this.originalPurchases.filter((p) => p.id !== purchase.id);
-          this.applyFilters({ term: '', categories: [] });
-          this.purchaseStatsCards?.loadStats();
-        }
+    this.purchaseService.deletePurchase(purchase.id).subscribe({
+      next: () => {
+        this.loadPurchases();
+        this.purchaseStatsCards?.loadStats();
       },
       error: (err) => console.error('Ocorreu um erro ao tentar excluir a compra:', err),
     });

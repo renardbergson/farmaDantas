@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import {
   CustomerService,
   CashbackService,
   PurchaseService,
   TopCustomer
 } from '../../../../../../shared/services';
-import { Customer } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-dashboard-top-customers',
@@ -34,10 +34,18 @@ export class DashboardTopCustomers implements OnInit {
   }
 
   loadTop5CustomersThisMonth() {
-    this.customerService.getCustomers().subscribe({
-      next: (customers) => {
-        const enriched = this.cashbackService.getCashbackStatsByCustomer(customers) as Customer[];
-        this.top5CustomersThisMonth = this.purchaseService.getTop5CustomersThisMonth(enriched);
+    forkJoin({
+      customers: this.customerService.getCustomers(),
+      purchases: this.purchaseService.getPurchases(),
+      cashbacks: this.cashbackService.getCashbacks(),
+    }).subscribe({
+      next: ({ customers, purchases, cashbacks }) => {
+        const cashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers, cashbacks);
+        this.top5CustomersThisMonth = this.purchaseService.getTop5CustomersThisMonth(
+          customers,
+          purchases,
+          cashbackStats,
+        );
       },
       error: (error) => {
         console.error('Ocorreu um erro ao tentar carregar os top 5 clientes:', error);

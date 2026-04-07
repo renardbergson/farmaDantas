@@ -11,7 +11,7 @@ import {
   createPerson,
   updatePerson,
 } from '../../../../../../shared/services';
-import { Customer } from '../../../../../../shared/models';
+import { Customer, CustomerDetailsResponse } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-customer-add-new-modal',
@@ -19,7 +19,7 @@ import { Customer } from '../../../../../../shared/models';
   imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective, NgSelectModule],
   providers: [provideNgxMask()],
   templateUrl: './customer-add-new-modal.component.html',
-  styleUrl: './customer-add-new-modal.component.css'
+  styleUrl: './customer-add-new-modal.component.css',
 })
 export class CustomerAddNewModal implements OnInit, OnChanges {
   @Output() customerAdded = new EventEmitter<void>();
@@ -29,10 +29,12 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   states: State[] = [];
   cities: City[] = [];
 
+  private dataToEdit: CustomerDetailsResponse | null = null;
+
   constructor(
     private fb: FormBuilder,
     private addressService: AddressService,
-    private customerService: CustomerService
+    private customerService: CustomerService,
   ) { }
 
   ngOnInit(): void {
@@ -40,25 +42,24 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.loadStates();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    // 1. Verificamos se a propriedade 'customer' foi alterada
-    if (changes['customer']) {
-      // 2. Verificamos se o formulário já foi inicializado
-      // ngOnChanges pode rodar antes do ngOnInit ***
-      if (!this.customerForm) return;
-      // 3. Verificamos o valor atual de 'customer'
-      if (this.customer) {
-        // MODO EDIÇÃO: o objeto existe
-        this.fillForm(this.customer);
-        const state = this.states.find(s => s.id === this.customer?.person.address.stateId);
-        if (state) {
-          this.loadCities(state)
-        };
-      } else {
-        // MODO CRIAÇÃO: o objeto é undefined
-        this.customerForm.reset();
-      }
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['customer']) return;
+    if (!this.customerForm) return;
+
+    if (!this.customer) {
+      this.dataToEdit = null;
+      this.customerForm.reset();
+      return;
     }
+
+    this.customerService.getCustomerDetails(this.customer.id).subscribe({
+      next: (dataToEdit) => {
+        this.dataToEdit = dataToEdit;
+        this.fillFormFromDetails(dataToEdit);
+        this.loadCitiesFromResponse(dataToEdit);
+      },
+      error: (err) => console.error('Erro ao carregar cliente para edição:', err),
+    });
   }
 
   initForm(): void {
@@ -75,42 +76,48 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
       neighborhood: ['', Validators.required],
       stateId: ['', Validators.required],
       cityId: ['', Validators.required],
-    })
+    });
     this.customerForm.get('cityId')?.disable();
   }
 
-  fillForm(customer: Customer): void {
-    // Preenche o formulário com os dados vindo do objeto Customer
+  private fillFormFromDetails(details: CustomerDetailsResponse): void {
     this.customerForm.patchValue({
-      name: customer.person.name,
-      cpf: customer.person.cpf,
-      email: customer.person.email ?? '',
-      phone: customer.person.phone,
-      dateOfBirth: customer.person.dateOfBirth ?? null,
-      zipCode: customer.person.address.zipCode,
-      street: customer.person.address.street,
-      number: customer.person.address.number ?? '',
-      complement: customer.person.address.complement ?? '',
-      neighborhood: customer.person.address.neighborhood,
-      stateId: customer.person.address.stateId,
-      cityId: customer.person.address.cityId
-    })
+      name: details.name,
+      cpf: details.cpf,
+      email: details.email ?? '',
+      phone: details.phone,
+      dateOfBirth: details.dateOfBirth
+        ? details.dateOfBirth
+        : null,
+      zipCode: details.address.zipCode,
+      street: details.address.street,
+      number: details.address.number ?? '',
+      complement: details.address.complement ?? '',
+      neighborhood: details.address.neighborhood,
+      stateId: details.address.stateId,
+      cityId: details.address.cityId,
+    });
+  }
+
+  private loadCitiesFromResponse(details: CustomerDetailsResponse): void {
+    const state = this.states.find((state) => state.id === details.address.stateId);
+    if (state) {
+      this.loadCities(state, details.address.cityId ?? undefined);
+    } else {
+      this.customerForm.get('cityId')?.disable();
+    }
   }
 
   loadStates(): void {
     this.addressService.getStates().subscribe({
-      next: (data) => {
-        this.states = data;
-        if (this.customer) {
-          const state = this.states.find(s => s.id === this.customer?.person.address.stateId);
-          if (state) this.loadCities(state);
-          else {
-            this.customerForm.get('cityId')?.disable();
-          }
+      next: (states) => {
+        this.states = states;
+        if (this.dataToEdit) {
+          this.loadCitiesFromResponse(this.dataToEdit);
         }
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar listar os estados:', err)
-    })
+      error: (err) => console.error('Ocorreu um erro ao tentar listar os estados:', err),
+    });
   }
 
   loadCities(state: State, selectedCityId?: number): void {
@@ -118,52 +125,50 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.addressService.getCities(state).subscribe({
       next: (data) => {
         this.cities = data;
-        if (selectedCityId) {
+        if (selectedCityId != null) {
           this.customerForm.patchValue({ cityId: selectedCityId });
         }
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar listar as cidades:', err)
-    })
+      error: (err) => console.error('Ocorreu um erro ao tentar listar as cidades:', err),
+    });
   }
 
-  searchByCep(): void {
+  searchByCep(): void { // chamado a partir do template
     const cep = this.customerForm.get('zipCode')?.value;
     if (!cep || cep.replace(/\D/g, '').length !== 8) return;
 
     this.addressService.getAddressByZipCode(cep).subscribe({
       next: (data) => {
-        if (data.erro) {
+        if (data.erro) { // no IBGE, erro é true quando o CEP não é encontrado
           console.warn('CEP não encontrado');
           return;
         }
 
-        const state = this.states.find(state => state.sigla === data.uf);
+        const state = this.states.find((state) => state.sigla === data.uf);
         if (state) {
           this.customerForm.patchValue({ stateId: state.id });
-          const cityId = data.ibge ? parseInt(data.ibge, 10) : undefined; // 10 significa: tenha certeza de converter para número em base 10
+          const cityId = data.ibge ? parseInt(data.ibge, 10) : undefined;
           this.loadCities(state, cityId);
         }
 
         this.customerForm.patchValue({
           street: data.logradouro || '',
-          neighborhood: data.bairro || ''
-        })
+          neighborhood: data.bairro || '',
+        });
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar buscar o endereço pelo CEP:', err)
-    })
+      error: (err) => console.error('Ocorreu um erro ao tentar buscar o endereço pelo CEP:', err),
+    });
   }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.customerForm.get(fieldName);
     return !!(field && field.invalid && (field.touched || field.dirty));
-    // !! converte para booleano, é o mesmo que Boolean(...)
   }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.customerForm.valid) {
       const raw = this.customerForm.getRawValue();
-      const stateName = this.states.find(s => s.id === raw.stateId)?.nome;
-      const cityName = this.cities.find(c => c.id === raw.cityId)?.nome;
+
       const customerData = {
         name: raw.name,
         cpf: raw.cpf,
@@ -172,37 +177,34 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
         dateOfBirth: raw.dateOfBirth,
         address: {
           zipCode: raw.zipCode,
-          stateId: raw.stateId,
-          stateName,
-          cityId: raw.cityId,
-          cityName,
           street: raw.street,
           number: raw.number,
           complement: raw.complement,
-          neighborhood: raw.neighborhood
-        }
-      }
+          neighborhood: raw.neighborhood,
+          cityId: raw.cityId,
+          stateId: raw.stateId,
+        },
+      };
 
       if (this.customer) {
-        // MODO EDIÇÃO
         this.customerService.updateCustomer(this.customer.id, customerData as updatePerson).subscribe({
           next: () => this.handleSuccess(),
-          error: (err) => console.error("Ocorreu um erro ao atualizar o cliente:", err)
-        })
+          error: (err) => console.error('Ocorreu um erro ao atualizar o cliente:', err),
+        });
       } else {
-        // MODO CRIAÇÃO
         this.customerService.addCustomer(customerData as createPerson).subscribe({
           next: () => this.handleSuccess(),
-          error: (err) => console.error("Ocorreu um erro ao salvar o cliente:", err)
-        })
+          error: (err) => console.error('Ocorreu um erro ao salvar o cliente:', err),
+        });
       }
     } else {
       this.customerForm.markAllAsTouched();
-      console.error("Formulário inválido");
+      console.error('Formulário inválido');
     }
   }
 
   private handleSuccess(): void {
+    this.dataToEdit = null;
     this.customerAdded.emit();
     this.customerForm.reset();
     const closeBtn = document.querySelector<HTMLElement>('#newCustomerModal .btn-close');

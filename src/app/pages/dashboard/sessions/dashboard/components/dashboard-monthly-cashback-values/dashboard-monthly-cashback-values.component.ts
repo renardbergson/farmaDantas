@@ -1,5 +1,5 @@
 import { Component, OnDestroy, AfterViewInit } from '@angular/core';
-import { CustomerService, CashbackService, MonthlyCashbackValueData } from '../../../../../../shared/services';
+import { CashbackService, MonthlyCashbackValueData } from '../../../../../../shared/services';
 import { Chart, TooltipItem } from 'chart.js/auto';
 
 @Component({
@@ -12,14 +12,13 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
   private areaChart?: Chart;
 
   constructor(
-    private customerService: CustomerService,
     private cashbackService: CashbackService
   ) { }
 
   ngAfterViewInit(): void {
-    this.customerService.getCustomers().subscribe({
-      next: (customers) => {
-        const data = this.cashbackService.getAllLastMonthsCashbackTotals(customers);
+    this.cashbackService.getCashbacks().subscribe({
+      next: (cashbacks) => {
+        const data = this.cashbackService.getAllLastMonthsCashbackTotals(cashbacks);
         this.initChart(data);
       },
       error: (error) => {

@@ -4,7 +4,7 @@
 
 <app-customer-searchbar (filtersChange)="onFiltersChange($event)" />
 
-<app-customer-table [customers]="filteredCustomers" (viewDetails)="onSelectCustomer($event)" (editCustomer)="onEditCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)" />
+<app-customer-table [customers]="filteredCustomers" [totalCustomers]="originalCustomers.length" [hasActiveFilters]="hasActiveFilters" (viewDetails)="onSelectCustomer($event)" (editCustomer)="onEditCustomer($event)" (deleteCustomer)="onDeleteCustomer($event)" />
 
 <app-customer-add-new-modal (customerAdded)="loadCustomers()" [customer]="customerToEdit" />
 

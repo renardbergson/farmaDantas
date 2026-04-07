@@ -1,19 +1,21 @@
+/** Espelha {@code Cashback.CashbackStatus} serializado pela API. */
 export enum CashbackStatus {
-  ACTIVE = 'Ativo',
-  USED = 'Utilizado',
-  EXPIRED = 'Expirado'
+  ACTIVE = 'ACTIVE',
+  USED = 'USED',
+  EXPIRED = 'EXPIRED',
 }
 
-export interface Cashback {
+/** Espelha {@code ListCashbacksResponse} da API. */
+export interface ListCashbacksResponse {
   id: string;
-  value: number;
-  customerId: string;
-  customerName: string;
-  createdAt: Date;
-  validUntil: Date;
-  timeLeft: string;
-  originPurchaseId: string;
   status: CashbackStatus;
+  value: number;
   minPurchaseValue: number;
+  customerName: string;
+  originPurchaseId: string;
   usedInPurchaseId: string | null;
+  createdAt: string;
+  validUntil: string;
 }
+
+export type Cashback = ListCashbacksResponse;

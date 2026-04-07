@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomerService, PurchaseService, PurchasesStats } from '../../../../../../shared/services';
+import { forkJoin } from 'rxjs';
+import { CustomerService, PurchaseService, CashbackService, PurchasesStats } from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-dashboard-stats-grid',
@@ -25,7 +26,8 @@ export class DashboardStatsGrid implements OnInit {
 
   constructor(
     private customerService: CustomerService,
-    private purchaseService: PurchaseService
+    private purchaseService: PurchaseService,
+    private cashbackService: CashbackService,
   ) { }
 
   ngOnInit(): void {
@@ -39,19 +41,23 @@ export class DashboardStatsGrid implements OnInit {
 
   getActiveCashbackText(delta: number, singular: string, plural: string): string {
     if (delta === 0) return 'igual ao mês anterior';
-    const n = Math.abs(delta); // retorna o valor absoluto de um número: remove o sinal, negativo ou positivo
+    const n = Math.abs(delta);
     const text = `${delta > 0 ? '+' : '-'} ${n} ${n === 1 ? singular : plural}`;
     return text;
   }
 
   loadStats(): void {
-    this.customerService.getCustomers().subscribe({
-      next: (customers) => {
-        this.stats = this.purchaseService.getAllPurchaseStats(customers);
+    forkJoin({
+      customers: this.customerService.getCustomers(),
+      purchases: this.purchaseService.getPurchases(),
+      cashbacks: this.cashbackService.getCashbacks(),
+    }).subscribe({
+      next: ({ customers, purchases, cashbacks }) => {
+        this.stats = this.purchaseService.getAllPurchaseStats(customers, purchases, cashbacks);
       },
       error: (err) => {
         console.error('Erro ao tentar carregar a visão geral de estatísticas do dashboard:', err);
       }
-    })
+    });
   }
 }

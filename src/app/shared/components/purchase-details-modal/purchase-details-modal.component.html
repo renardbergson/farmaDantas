@@ -1,0 +1,185 @@
+<div 
+  class="modal fade" 
+  id="purchaseDetailsModal" 
+  tabindex="-1" 
+  aria-labelledby="purchaseDetailsModalLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-custom">
+    <div class="modal-content modal-content-custom">
+      <div class="modal-header-custom">
+        <div class="modal-header-inner">
+          <div class="modal-header-icon">
+            <i class="bi bi-receipt"></i>
+          </div>
+          <div>
+            <h2 
+              class="modal-title-custom" 
+              id="purchaseDetailsModalLabel"
+            >
+              Detalhes da Compra
+            </h2>
+            <p class="modal-subtitle">
+              Confira os detalhes adicionais a respeito da compra.             
+            </p>
+          </div>
+        </div>
+        <button 
+          type="button" 
+          class="btn-close btn-close-custom" 
+          data-bs-dismiss="modal" 
+          aria-label="Fechar">
+        </button>
+      </div>
+
+      @if (isLoading) {
+        <div class="modal-body">
+          <div class="state-card">
+            <i class="bi bi-hourglass-split state-icon"></i>
+            <h6 class="state-title">Carregando detalhes da compra...</h6>
+            <p class="state-text">Aguarde enquanto buscamos as informações.</p>
+          </div>
+        </div>
+      } @else if (hasError) {
+        <div class="modal-body">
+          <div class="state-card state-card-error">
+            <i class="bi bi-exclamation-triangle state-icon"></i>
+            <h6 class="state-title">Não foi possível carregar os detalhes</h6>
+            <p class="state-text">Feche e abra o modal novamente para tentar de novo.</p>
+          </div>
+        </div>
+      } @else if (purchaseDetails; as purchase) {
+        <div class="modal-body">
+          <div class="profile-header">
+            <div class="d-flex align-items-center gap-3">
+              <div class="profile-avatar">
+                {{ getInitials(purchase.customerName || '') }}
+              </div>
+              <div>
+                <h4 class="profile-name">
+                  {{ purchase.customerName || '' }}                
+                </h4>
+              </div>
+            </div>
+          </div>
+  
+          <div class="form-grid">
+            <h6 class="section-label form-grid-cell-full">
+              <i class="bi bi-receipt me-2"></i>
+              Dados da compra
+            </h6>
+            <div class="purchase-data-grid">
+              <div class="detail-field">
+                <label class="detail-label">ID da compra</label>
+                <span class="detail-text detail-id">
+                  {{ purchaseId || purchase.id }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Categoria</label>
+                <span class="detail-value">
+                  <span 
+                    class="badge-categoria" 
+                    [ngClass]="getCategoryBadgeClass(purchase.category)"
+                  >
+                    {{ purchase.category | purchaseCategoryLabel }}
+                  </span>
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Valor total</label>
+                <span class="detail-text detail-stat-value">
+                  {{ purchase.totalValue | currency: 'BRL' }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Registrado por</label>
+                <span class="detail-text">
+                  {{ purchase.userName }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Data</label>
+                <span class="detail-text">
+                  {{ purchase.date | date: 'dd/MM/yyyy' }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Formas de pagamento</label>
+                <span class="detail-text">
+                  {{ purchase.paymentMethods | paymentMethodsLabel }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Valor final</label>
+                <span class="detail-text detail-stat-value text-success-value">
+                  {{ purchase.finalValue | currency: 'BRL' }}
+                </span>
+              </div>
+              <div class="detail-field">
+                <label class="detail-label">Modalidade</label>
+                <span class="detail-text">{{ purchase.mode | purchaseModeLabel }}</span>
+              </div>
+            </div>
+  
+            <div class="form-grid-cell-full detail-observations">
+              <h6 class="section-label">
+                <i class="bi bi-chat-left-text me-2"></i>
+                Observações
+              </h6>
+              <div 
+                class="observations-content" 
+                [class.observations-empty]="!purchase.observations"
+              >
+                {{ purchase.observations || '--' }}
+              </div>
+            </div>
+  
+            <div class="form-grid-cell-full detail-stats-row">
+              <h6 class="section-label">
+                <i class="bi bi-gift me-2"></i>
+                Cashback
+              </h6>
+              <div class="detail-stats-grid">
+                <div class="detail-stat">
+                  <label class="detail-label">Taxa de geração</label>
+                  <span class="detail-text detail-stat-value">
+                    {{ purchase.cashbackGenerationRate != null
+                      ? ((purchase.cashbackGenerationRate / 100) | percent:'1.0-0')
+                      : '--' 
+                    }}
+                  </span>
+                  <span class="detail-cashback-count">Na data da compra</span>
+                </div>
+                <div class="detail-stat">
+                  <label class="detail-label">Valor gerado</label>
+                  <span class="detail-text detail-stat-value text-primary">
+                    {{ purchase.generatedCashbackValue != null ? (purchase.generatedCashbackValue | currency: 'BRL') : '--' }}
+                  </span>
+                </div>
+                <div class="detail-stat">
+                  <label class="detail-label">Valor resgatado</label>
+                  <span class="detail-text detail-stat-value text-danger-value">
+                    {{ purchase.redeemedCashbackValue != null ? (purchase.redeemedCashbackValue | currency: 'BRL') : '--' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="modal-body">
+          <div class="state-card">
+            <i class="bi bi-info-circle state-icon"></i>
+            <h6 class="state-title">Nenhum detalhe disponível</h6>
+            <p class="state-text">Selecione uma compra para visualizar os dados.</p>
+          </div>
+        </div>
+      }
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>

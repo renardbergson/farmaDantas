@@ -17,7 +17,7 @@
             <!-- usamos vírgula aqui porque estamos passando um array de condições para o
               ngClass, que converterá cada condição em uma classe separada -->
             <label [for]="'filter-' + status.value" class="status-chip" [ngClass]="[status.class, selectedStatuses.has(status.value) ? 'is-active' : '']">
-              {{ status.value }}
+              {{ status.value | customerStatusLabel }}
             </label>
           </div>
           }

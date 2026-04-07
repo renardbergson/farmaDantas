@@ -15,6 +15,7 @@
             <h6 class="section-label form-grid-cell-right">Endereço</h6>
 
             <!-- Linha 1: Nome | CEP + Estado + Número -->
+            <!-- NOME COMPLETO -->
             <div class="form-grid-cell-left form-group-with-error-space">
               <label class="form-label-custom">Nome completo*</label>
               <input formControlName="name" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('name')" placeholder="Nome do cliente">
@@ -24,13 +25,29 @@
                 }
               </div>
             </div>
+
+            <!-- CEP + Estado + Número -->
             <div class="form-grid-cell-right">
               <div class="row g-2 address-row">
+                <!-- CEP -->
                 <div class="col-5 form-group-with-error-space">
                   <label class="form-label-custom">CEP*</label>
                   <div class="input-group input-group-cep">
-                    <input formControlName="zipCode" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('zipCode')" mask="00000-000" placeholder="00000-000" (blur)="searchByCep()">
-                    <button type="button" class="btn btn-cep-search" (click)="searchByCep()" title="Buscar endereço">
+                    <input 
+                      formControlName="zipCode" 
+                      type="text" 
+                      class="form-control form-control-custom" 
+                      [class.is-invalid]="isFieldInvalid('zipCode')" mask="00000-000" 
+                      placeholder="00000-000" 
+                      (blur)="searchByCep()">
+
+                    <button 
+                      type="button" 
+                      class="btn btn-cep-search" 
+                      (click)="searchByCep()" 
+                      title="Buscar endereço" 
+                      [disabled]="customerForm.get('zipCode')?.value?.length !== 8"
+                    >
                       <i class="bi bi-search"></i>
                     </button>
                   </div>
@@ -40,6 +57,7 @@
                     }
                   </div>
                 </div>
+                <!-- Estado -->
                 <div class="col-4 form-group-with-error-space">
                   <label class="form-label-custom">Estado*</label>
                   <ng-select (change)="loadCities($event)" formControlName="stateId" bindLabel="nome" bindValue="id" placeholder="Estado" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('stateId')" [items]="states" [searchable]="true" [clearable]="false">
@@ -50,6 +68,7 @@
                     }
                   </div>
                 </div>
+                <!-- Número -->
                 <div class="col-3 form-group-with-error-space">
                   <label class="form-label-custom">Número</label>
                   <input formControlName="number" type="text" class="form-control form-control-custom" placeholder="Nº">
@@ -128,11 +147,11 @@
               </ng-select>
               <div class="error-feedback-space">
                 @if(isFieldInvalid('cityId')) {
-                  @if(customerForm.get('cityId')?.errors?.['cityNotFound']) {
-                    <div class="invalid-feedback d-block">Cidade não encontrada.</div>
-                  } @else {
-                    <div class="invalid-feedback d-block">A cidade é obrigatória.</div>
-                  }
+                @if(customerForm.get('cityId')?.errors?.['cityNotFound']) {
+                <div class="invalid-feedback d-block">Cidade não encontrada.</div>
+                } @else {
+                <div class="invalid-feedback d-block">A cidade é obrigatória.</div>
+                }
                 }
               </div>
             </div>

@@ -2,11 +2,10 @@ import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitte
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CustomerService, PurchaseService, UserService } from '../../../../../../shared/services';
-import { Customer, Purchase, PurchaseCategory, PurchaseMode, PaymentMethod, User, Cashback, CashbackStatus } from '../../../../../../shared/models';
+import { CustomerService, PurchaseService, UserService, CashbackService } from '../../../../../../shared/services';
+import { Cashback, CreatePurchaseRequest, Customer, Purchase, PurchaseCategory, PurchaseMode, PaymentMethod, User } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
-import { parseDateToLocalDate } from '../../../../../../shared/utils/parseDateToLocalDate';
 
 @Component({
   selector: 'app-purchase-add-new-modal',
@@ -51,7 +50,8 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     private fb: FormBuilder,
     private customerService: CustomerService,
     private userService: UserService,
-    private purchaseService: PurchaseService
+    private purchaseService: PurchaseService,
+    private cashbackService: CashbackService,
   ) { }
 
   ngOnInit(): void {
@@ -129,31 +129,17 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   }
 
   /**
-   * Configura o listener de mudança do campo cliente. Executado sempre que o usuário
-   * seleciona ou troca o cliente no formulário de adição de compra.
-   *
-   * Passos:
-   * 1. Limpa o cashback selecionado (emitEvent: false evita disparar valueChanges).
-   * 2. Filtra os cashbacks do cliente para exibir apenas os disponíveis para uso:
-   *    - status ACTIVE;
-   *    - validUntil >= hoje (não expirados).
-   * 3. Atualiza activeCashbacksList, usada no select "Aplicar cashback".
+   * Ao mudar o cliente: limpa o cashback escolhido e busca vouchers disponíveis na API.
    */
   private setupCustomerChangeListener(): void {
     this.purchaseForm.get('customer')?.valueChanges.subscribe((customer: Customer | null) => {
       this.purchaseForm.patchValue({ selectedCashback: null }, { emitEvent: false });
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      this.activeCashbacksList = customer?.cashbacks?.filter((cb) => {
-        if (cb.status !== CashbackStatus.ACTIVE) return false;
-
-        const validUntil = new Date(cb.validUntil);
-        validUntil.setHours(0, 0, 0, 0);
-
-        return validUntil >= today;
-      }) ?? [];
+      this.activeCashbacksList = [];
+      if (!customer?.id) return;
+      this.cashbackService.getAvailableCashbacksForCustomer(customer.id).subscribe({
+        next: (list) => { this.activeCashbacksList = list; },
+        error: (err) => console.error('Erro ao listar cashbacks do cliente:', err),
+      });
     });
   }
 
@@ -221,25 +207,27 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   onSubmit(): void {
     if (this.purchaseForm.valid) {
       const raw = this.purchaseForm.getRawValue();
-
-      const purchase: Omit<Purchase, 'id' | 'generatedCashback'> & { generatedCashbackValue: number | null } = {
+      const gen = raw.generateCashback;
+      const purchase: CreatePurchaseRequest = {
+        customerId: raw.customer.id,
+        userId: raw.employee.id,
         mode: raw.mode as PurchaseMode,
-        date: parseDateToLocalDate(raw.purchaseDate),
+        date: raw.purchaseDate,
+        category: raw.category as PurchaseCategory,
+        paymentMethods: raw.paymentMethods as PaymentMethod[],
         totalValue: Number(raw.totalValue),
         finalValue: Number(raw.finalValue),
-        category: raw.category as PurchaseCategory,
-        customerId: raw.customer.id,
-        customerName: raw.customer.person.name,
-        employeeId: raw.employee.id,
-        employeeName: raw.employee.person.name,
-        paymentMethods: raw.paymentMethods as PaymentMethod[],
-        usedCashbackGenerationRate: raw.generateCashback ? CASHBACK_CONFIG.cashbackGenerationRate : null,
+        generateCashback: gen,
         observations: raw.observations || null,
-        usedCashback: raw.selectedCashback as Cashback || null,
-        generatedCashbackValue: this.generatedCashbackValue || null,
+        usedCashbackId: (raw.selectedCashback as Cashback | null)?.id ?? null,
+        ...(gen ? {
+          cashbackValidityDays: 30,
+          cashbackGenerationRate: Math.round(CASHBACK_CONFIG.cashbackGenerationRate * 100),
+          cashbackRedemptionRate: Math.round(CASHBACK_CONFIG.cashbackRedemptionRate * 100),
+        } : {}),
       };
 
-      this.purchaseService.addPurchase(raw.customer, purchase).subscribe({
+      this.purchaseService.addPurchase(purchase).subscribe({
         next: () => this.handleSuccess(),
         error: (err) => console.error('Erro ao registrar compra:', err)
       });

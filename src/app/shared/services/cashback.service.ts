@@ -49,7 +49,7 @@ export class CashbackService {
 
   getAvailableCashbacksForCustomer(customerId: string): Observable<Cashback[]> {
     return this.http.get<Cashback[]>(
-      `${this.CASHBACKS_URL}?customerId=${customerId}&availableOnly=true`,
+      `${this.CASHBACKS_URL}?customerId=${customerId}&activeOnly=true`,
     );
   }
 

@@ -4,6 +4,9 @@
   <app-purchases-searchbar (filtersChange)="onFiltersChange($event)" />
   <app-purchases-table 
     [purchases]="filteredPurchases" 
+    [isLoading]="isLoading"
+    [totalPurchases]="originalPurchases.length"
+    [hasActiveFilters]="hasActiveFilters"
     (viewDetails)="onViewPurchaseDetails($event)" 
     (deletePurchase)="onDeletePurchase($event)" 
   />

@@ -12,6 +12,8 @@ import {
   updatePerson,
 } from '../../../../../../shared/services';
 import { Customer, CustomerDetailsResponse } from '../../../../../../shared/models';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-customer-add-new-modal',
@@ -35,6 +37,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     private fb: FormBuilder,
     private addressService: AddressService,
     private customerService: CustomerService,
+    private toast: ToastrService,
   ) { }
 
   ngOnInit(): void {
@@ -58,7 +61,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
         this.fillFormFromDetails(dataToEdit);
         this.loadCitiesFromResponse(dataToEdit);
       },
-      error: (err) => console.error('Erro ao carregar cliente para edição:', err),
+      error: () => this.toast.error('Erro ao carregar cliente para edição')
     });
   }
 
@@ -116,7 +119,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           this.loadCitiesFromResponse(this.dataToEdit);
         }
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar listar os estados:', err),
+      error: () => this.toast.error('Erro ao tentar listar os estados')
     });
   }
 
@@ -129,7 +132,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           this.customerForm.patchValue({ cityId: selectedCityId });
         }
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar listar as cidades:', err),
+      error: () => this.toast.error('Erro ao tentar listar as cidades')
     });
   }
 
@@ -140,7 +143,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.addressService.getAddressByZipCode(cep).subscribe({
       next: (data) => {
         if (data.erro) { // no IBGE, erro é true quando o CEP não é encontrado
-          console.warn('CEP não encontrado');
+          this.toast.warning('CEP não encontrado');
           return;
         }
 
@@ -156,7 +159,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           neighborhood: data.bairro || '',
         });
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar buscar o endereço pelo CEP:', err),
+      error: () => this.toast.error('Erro ao buscar o endereço pelo CEP')
     });
   }
 
@@ -188,26 +191,36 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
 
       if (this.customer) {
         this.customerService.updateCustomer(this.customer.id, customerData as updatePerson).subscribe({
-          next: () => this.handleSuccess(),
-          error: (err) => console.error('Ocorreu um erro ao atualizar o cliente:', err),
+          next: () => this.handleSuccess('Cliente atualizado com sucesso'),
+          error: () => this.toast.error('Erro ao tentar atualizar o cliente')
         });
       } else {
         this.customerService.addCustomer(customerData as createPerson).subscribe({
-          next: () => this.handleSuccess(),
-          error: (err) => console.error('Ocorreu um erro ao salvar o cliente:', err),
+          next: () => this.handleSuccess('Cliente salvo com sucesso'),
+          error: (err) => {
+            if (err instanceof HttpErrorResponse &&
+              err.status === 409 &&
+              typeof err.error?.message === 'string'
+            ) {
+              this.toast.error(err.error.message); // conflito de CPF
+            } else {
+              this.toast.error('Erro ao tentar salvar o cliente');
+            }
+          }
         });
       }
     } else {
       this.customerForm.markAllAsTouched();
-      console.error('Formulário inválido');
+      this.toast.error('Formulário inválido');
     }
   }
 
-  private handleSuccess(): void {
+  private handleSuccess(toastMessage: string): void {
     this.dataToEdit = null;
     this.customerAdded.emit();
     this.customerForm.reset();
     const closeBtn = document.querySelector<HTMLElement>('#newCustomerModal .btn-close');
     closeBtn?.click();
+    this.toast.success(toastMessage);
   }
 }

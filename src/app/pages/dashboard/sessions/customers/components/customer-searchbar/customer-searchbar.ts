@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomerStatus } from '../../../../../../shared/models';
-import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes/customer-status-label.pipe';
+import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
 export interface CustomerFilters {
   term: string;
   statuses: CustomerStatus[];

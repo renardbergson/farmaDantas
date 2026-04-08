@@ -1,63 +1,96 @@
 <div class="dashboard-card">
   <div class="dashboard-card-header">
     <h2 class="dashboard-card-title">Histórico de Compras</h2>
-    <p class="dashboard-card-subtitle">{{ purchases.length }} compra(s) encontrada(s)</p>
+    <p class="dashboard-card-subtitle">
+      {{ purchases.length }} compra(s) encontrada(s)
+    </p>
   </div>
-  <div class="table-responsive">
-    <table class="table table-custom">
-      <thead>
-        <tr>
-          <th>Cliente</th>
-          <th>
-            <button type="button" class="sort-header-btn" (click)="toggleSortByDate()">
-              Data
-              <i class="bi ms-1" [ngClass]="sortByDate === 'desc' ? 'bi-arrow-down' : 'bi-arrow-up'"></i>
-            </button>
-          </th>
-          <th>Categoria</th>
-          <th class="text-end">Valor</th>
-          <th class="text-end">Cashback</th>
-          <th class="text-end">Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (purchase of sortedPurchases; track $index) {
-        <tr>
-          <td>
-            <div class="d-flex align-items-center gap-3">
-              <div class="client-avatar">{{ getInitials(purchase.customerName) }}</div>
-              <div class="client-info">
-                <p class="client-name">{{ purchase.customerName }}</p>
-              </div>
-            </div>
-          </td>
-          <td class="text-muted">{{ purchase.date | date: 'dd/MM/yyyy' }}</td>
-          <td><span class="badge-categoria" [ngClass]="getCategoryBadgeClass(purchase.category)">{{ purchase.category }}</span></td>
-          <td class="text-end fw-medium">{{ purchase.finalValue | currency: 'BRL' }}</td>
-          <td class="text-end cashback-value">--</td>
-          <td class="text-end">
-            <div class="dropdown">
-              <button class="actions-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-three-dots"></i>
+  @if (isLoading) {
+    <div class="empty-state-card">
+      <div class="empty-state-icon">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <h6 class="empty-state-title">Carregando compras...</h6>
+      <p class="empty-state-text">Por favor, aguarde enquanto os dados são carregados.</p>
+    </div>
+  } @else if (!showEmptyState) {
+    <div class="table-responsive">
+      <table class="table table-custom">
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>
+              <button type="button" class="sort-header-btn" (click)="toggleSortByDate()">
+                Data
+                <i class="bi ms-1" [ngClass]="sortByDate === 'desc' ? 'bi-arrow-down' : 'bi-arrow-up'"></i>
               </button>
+            </th>
+            <th>Categoria</th>
+            <th class="text-end">Valor</th>
+            <th class="text-end">Modalidade</th>
+            <th class="text-end">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (purchase of sortedPurchases; track $index) {
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-3">
+                <div class="client-avatar">{{ getInitials(purchase.customerName) }}</div>
+                <div class="client-info">
+                  <p class="client-name">{{ purchase.customerName }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="text-muted">{{ purchase.date | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              <span class="badge-categoria" 
+                [ngClass]="getCategoryBadgeClass(purchase.category)"
+              >
+                {{ purchase.category | purchaseCategoryLabel }}              
+              </span>
+            </td>
+            <td class="text-end fw-medium">{{ purchase.finalValue | currency: 'BRL' }}</td>
+            <td class="text-end text-muted">
+              {{ purchase.mode | purchaseModeLabel }}
+            </td>
+            <td class="text-end">
+              <div class="dropdown">
+                <button 
+                  class="actions-btn" 
+                  type="button" 
+                  data-bs-toggle="dropdown" 
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-three-dots"></i>
+                </button>
 
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(purchase)" data-bs-toggle="modal" data-bs-target="#purchaseDetailsModal">
-                    <i class="bi bi-eye me-2"></i> Ver detalhes
-                  </a>
-                </li>
-                <li>
-                  <a class="dropdown-item text-danger" (click)="$event.preventDefault(); onDeletePurchase(purchase)" data-bs-toggle="modal" data-bs-target="#purchaseDeleteModal">
-                    <i class="bi bi-trash me-2"></i> Excluir
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li>
+                    <a class="dropdown-item" (click)="$event.preventDefault(); onViewDetails(purchase)" data-bs-toggle="modal" data-bs-target="#purchaseDetailsModal">
+                      <i class="bi bi-eye me-2"></i> Ver detalhes
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item text-danger" (click)="$event.preventDefault(); onDeletePurchase(purchase)" data-bs-toggle="modal" data-bs-target="#purchaseDeleteModal">
+                      <i class="bi bi-trash me-2"></i> Excluir
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty-state-card">
+      <div class="empty-state-icon">
+        <i class="bi" [ngClass]="hasActiveFilters ? 'bi-funnel' : 'bi-inbox'"></i>
+      </div>
+      <h6 class="empty-state-title">{{ emptyStateTitle }}</h6>
+      <p class="empty-state-text">{{ emptyStateMessage }}</p>
+    </div>
+  }
 </div>

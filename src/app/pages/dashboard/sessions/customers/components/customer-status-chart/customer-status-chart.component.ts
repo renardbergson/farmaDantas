@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Customer, CustomerStatus } from '../../../../../../shared/models';
-import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes/customer-status-label.pipe';
+import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
 
 @Component({
   selector: 'app-customer-status-chart',

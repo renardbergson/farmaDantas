@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PurchaseCategory } from '../../../../../../shared/models';
+import { PurchaseCategoryLabelPipe } from '../../../../../../shared/pipes';
 
 export interface PurchaseFilters {
   term: string;
@@ -9,7 +10,7 @@ export interface PurchaseFilters {
 
 @Component({
   selector: 'app-purchases-searchbar',
-  imports: [CommonModule],
+  imports: [CommonModule, PurchaseCategoryLabelPipe],
   templateUrl: './purchase-searchbar.html',
   styleUrl: './purchase-searchbar.css',
 })

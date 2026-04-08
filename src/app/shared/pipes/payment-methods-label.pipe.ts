@@ -14,7 +14,10 @@ const labels: Record<PaymentMethod, string> = {
   standalone: true,
 })
 export class PaymentMethodsLabelPipe implements PipeTransform {
-  transform(value: PaymentMethod[]): string {
-    return value.map((method) => labels[method] ?? method).join(', ');
+  transform(value: PaymentMethod[] | PaymentMethod): string {
+    if (Array.isArray(value)) {
+      return value.map((method) => labels[method] ?? method).join(', ');
+    }
+    return labels[value] ?? value;
   }
 }

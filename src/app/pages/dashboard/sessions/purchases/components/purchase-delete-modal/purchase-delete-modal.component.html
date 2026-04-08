@@ -16,7 +16,7 @@
         <div class="alert alert-warning border-0 bg-warning-subtle d-flex align-items-center gap-3 mb-4 rounded-3">
           <i class="bi bi-info-circle-fill fs-4 text-warning"></i>
           <p class="mb-0 small text-dark-emphasis">
-            <strong class="text-danger">Atenção:</strong> Esta ação não poderá ser desfeita. O <b>cashback gerado</b> e o <b>voucher utilizado</b> nesta compra (se houver) também serão <b>removidos permanentemente</b>.
+            <strong class="text-danger">Atenção:</strong> Esta ação não poderá ser desfeita! <b>Vouchers gerados e/ou utilizados</b> nesta compra também serão <b>removidos permanentemente</b>.
           </p>
         </div>
 
@@ -28,7 +28,11 @@
             </div>
             <div class="overflow-hidden">
               <h6 class="mb-0 text-truncate">{{ purchase.customerName }}</h6>
-              <p class="mb-0 text-muted small">{{ purchase.date | date:'dd/MM/yyyy' }} · {{ purchase.finalValue | currency:'BRL' }}</p>
+              <p class="mb-0 text-muted small">
+                {{ purchase.date | date:'dd/MM/yyyy' }} · 
+                {{ purchase.finalValue | currency:'BRL' }} ·
+                {{ purchase.mode | purchaseModeLabel }}
+              </p>
             </div>
           </div>
         </div>

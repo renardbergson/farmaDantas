@@ -4,6 +4,8 @@ import { PurchaseDetailsModalComponent } from '../../../../shared/components/pur
 import { Purchase } from '../../../../shared/models';
 import { PurchaseService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-purchases',
@@ -16,11 +18,14 @@ export class Purchases implements OnInit {
   filteredPurchases: Purchase[] = [];
   selectedPurchaseId: string | null = null;
   purchaseToDelete: Purchase | null = null;
+  isLoading = false;
+  currentFilters: PurchaseFilters = { term: '', categories: [] };
 
   @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
   constructor(
-    private purchaseService: PurchaseService
+    private purchaseService: PurchaseService,
+    private toast: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -28,13 +33,16 @@ export class Purchases implements OnInit {
   }
 
   loadPurchases(): void {
+    this.isLoading = true;
     this.purchaseService.getPurchases().subscribe({
       next: (purchases) => {
         this.originalPurchases = purchases;
-        this.filteredPurchases = purchases;
+        this.applyFilters(this.currentFilters);
+        this.isLoading = false;
       },
-      error: (err) => {
-        console.error('Ocorreu um erro ao tentar carregar as compras', err);
+      error: () => {
+        this.isLoading = false;
+        this.toast.error('Erro ao tentar listar as compras');
       }
     })
   }
@@ -45,6 +53,7 @@ export class Purchases implements OnInit {
   }
 
   onFiltersChange(filters: PurchaseFilters): void {
+    this.currentFilters = filters;
     this.applyFilters(filters);
   }
 
@@ -67,6 +76,10 @@ export class Purchases implements OnInit {
     })
   }
 
+  get hasActiveFilters(): boolean {
+    return this.currentFilters.term.trim() !== '' || this.currentFilters.categories.length > 0;
+  }
+
   onViewPurchaseDetails(purchase: Purchase): void {
     this.selectedPurchaseId = purchase.id;
   }
@@ -81,7 +94,16 @@ export class Purchases implements OnInit {
         this.loadPurchases();
         this.purchaseStatsCards?.loadStats();
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar excluir a compra:', err),
+      error: (err) => {
+        if (err instanceof HttpErrorResponse &&
+          err.status === 400 &&
+          typeof err.error?.message === 'string'
+        ) {
+          this.toast.error(err.error.message);
+        } else {
+          this.toast.error('Erro ao tentar excluir a compra');
+        }
+      }
     });
   }
 }

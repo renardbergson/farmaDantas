@@ -6,9 +6,7 @@ import {
 } from '../../models';
 import { PurchaseService } from '../../services';
 import { getInitials } from '../../utils/getInitials';
-import { PurchaseCategoryLabelPipe } from '../../pipes/purchase-category-label.pipe';
-import { PurchaseModeLabelPipe } from '../../pipes/purchase-mode-label.pipe';
-import { PaymentMethodsLabelPipe } from '../../pipes/payment-methods-label.pipe';
+import { PaymentMethodsLabelPipe, PurchaseCategoryLabelPipe, PurchaseModeLabelPipe } from '../../pipes';
 
 @Component({
   selector: 'app-purchase-details-modal',

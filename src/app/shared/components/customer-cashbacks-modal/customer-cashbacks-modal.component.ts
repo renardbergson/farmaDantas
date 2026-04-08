@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, OnChanges, OnDestroy, SimpleChanges } 
 import { CommonModule } from '@angular/common';
 import { Customer, Cashback, CashbackStatus } from '../../models';
 import { CashbackService } from '../../services';
-import { CashbackStatusLabelPipe } from '../../pipes/cashback-status-label.pipe';
+import { CashbackStatusLabelPipe } from '../../pipes';
 import { PurchaseDetailsModalComponent } from '../purchase-details-modal/purchase-details-modal.component';
 
 @Component({

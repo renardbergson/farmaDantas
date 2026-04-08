@@ -1,12 +1,13 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Purchase } from '../../../../../../shared/models';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
+import { PurchaseModeLabelPipe } from '../../../../../../shared/pipes';
 
 @Component({
   selector: 'app-purchase-delete-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PurchaseModeLabelPipe],
   templateUrl: './purchase-delete-modal.component.html',
   styleUrl: './purchase-delete-modal.component.css'
 })

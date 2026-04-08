@@ -5,6 +5,7 @@ import { CustomerCashbacksModal } from '../../../../shared/components';
 import { Customer } from '../../../../shared/models';
 import { CustomerService } from '../../../../shared/services';
 import { CustomerFilters } from './components/customer-searchbar/customer-searchbar';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-customers',
@@ -34,7 +35,8 @@ export class Customers implements OnInit {
   @ViewChild(CustomerAddNewModal) customerAddNewModal?: CustomerAddNewModal;
 
   constructor(
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private toast: ToastrService
   ) { }
 
   ngOnInit(): void {
@@ -47,7 +49,7 @@ export class Customers implements OnInit {
         this.originalCustomers = customers;
         this.applyFilters(this.currentFilters);
       },
-      error: (err) => console.error('Ocorreu um erro ao tentar listar os clientes:', err),
+      error: () => this.toast.error('Erro ao tentar listar os clientes')
     })
   }
 
@@ -103,8 +105,11 @@ export class Customers implements OnInit {
 
   confirmDelete(customer: Customer): void {
     this.customerService.deleteCustomer(customer).subscribe({
-      next: () => this.loadCustomers(),
-      error: (err) => console.error('Ocorreu um erro ao tentar excluir o cliente:', err),
+      next: () => {
+        this.loadCustomers();
+        this.toast.success('Cliente excluído com sucesso');
+      },
+      error: () => this.toast.error('Erro ao tentar excluir o cliente')
     })
   }
 }

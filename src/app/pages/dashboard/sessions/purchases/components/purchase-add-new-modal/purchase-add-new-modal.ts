@@ -6,11 +6,12 @@ import { CustomerService, PurchaseService, UserService, CashbackService } from '
 import { Cashback, CreatePurchaseRequest, Customer, Purchase, PurchaseCategory, PurchaseMode, PaymentMethod, User } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
+import { PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPipe } from '../../../../../../shared/pipes';
 
 @Component({
   selector: 'app-purchase-add-new-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgSelectModule, NgxCurrencyDirective],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgSelectModule, NgxCurrencyDirective, PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPipe],
   templateUrl: './purchase-add-new-modal.html',
   styleUrl: './purchase-add-new-modal.css',
 })
@@ -25,26 +26,15 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
   purchaseForm!: FormGroup;
 
-  /* Clientes, funcionários e categorias */
   customers: Customer[] = [];
-  employees: User[] = [];
+  users: User[] = [];
   categories: PurchaseCategory[] = Object.values(PurchaseCategory);
 
-  /* Pagamento */
   paymentMethods: PaymentMethod[] = Object.values(PaymentMethod);
   selectedPaymentMethods: Set<PaymentMethod> = new Set();
   purchaseModes: PurchaseMode[] = Object.values(PurchaseMode);
 
-  /* Cashback */
   activeCashbacksList: Cashback[] = [];
-
-  /* Utilitários */
-  private dateToInputValue(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   constructor(
     private fb: FormBuilder,
@@ -56,8 +46,9 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
-    this.setupCustomerChangeListener();
+    this.setCustomerChangeListener();
     this.syncTotalAndFinalValue();
+
     this.customerService.getCustomers().subscribe({
       next: (customers) => {
         this.customers = customers;
@@ -67,9 +58,9 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       },
     });
 
-    this.userService.getEmployees().subscribe({
-      next: (employees) => {
-        this.employees = employees;
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
       },
       error: (error) => {
         console.error('Erro ao listar funcionários:', error);
@@ -87,19 +78,14 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     this.modalShownHandler = () => {
       this.disposeTooltip();
       this.tooltipInstance = new Bootstrap.Tooltip(alertEl, {
+        placement: 'bottom',
+        fallbackPlacements: ['top'],
         container: 'body',
         customClass: 'purchase-info-tooltip'
       });
     };
 
     modalEl.addEventListener('shown.bs.modal', this.modalShownHandler);
-  }
-
-  private disposeTooltip(): void {
-    if (this.tooltipInstance) {
-      this.tooltipInstance.dispose();
-      this.tooltipInstance = null;
-    }
   }
 
   ngOnDestroy(): void {
@@ -125,33 +111,35 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       mode: [PurchaseMode.IN_STORE, Validators.required],
       observations: ['']
     });
-    this.setupValueSyncListeners();
+    this.setValueAndCashbackListeners();
+  }
+
+  private setValueAndCashbackListeners(): void {
+    this.purchaseForm.get('purchaseValue')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
+    this.purchaseForm.get('selectedCashback')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
   }
 
   /**
    * Ao mudar o cliente: limpa o cashback escolhido e busca vouchers disponíveis na API.
    */
-  private setupCustomerChangeListener(): void {
+  private setCustomerChangeListener(): void {
     this.purchaseForm.get('customer')?.valueChanges.subscribe((customer: Customer | null) => {
       this.purchaseForm.patchValue({ selectedCashback: null }, { emitEvent: false });
       this.activeCashbacksList = [];
+
       if (!customer?.id) return;
+
       this.cashbackService.getAvailableCashbacksForCustomer(customer.id).subscribe({
         next: (list) => { this.activeCashbacksList = list; },
-        error: (err) => console.error('Erro ao listar cashbacks do cliente:', err),
+        error: (err) => console.error('Erro ao listar vouchers ativos do cliente:', err),
       });
     });
-  }
-
-  private setupValueSyncListeners(): void {
-    this.purchaseForm.get('purchaseValue')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
-    this.purchaseForm.get('selectedCashback')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
   }
 
   private syncTotalAndFinalValue(): void {
     const total = this.purchaseInputValue;
     const cashback = this.purchaseForm.get('selectedCashback')?.value as Cashback | null;
-    const final = cashback && total >= (cashback.minPurchaseValue ?? 0)
+    const final = cashback !== null && total >= (cashback.minPurchaseValue ?? 0)
       ? total - cashback.value
       : total;
     this.purchaseForm.patchValue({ totalValue: total, finalValue: final }, { emitEvent: false });
@@ -167,47 +155,11 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     this.purchaseForm.get('paymentMethods')?.updateValueAndValidity();
   }
 
-  get purchaseInputValue(): number {
-    const val = this.purchaseForm?.get('purchaseValue')?.value;
-    return val != null ? Number(val) : 0;
-  }
-
-  get generateCashback(): boolean {
-    return this.purchaseForm?.get('generateCashback')?.value ?? true;
-  }
-
-  get generatedCashbackValue(): number | null {
-    if (!this.generateCashback) return null;
-    return this.finalValue * CASHBACK_CONFIG.cashbackGenerationRate;
-  }
-
-  get cashbackPercent(): number {
-    return CASHBACK_CONFIG.cashbackGenerationRate * 100;
-  }
-
-  get selectedCashback(): Cashback | null {
-    return this.purchaseForm?.get('selectedCashback')?.value ?? null;
-  }
-
-  get isCashbackApplicable(): boolean {
-    const cb = this.selectedCashback;
-    if (!cb) return false;
-    return this.purchaseInputValue >= cb.minPurchaseValue;
-  }
-
-  get finalValue(): number {
-    return Number(this.purchaseForm?.get('finalValue')?.value) ?? this.purchaseInputValue;
-  }
-
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.purchaseForm.get(fieldName);
-    return !!(field && field.invalid && (field.touched || field.dirty));
-  }
-
   onSubmit(): void {
     if (this.purchaseForm.valid) {
       const raw = this.purchaseForm.getRawValue();
-      const gen = raw.generateCashback;
+      const generateNewCashback = raw.generateCashback;
+
       const purchase: CreatePurchaseRequest = {
         customerId: raw.customer.id,
         userId: raw.employee.id,
@@ -217,19 +169,22 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
         paymentMethods: raw.paymentMethods as PaymentMethod[],
         totalValue: Number(raw.totalValue),
         finalValue: Number(raw.finalValue),
-        generateCashback: gen,
+        generateCashback: generateNewCashback,
         observations: raw.observations || null,
         usedCashbackId: (raw.selectedCashback as Cashback | null)?.id ?? null,
-        ...(gen ? {
-          cashbackValidityDays: 30,
-          cashbackGenerationRate: Math.round(CASHBACK_CONFIG.cashbackGenerationRate * 100),
-          cashbackRedemptionRate: Math.round(CASHBACK_CONFIG.cashbackRedemptionRate * 100),
-        } : {}),
+        ...(generateNewCashback // equivale a um if (generateNewCashback)
+          ? {
+            cashbackValidityDays: 30,
+            cashbackGenerationRate: Math.round(CASHBACK_CONFIG.cashbackGenerationRate * 100),
+            cashbackRedemptionRate: Math.round(CASHBACK_CONFIG.cashbackRedemptionRate * 100),
+          }
+          : {}
+        ),
       };
 
       this.purchaseService.addPurchase(purchase).subscribe({
         next: () => this.handleSuccess(),
-        error: (err) => console.error('Erro ao registrar compra:', err)
+        error: (err) => console.error('Erro ao tentar registrar compra:', err)
       });
     } else {
       this.purchaseForm.markAllAsTouched();
@@ -259,5 +214,58 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
       modalInstance?.hide();
     }
+  }
+
+  /* GETTERS */
+  get purchaseInputValue(): number {
+    const value = this.purchaseForm?.get('purchaseValue')?.value;
+    return value != null ? Number(value) : 0;
+  }
+
+  get selectedCashback(): Cashback | null {
+    return this.purchaseForm?.get('selectedCashback')?.value ?? null;
+  }
+
+  get isCashbackApplicable(): boolean {
+    const cb = this.selectedCashback;
+    if (!cb) return false;
+    return this.purchaseInputValue >= cb.minPurchaseValue;
+  }
+
+  get finalValue(): number {
+    return Number(this.purchaseForm?.get('finalValue')?.value) ?? this.purchaseInputValue;
+  }
+
+  get generateCashback(): boolean {
+    return this.purchaseForm?.get('generateCashback')?.value ?? true;
+  }
+
+  get generatedCashbackValue(): number | null {
+    if (!this.generateCashback) return null;
+    return this.finalValue * CASHBACK_CONFIG.cashbackGenerationRate;
+  }
+
+  get cashbackPercent(): number {
+    return CASHBACK_CONFIG.cashbackGenerationRate * 100;
+  }
+
+  /* HELPERS */
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.purchaseForm.get(fieldName);
+    return !!(field && field.invalid && (field.touched || field.dirty));
+  }
+
+  private disposeTooltip(): void {
+    if (this.tooltipInstance) {
+      this.tooltipInstance.dispose();
+      this.tooltipInstance = null;
+    }
+  }
+
+  private dateToInputValue(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

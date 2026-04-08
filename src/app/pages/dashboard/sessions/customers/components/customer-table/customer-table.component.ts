@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Customer, CustomerStatus } from '../../../../../../shared/models';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
 import { provideNgxMask } from 'ngx-mask';
-import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes/customer-status-label.pipe';
+import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
 @Component({
   selector: 'app-customer-table',
   standalone: true,

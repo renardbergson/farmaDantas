@@ -2,15 +2,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Purchase, PurchaseCategory } from '../../../../../../shared/models';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
+import { PurchaseCategoryLabelPipe, PurchaseModeLabelPipe } from '../../../../../../shared/pipes';
 
 @Component({
   selector: 'app-purchases-table',
-  imports: [CommonModule],
+  imports: [CommonModule, PurchaseCategoryLabelPipe, PurchaseModeLabelPipe],
   templateUrl: './purchase-table.html',
   styleUrl: './purchase-table.css',
 })
 export class PurchaseTable {
   @Input() purchases: Purchase[] = [];
+  @Input() isLoading = false;
+  @Input() totalPurchases = 0;
+  @Input() hasActiveFilters = false;
   sortByDate: 'desc' | 'asc' = 'desc';
   @Output() viewDetails = new EventEmitter<Purchase>();
   @Output() deletePurchase = new EventEmitter<Purchase>();
@@ -26,6 +30,22 @@ export class PurchaseTable {
       const dateB = new Date(b.date).getTime();
       return this.sortByDate === 'desc' ? dateB - dateA : dateA - dateB;
     });
+  }
+
+  get showEmptyState(): boolean {
+    return !this.isLoading && this.sortedPurchases.length === 0;
+  }
+
+  get emptyStateTitle(): string {
+    return this.totalPurchases > 0 && this.hasActiveFilters
+      ? 'Nenhuma compra encontrada'
+      : 'Nenhuma compra cadastrada';
+  }
+
+  get emptyStateMessage(): string {
+    return this.totalPurchases > 0 && this.hasActiveFilters
+      ? 'Ajuste ou desative os filtros para ver outros resultados.'
+      : 'Registre uma compra para começar a preencher esta tabela.';
   }
 
   toggleSortByDate(): void {

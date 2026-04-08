@@ -4,20 +4,39 @@
       <!-- Campo de Busca -->
       <div class="search-wrapper">
         <i class="bi bi-search search-icon"></i>
-        <input type="text" class="form-control search-input" placeholder="Buscar por cliente, data ou funcionário..." (input)="onSearch($event)">
+        <input 
+          type="text" 
+          class="form-control search-input" 
+          placeholder="Buscar por cliente, data ou funcionário..." 
+          (input)="onSearch($event)"
+        >
       </div>
 
       <!-- Filtros de Categoria -->
       <div class="status-filters d-flex align-items-center gap-3">
-        <span class="filter-label text-muted"><i class="bi bi-funnel me-1"></i> Filtrar por categoria:</span>
+        <span class="filter-label text-muted">
+          <i class="bi bi-funnel me-1"></i> 
+          Filtrar por categoria:
+        </span>
         <div class="d-flex gap-2">
           @for (category of categories; track $index) {
-          <div class="filter-checkbox">
-            <input type="checkbox" [id]="'filter-' + category.value" class="btn-check" (click)="toggleCategory(category.value); $event.preventDefault()" [checked]="selectedCategories.has(category.value)">
-            <label [for]="'filter-' + category.value" class="status-chip" [ngClass]="category.class">
-              {{ category.value }}
-            </label>
-          </div>
+            <div class="filter-checkbox">
+              <input 
+                type="checkbox" 
+                [id]="'filter-' + category.value" 
+                class="btn-check" 
+                (click)="toggleCategory(category.value); 
+                $event.preventDefault()" 
+                [checked]="selectedCategories.has(category.value)"
+              >
+              <label 
+                [for]="'filter-' + category.value" 
+                class="status-chip" 
+                [ngClass]="category.class"
+              >
+                {{ category.value | purchaseCategoryLabel }}
+              </label>
+            </div>
           }
         </div>
       </div>

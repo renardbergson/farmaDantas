@@ -8,11 +8,12 @@ import {
 import { CustomerService } from '../../../../../../shared/services';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
 import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
 
 @Component({
   selector: 'app-customer-details-modal',
   standalone: true,
-  imports: [CommonModule, NgxMaskPipe],
+  imports: [CommonModule, NgxMaskPipe, CustomerStatusLabelPipe],
   providers: [provideNgxMask()],
   templateUrl: './customer-details-modal.component.html',
   styleUrl: './customer-details-modal.component.css',

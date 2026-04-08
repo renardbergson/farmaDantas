@@ -13,7 +13,12 @@
             <div class="profile-avatar">{{ getInitials(customerDetails.name) }}</div>
             <div>
               <h4 class="profile-name">{{ customerDetails.name }}</h4>
-              <span class="badge-status" [ngClass]="getStatusClass(customerDetails.status)">{{ customerDetails.status }}</span>
+              <span 
+                class="badge-status" 
+                [ngClass]="getStatusClass(customerDetails.status)"
+              >
+                {{ customerDetails.status | customerStatusLabel }}
+              </span>
             </div>
           </div>
         </div>

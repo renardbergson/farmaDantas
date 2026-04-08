@@ -16,10 +16,18 @@
 
       <!-- Tooltip de informação -->
       <div class="modal-body-custom">
-        <div #purchaseInfoAlert class="alert alert-info border-0 bg-info-subtle d-flex align-items-center gap-3 mb-4 rounded-3 purchase-info-alert" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Compras são registros históricos. Editar prejudicaria relatórios e auditoria. Alterar valor, voucher ou taxa exigiria recalcular cashbacks e devolver vouchers utilizados." role="button" tabindex="0">
+        <div 
+          #purchaseInfoAlert 
+          class="alert alert-info border-0 bg-info-subtle d-flex align-items-center gap-3 mb-4 rounded-3 purchase-info-alert" data-bs-toggle="tooltip" 
+          data-bs-placement="top" 
+          data-bs-html="true" 
+          data-bs-title="&bull; Se o voucher gerado pela compra já tiver sido resgatado em outra compra, a exclusão é bloqueada para preservar o histórico.<br><br>&bull; Se a exclusão for permitida, os vouchers usados e/ou gerados na compra também serão removidos para evitar que vouchers apontem para compras inexistentes." 
+          role="button" 
+          tabindex="0"
+        >
           <i class="bi bi-info-circle-fill fs-4 text-info"></i>
           <p class="mb-0 small text-dark-emphasis">
-            Não é permitido editar os dados de uma compra e, quando excluída, o voucher utilizado também será removido.
+            Compras registradas nao podem ser editadas, apenas excluidas. Passe o mouse para saber mais.
           </p>
         </div>
 
@@ -31,11 +39,19 @@
               <!-- Cliente -->
               <div class="mb-3 form-group-with-error-space">
                 <label class="form-label-custom d-block">Cliente</label>
-                <ng-select formControlName="customer" [items]="customers" bindLabel="name" placeholder="Selecione ou busque o cliente" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('customer')">
-                </ng-select>
+                <ng-select 
+                  formControlName="customer" 
+                  [items]="customers" 
+                  bindLabel="name" 
+                  placeholder="Selecione ou busque o cliente" 
+                  class="custom-ng-select w-100" 
+                  [searchable]="true" 
+                  [clearable]="true" 
+                  [class.is-invalid]="isFieldInvalid('customer')"
+                />
                 <div class="error-feedback-space">
                   @if (isFieldInvalid('customer')) {
-                  <div class="invalid-feedback d-block">O cliente é obrigatório.</div>
+                    <div class="invalid-feedback d-block">O cliente é obrigatório.</div>
                   }
                 </div>
               </div>
@@ -46,17 +62,25 @@
                   <input type="date" formControlName="purchaseDate" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('purchaseDate')">
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('purchaseDate')) {
-                    <div class="invalid-feedback d-block">A data é obrigatória.</div>
+                      <div class="invalid-feedback d-block">A data é obrigatória.</div>
                     }
                   </div>
                 </div>
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom d-block">Funcionário</label>
-                  <ng-select formControlName="employee" [items]="employees" bindLabel="name" placeholder="Funcionário" class="custom-ng-select w-100" [searchable]="true" [clearable]="true" [class.is-invalid]="isFieldInvalid('employee')">
-                  </ng-select>
+                  <ng-select 
+                    formControlName="employee" 
+                    [items]="users" 
+                    bindLabel="name" 
+                    placeholder="Funcionário" 
+                    class="custom-ng-select w-100" 
+                    [searchable]="true" 
+                    [clearable]="true" 
+                    [class.is-invalid]="isFieldInvalid('employee')"
+                  />
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('employee')) {
-                    <div class="invalid-feedback d-block">O funcionário é obrigatório.</div>
+                      <div class="invalid-feedback d-block">O funcionário é obrigatório.</div>
                     }
                   </div>
                 </div>
@@ -65,10 +89,16 @@
               <div class="row g-2 mb-3">
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom d-block">Valor da Compra</label>
-                  <input type="text" formControlName="purchaseValue" inputmode="decimal" [currencyMask]="{prefix: 'R$ ', thousands: '.', decimal: ','}" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('purchaseValue')">
+                  <input 
+                    type="text" 
+                    formControlName="purchaseValue" 
+                    inputmode="decimal" 
+                    [currencyMask]="{prefix: 'R$ ', thousands: '.', decimal: ','}" class="form-control form-control-custom" 
+                    [class.is-invalid]="isFieldInvalid('purchaseValue')"
+                  >
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('purchaseValue')) {
-                    <div class="invalid-feedback d-block">O valor da compra é obrigatório.</div>
+                      <div class="invalid-feedback d-block">O valor da compra é obrigatório.</div>
                     }
                   </div>
                 </div>
@@ -77,12 +107,12 @@
                   <select formControlName="category" class="form-select form-select-custom" [class.is-invalid]="isFieldInvalid('category')">
                     <option value="" disabled>Categoria</option>
                     @for (category of categories; track $index) {
-                    <option [value]="category">{{ category }}</option>
+                      <option [value]="category">{{ category | purchaseCategoryLabel }}</option>
                     }
                   </select>
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('category')) {
-                    <div class="invalid-feedback d-block">A categoria é obrigatória.</div>
+                      <div class="invalid-feedback d-block">A categoria é obrigatória.</div>
                     }
                   </div>
                 </div>
@@ -95,28 +125,38 @@
                   <label class="form-label-custom d-block">Forma de pagamento</label>
                   <div class="payment-methods-checkboxes" [class.is-invalid]="isFieldInvalid('paymentMethods')">
                     @for (method of paymentMethods; track method) {
-                    <label class="payment-method-checkbox">
-                      <input type="checkbox" [checked]="selectedPaymentMethods.has(method)" (change)="togglePaymentMethod(method)" name="paymentMethod">
-                      <span>{{ method }}</span>
-                    </label>
+                      <label class="payment-method-checkbox">
+                        <input 
+                          type="checkbox" 
+                          [checked]="selectedPaymentMethods.has(method)" 
+                          (change)="togglePaymentMethod(method)" name="paymentMethod"
+                        >
+                        <span>{{ method | paymentMethodsLabel }}</span>
+                      </label>
                     }
                   </div>
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('paymentMethods')) {
-                    <div class="invalid-feedback d-block">Selecione ao menos uma forma de pagamento.</div>
+                      <div class="invalid-feedback d-block">Selecione ao menos uma forma de pagamento.</div>
                     }
                   </div>
                 </div>
                 <div class="col-5 form-group-with-error-space">
                   <label class="form-label-custom d-block">Modalidade</label>
-                  <select formControlName="mode" class="form-select form-select-custom" [class.is-invalid]="isFieldInvalid('mode')">
+                  <select 
+                    formControlName="mode" 
+                    class="form-select form-select-custom" 
+                    [class.is-invalid]="isFieldInvalid('mode')"
+                  >
                     @for (purchaseMode of purchaseModes; track $index) {
-                    <option [value]="purchaseMode">{{ purchaseMode }}</option>
+                      <option [value]="purchaseMode">
+                        {{ purchaseMode | purchaseModeLabel }}
+                      </option>
                     }
                   </select>
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('mode')) {
-                    <div class="invalid-feedback d-block">A modalidade é obrigatória.</div>
+                      <div class="invalid-feedback d-block">A modalidade é obrigatória.</div>
                     }
                   </div>
                 </div>
@@ -163,24 +203,24 @@
                 </p>
                 }
                 @if (isCashbackApplicable && selectedCashback) {
-                <div class="cashback-applied mt-2">
-                  <span class="text-success fw-medium">
-                    <i class="bi bi-check-circle me-1"></i>
-                    Desconto de {{ selectedCashback.value | currency:'BRL' }} aplicado.
-                  </span>
-                  <p class="final-value mb-0 mt-1"><strong>Valor final: {{ finalValue | currency:'BRL' }}</strong></p>
-                </div>
+                  <div class="cashback-applied mt-2">
+                    <span class="text-success fw-medium">
+                      <i class="bi bi-check-circle me-1"></i>
+                      Desconto de {{ selectedCashback.value | currency:'BRL' }} aplicado.
+                    </span>
+                    <p class="final-value mb-0 mt-1"><strong>Valor final: {{ finalValue | currency:'BRL' }}</strong></p>
+                  </div>
                 }
                 } @else {
-                <div class="cashback-preview-placeholder">
-                  @if (!purchaseForm.get('customer')?.value) {
-                  <i class="bi bi-person-plus"></i>
-                  <span>Selecione um cliente para verificar cashbacks disponíveis</span>
-                  } @else {
-                  <i class="bi bi-inbox"></i>
-                  <span>Nenhum cashback disponível para este cliente</span>
-                  }
-                </div>
+                  <div class="cashback-preview-placeholder">
+                    @if (!purchaseForm.get('customer')?.value) {
+                      <i class="bi bi-person-plus"></i>
+                      <span>Selecione um cliente para verificar cashbacks disponíveis</span>
+                    } @else {
+                      <i class="bi bi-inbox"></i>
+                      <span>Nenhum cashback disponível para este cliente</span>
+                    }
+                  </div>
                 }
               </div>
 

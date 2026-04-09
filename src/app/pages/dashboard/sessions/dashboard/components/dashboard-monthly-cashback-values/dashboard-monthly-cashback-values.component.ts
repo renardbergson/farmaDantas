@@ -10,6 +10,7 @@ import { Chart, TooltipItem } from 'chart.js/auto';
 })
 export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy {
   private areaChart?: Chart;
+  hasData = false;
 
   constructor(
     private cashbackService: CashbackService
@@ -18,6 +19,12 @@ export class DashboardMonthlyCashbackValues implements AfterViewInit, OnDestroy 
   ngAfterViewInit(): void {
     this.cashbackService.getCashbacks().subscribe({
       next: (cashbacks) => {
+        this.hasData = cashbacks.length > 0;
+        if (!this.hasData) {
+          this.areaChart?.destroy();
+          return;
+        }
+
         const data = this.cashbackService.getAllLastMonthsCashbackTotals(cashbacks);
         this.initChart(data);
       },

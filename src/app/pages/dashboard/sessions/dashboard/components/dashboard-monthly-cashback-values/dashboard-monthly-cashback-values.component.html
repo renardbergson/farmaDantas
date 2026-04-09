@@ -6,8 +6,20 @@
     </div>
   </div>
   <div class="dashboard-card-body">
-    <div class="chart-container">
-      <canvas id="cashbackAreaChart"></canvas>
-    </div>
+    @if (hasData) {
+      <div class="chart-container">
+        <canvas id="cashbackAreaChart"></canvas>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="bi bi-graph-up"></i>
+        </div>
+        <h3 class="empty-state-title">Sem dados para exibir</h3>
+        <p class="empty-state-text">
+          Ainda não há histórico de cashbacks para montar o gráfico de valores mensais.
+        </p>
+      </div>
+    }
   </div>
 </div>

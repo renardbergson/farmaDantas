@@ -59,7 +59,13 @@
               <div class="row g-2 mb-3">
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom d-block">Data</label>
-                  <input type="date" formControlName="purchaseDate" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('purchaseDate')">
+                  <input 
+                    type="date" 
+                    formControlName="purchaseDate" 
+                    class="form-control form-control-custom" 
+                    [class.is-invalid]="isFieldInvalid('purchaseDate')"
+                    [max]="todayDate"
+                  >
                   <div class="error-feedback-space">
                     @if (isFieldInvalid('purchaseDate')) {
                       <div class="invalid-feedback d-block">A data é obrigatória.</div>

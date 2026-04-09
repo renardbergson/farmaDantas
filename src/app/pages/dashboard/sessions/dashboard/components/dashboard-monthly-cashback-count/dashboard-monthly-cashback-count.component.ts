@@ -10,6 +10,7 @@ import { CashbackService, MonthlyCashbackCountData } from '../../../../../../sha
 })
 export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
   private barChart?: Chart<'bar', number[], string>;
+  hasData = false;
 
   constructor(
     private cashbackService: CashbackService
@@ -18,6 +19,12 @@ export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.cashbackService.getCashbacks().subscribe({
       next: (cashbacks) => {
+        this.hasData = cashbacks.length > 0;
+        if (!this.hasData) {
+          this.barChart?.destroy();
+          return;
+        }
+
         const data = this.cashbackService.getAllLastMonthsCashbackCount(cashbacks);
         this.initChart(data);
       },

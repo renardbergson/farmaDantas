@@ -22,6 +22,7 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
   private tooltipInstance: any = null;
   private modalShownHandler?: () => void;
+  readonly todayDate = this.dateToInputValue(new Date());
 
   purchaseForm!: FormGroup;
 

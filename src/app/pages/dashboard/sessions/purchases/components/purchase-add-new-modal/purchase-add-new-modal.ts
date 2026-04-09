@@ -2,8 +2,8 @@ import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitte
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CustomerService, PurchaseService, UserService, CashbackService } from '../../../../../../shared/services';
-import { Cashback, CreatePurchaseRequest, Customer, Purchase, PurchaseCategory, PurchaseMode, PaymentMethod, User } from '../../../../../../shared/models';
+import { CustomerService, PurchaseService, UserService, CashbackService, FeedbackService } from '../../../../../../shared/services';
+import { Cashback, CreatePurchaseRequest, Customer, PurchaseCategory, PurchaseMode, PaymentMethod, User } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPipe } from '../../../../../../shared/pipes';
@@ -16,7 +16,6 @@ import { PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPi
   styleUrl: './purchase-add-new-modal.css',
 })
 export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
-  @Input() purchase?: Purchase;
   @Output() purchaseAdded = new EventEmitter<void>();
   @ViewChild('modalRef') modalRef!: ElementRef<HTMLDivElement>;
   @ViewChild('purchaseInfoAlert') purchaseInfoAlert!: ElementRef<HTMLElement>;
@@ -42,6 +41,7 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     private userService: UserService,
     private purchaseService: PurchaseService,
     private cashbackService: CashbackService,
+    private feedback: FeedbackService
   ) { }
 
   ngOnInit(): void {
@@ -54,7 +54,8 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
         this.customers = customers;
       },
       error: (error) => {
-        console.error('Erro ao listar clientes:', error);
+        this.feedback.error('Erro ao tentar listar clientes')
+        console.error('Erro ao tentar listar clientes:', error);
       },
     });
 
@@ -63,7 +64,8 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
         this.users = users;
       },
       error: (error) => {
-        console.error('Erro ao listar funcionários:', error);
+        this.feedback.error('Erro ao tentar listar funcionários')
+        console.error('Erro ao tentar listar funcionários:', error);
       },
     });
   }
@@ -131,7 +133,10 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
       this.cashbackService.getAvailableCashbacksForCustomer(customer.id).subscribe({
         next: (list) => { this.activeCashbacksList = list; },
-        error: (err) => console.error('Erro ao listar vouchers ativos do cliente:', err),
+        error: (err) => {
+          this.feedback.error('Erro ao tentar listar vouchers ativos do cliente')
+          console.error('Erro ao tentar listar vouchers ativos do cliente:', err);
+        },
       });
     });
   }
@@ -184,10 +189,16 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
       this.purchaseService.addPurchase(purchase).subscribe({
         next: () => this.handleSuccess(),
-        error: (err) => console.error('Erro ao tentar registrar compra:', err)
+        error: (err) => {
+          // front-end já trata os demais erros possíveis na UI
+          this.feedback.apiError(err, 'Erro ao tentar registrar compra')
+          console.error('Erro ao tentar registrar compra:', err);
+        }
       });
     } else {
       this.purchaseForm.markAllAsTouched();
+      this.feedback.warning('Formulário inválido');
+      console.warn('Formulário inválido');
     }
   }
 

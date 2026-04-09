@@ -10,10 +10,9 @@ import {
   CustomerService,
   createPerson,
   updatePerson,
+  FeedbackService,
 } from '../../../../../../shared/services';
 import { Customer, CustomerDetailsResponse } from '../../../../../../shared/models';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-customer-add-new-modal',
@@ -37,7 +36,7 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     private fb: FormBuilder,
     private addressService: AddressService,
     private customerService: CustomerService,
-    private toast: ToastrService,
+    private feedback: FeedbackService,
   ) { }
 
   ngOnInit(): void {
@@ -61,7 +60,10 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
         this.fillFormFromDetails(dataToEdit);
         this.loadCitiesFromResponse(dataToEdit);
       },
-      error: () => this.toast.error('Erro ao carregar cliente para edição')
+      error: (err) => {
+        this.feedback.error('Erro ao carregar cliente para edição')
+        console.error('Erro ao carregar cliente para edição:', err);
+      }
     });
   }
 
@@ -119,7 +121,10 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           this.loadCitiesFromResponse(this.dataToEdit);
         }
       },
-      error: () => this.toast.error('Erro ao tentar listar os estados')
+      error: (err) => {
+        this.feedback.error('Erro ao tentar listar estados')
+        console.error('Erro ao tentar listar estados:', err);
+      }
     });
   }
 
@@ -132,7 +137,10 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           this.customerForm.patchValue({ cityId: selectedCityId });
         }
       },
-      error: () => this.toast.error('Erro ao tentar listar as cidades')
+      error: (err) => {
+        this.feedback.error('Erro ao tentar listar cidades')
+        console.error('Erro ao tentar listar cidades:', err);
+      }
     });
   }
 
@@ -143,7 +151,8 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     this.addressService.getAddressByZipCode(cep).subscribe({
       next: (data) => {
         if (data.erro) { // no IBGE, erro é true quando o CEP não é encontrado
-          this.toast.warning('CEP não encontrado');
+          this.feedback.warning('CEP não encontrado');
+          console.warn('CEP não encontrado:', { cep });
           return;
         }
 
@@ -159,7 +168,10 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           neighborhood: data.bairro || '',
         });
       },
-      error: () => this.toast.error('Erro ao buscar o endereço pelo CEP')
+      error: (err) => {
+        this.feedback.error('Erro ao buscar endereço por CEP')
+        console.error('Erro ao buscar endereço por CEP:', err);
+      }
     });
   }
 
@@ -192,35 +204,41 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
       if (this.customer) {
         this.customerService.updateCustomer(this.customer.id, customerData as updatePerson).subscribe({
           next: () => this.handleSuccess('Cliente atualizado com sucesso'),
-          error: () => this.toast.error('Erro ao tentar atualizar o cliente')
+          error: (err) => {
+            this.feedback.apiError(
+              err,
+              'Erro ao tentar atualizar o cliente', // fallback message
+              { apiStatuses: [409] } // conflito de CPF (api)
+            )
+            console.error('Erro ao tentar atualizar o cliente:', err);
+          }
         });
       } else {
         this.customerService.addCustomer(customerData as createPerson).subscribe({
           next: () => this.handleSuccess('Cliente salvo com sucesso'),
           error: (err) => {
-            if (err instanceof HttpErrorResponse &&
-              err.status === 409 &&
-              typeof err.error?.message === 'string'
-            ) {
-              this.toast.error(err.error.message); // conflito de CPF
-            } else {
-              this.toast.error('Erro ao tentar salvar o cliente');
-            }
+            this.feedback.apiError(
+              err,
+              'Erro ao tentar salvar o cliente', // fallback message
+              { apiStatuses: [409] } // conflito de CPF (api)
+            )
+            console.error('Erro ao tentar salvar o cliente:', err);
           }
         });
       }
     } else {
       this.customerForm.markAllAsTouched();
-      this.toast.error('Formulário inválido');
+      this.feedback.error('Formulário inválido');
+      console.warn('Formulário inválido');
     }
   }
 
-  private handleSuccess(toastMessage: string): void {
+  private handleSuccess(feedbackMessage: string): void {
     this.dataToEdit = null;
     this.customerAdded.emit();
     this.customerForm.reset();
     const closeBtn = document.querySelector<HTMLElement>('#newCustomerModal .btn-close');
     closeBtn?.click();
-    this.toast.success(toastMessage);
+    this.feedback.success(feedbackMessage);
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin } from 'rxjs';
-import { CashbackService, CustomerService, PurchaseService, PurchasesStats } from '../../../../../../shared/services';
+import { CashbackService, CustomerService, PurchaseService, PurchasesStats, FeedbackService } from '../../../../../../shared/services';
 
 @Component({
   selector: 'app-purchases-stats-cards',
@@ -21,6 +21,7 @@ export class PurchaseStatsCards implements OnInit {
     private customerService: CustomerService,
     private purchaseService: PurchaseService,
     private cashbackService: CashbackService,
+    private feedback: FeedbackService
   ) { }
 
   ngOnInit(): void {
@@ -41,6 +42,7 @@ export class PurchaseStatsCards implements OnInit {
         );
       },
       error: (err) => {
+        this.feedback.apiError(err, 'Erro ao tentar carregar estatísticas de compras');
         console.error('Erro ao tentar carregar estatísticas de compras:', err);
       }
     })

@@ -2,10 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDeleteModal } from './components'
 import { PurchaseDetailsModalComponent } from '../../../../shared/components/purchase-details-modal/purchase-details-modal.component';
 import { Purchase } from '../../../../shared/models';
-import { PurchaseService } from '../../../../shared/services';
+import { PurchaseService, FeedbackService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
-import { HttpErrorResponse } from '@angular/common/http';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-purchases',
@@ -25,7 +23,7 @@ export class Purchases implements OnInit {
 
   constructor(
     private purchaseService: PurchaseService,
-    private toast: ToastrService
+    private feedback: FeedbackService
   ) { }
 
   ngOnInit(): void {
@@ -40,9 +38,10 @@ export class Purchases implements OnInit {
         this.applyFilters(this.currentFilters);
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.toast.error('Erro ao tentar listar as compras');
+        this.feedback.error('Erro ao tentar listar as compras');
+        console.error('Erro ao tentar listar as compras:', err);
       }
     })
   }
@@ -95,14 +94,12 @@ export class Purchases implements OnInit {
         this.purchaseStatsCards?.loadStats();
       },
       error: (err) => {
-        if (err instanceof HttpErrorResponse &&
-          err.status === 400 &&
-          typeof err.error?.message === 'string'
-        ) {
-          this.toast.error(err.error.message);
-        } else {
-          this.toast.error('Erro ao tentar excluir a compra');
-        }
+        this.feedback.apiError(
+          err,
+          'Erro ao tentar excluir a compra',
+          { apiStatuses: [400] }
+        );
+        console.error('Erro ao tentar excluir a compra:', err);
       }
     });
   }

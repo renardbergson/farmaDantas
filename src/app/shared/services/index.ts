@@ -22,3 +22,7 @@ export type { PurchasesStats } from '../models';
 
 // USER SERVICE
 export { UserService } from './user.service';
+
+
+// FEEDBACK SERVICE
+export { FeedbackService } from './feedback.service';

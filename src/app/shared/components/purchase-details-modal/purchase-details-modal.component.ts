@@ -4,7 +4,7 @@ import {
   PurchaseCategory,
   type PurchaseDetailsResponse,
 } from '../../models';
-import { PurchaseService } from '../../services';
+import { PurchaseService, FeedbackService } from '../../services';
 import { getInitials } from '../../utils/getInitials';
 import { PaymentMethodsLabelPipe, PurchaseCategoryLabelPipe, PurchaseModeLabelPipe } from '../../pipes';
 
@@ -21,7 +21,10 @@ export class PurchaseDetailsModalComponent implements OnChanges {
   hasError = false;
   protected readonly getInitials = getInitials;
 
-  constructor(private purchaseService: PurchaseService) { }
+  constructor(
+    private purchaseService: PurchaseService,
+    private feedback: FeedbackService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['purchaseId']) return;
@@ -47,6 +50,7 @@ export class PurchaseDetailsModalComponent implements OnChanges {
         this.isLoading = false;
       },
       error: (err) => {
+        this.feedback.apiError(err, 'Erro ao tentar carregar os detalhes da compra');
         console.error('Ocorreu um erro ao tentar carregar os detalhes da compra', err);
         this.hasError = true;
         this.isLoading = false;

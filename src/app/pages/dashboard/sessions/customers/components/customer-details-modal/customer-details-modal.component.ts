@@ -5,7 +5,7 @@ import {
   CustomerDetailsResponse,
   CustomerStatus,
 } from '../../../../../../shared/models';
-import { CustomerService } from '../../../../../../shared/services';
+import { CustomerService, FeedbackService } from '../../../../../../shared/services';
 import { getInitials } from '../../../../../../shared/utils/getInitials';
 import { NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
@@ -25,7 +25,10 @@ export class CustomerDetailsModal implements OnChanges {
   protected readonly CustomerStatus = CustomerStatus;
   protected readonly getInitials = getInitials;
 
-  constructor(private customerService: CustomerService) { }
+  constructor(
+    private customerService: CustomerService,
+    private feedback: FeedbackService
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['customer']) return;
@@ -33,7 +36,10 @@ export class CustomerDetailsModal implements OnChanges {
     if (this.customer?.id) {
       this.customerService.getCustomerDetails(this.customer.id).subscribe({
         next: (details) => (this.customerDetails = details),
-        error: (err) => console.error('Erro ao carregar detalhes do cliente:', err),
+        error: (err) => {
+          this.feedback.apiError(err, 'Erro ao tentar carregar detalhes do cliente');
+          console.error('Erro ao tentar carregar detalhes do cliente:', err);
+        }
       });
     } else {
       this.customerDetails = null;

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDeleteModal } from './components'
 import { PurchaseDetailsModalComponent } from '../../../../shared/components/purchase-details-modal/purchase-details-modal.component';
 import { Purchase } from '../../../../shared/models';
@@ -18,8 +18,6 @@ export class Purchases implements OnInit {
   purchaseToDelete: Purchase | null = null;
   isLoading = false;
   currentFilters: PurchaseFilters = { term: '', categories: [] };
-
-  @ViewChild(PurchaseStatsCards) purchaseStatsCards!: PurchaseStatsCards;
 
   constructor(
     private purchaseService: PurchaseService,
@@ -48,7 +46,6 @@ export class Purchases implements OnInit {
 
   onPurchaseAdded(): void {
     this.loadPurchases();
-    this.purchaseStatsCards?.loadStats();
   }
 
   onFiltersChange(filters: PurchaseFilters): void {
@@ -91,7 +88,6 @@ export class Purchases implements OnInit {
     this.purchaseService.deletePurchase(purchase.id).subscribe({
       next: () => {
         this.loadPurchases();
-        this.purchaseStatsCards?.loadStats();
       },
       error: (err) => {
         this.feedback.apiError(

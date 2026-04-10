@@ -1,12 +1,14 @@
 <div class="row g-3 mb-4">
   <!-- Compras este mês -->
+  @let stats = (stats$ | async);
+
   <div class="col-12 col-md-6 col-lg-3">
     <div class="stat-card">
       <div class="stat-icon primary">
         <i class="bi bi-cart3"></i>
       </div>
       <div>
-        <p class="stat-value">{{ (stats.purchasesThisMonth ?? 0) | number:'1.0-0' }}</p>
+        <p class="stat-value">{{ (stats?.purchasesThisMonth) | number:'1.0-0' }}</p>
         <p class="stat-label">Compras este mês</p>
       </div>
     </div>
@@ -19,7 +21,7 @@
         <i class="bi bi-currency-dollar"></i>
       </div>
       <div>
-        <p class="stat-value">{{ (stats.purchasesAmountThisMonth ?? 0) | currency:'BRL' }}</p>
+        <p class="stat-value">{{ (stats?.purchasesAmountThisMonth) | currency:'BRL' }}</p>
         <p class="stat-label">Total em vendas este mês</p>
       </div>
     </div>
@@ -32,7 +34,7 @@
         <i class="bi bi-cart-check"></i>
       </div>
       <div>
-        <p class="stat-value">{{ (stats.purchasesToday ?? 0) | number:'1.0-0' }}</p>
+        <p class="stat-value">{{ (stats?.purchasesToday) | number:'1.0-0' }}</p>
         <p class="stat-label">Compras hoje</p>
       </div>
     </div>
@@ -45,7 +47,7 @@
         <i class="bi bi-cash-coin"></i>
       </div>
       <div>
-        <p class="stat-value">{{ (stats.purchasesAmountToday ?? 0) | currency:'BRL' }}</p>
+        <p class="stat-value">{{ (stats?.purchasesAmountToday) | currency:'BRL' }}</p>
         <p class="stat-label">Total em vendas hoje</p>
       </div>
     </div>

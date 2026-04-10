@@ -13,3 +13,10 @@ export interface PurchasesStats {
   returnRateThisMonth: number;
   returningCustomersChange: number;
 }
+
+export interface PurchaseSessionStats {
+  purchasesThisMonth: number;
+  purchasesAmountThisMonth: number;
+  purchasesToday: number;
+  purchasesAmountToday: number;
+}

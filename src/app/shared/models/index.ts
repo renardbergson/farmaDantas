@@ -23,10 +23,10 @@ export type {
   CreatePurchaseResponse,
   GeneratedCashbackInfo,
   UsedCashbackInfo,
-  PurchaseDetailsResponse
+  PurchaseDetailsResponse,
 } from './purchase.model';
 export { PurchaseCategory, PurchaseMode, PaymentMethod } from './purchase.model';
-export type { PurchasesStats } from './purchases-stats.model';
+export type { PurchasesStats, PurchaseSessionStats } from './purchases-stats.model';
 export type {
   User,
   ListUsersResponse,

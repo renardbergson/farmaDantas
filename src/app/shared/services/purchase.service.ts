@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import {
   Customer,
   Cashback,
@@ -11,9 +11,11 @@ import {
   CreatePurchaseRequest,
   CreatePurchaseResponse,
   PurchaseDetailsResponse,
+  PurchaseSessionStats
 } from '../models';
 import { getInitials } from '../utils/getInitials';
 import type { CustomerCashbackStats } from './cashback.service';
+
 export interface TopCustomer {
   name: string;
   avatar: string;
@@ -25,6 +27,19 @@ export interface TopCustomer {
 })
 export class PurchaseService {
   private readonly PURCHASES_URL = 'http://localhost:8080/api/purchases';
+
+  // Criação e encapsulamento de um Subject para atualizar stats de compras
+  // Abordagem automática, para que componentes que provoquem mudanças nas
+  // Purchases não precisem chamar o método refreshStats() internamente,
+  // assim o service ficará encarregado de tudo
+  private refreshStatsSubject = new BehaviorSubject<void>(undefined);
+  readonly stats$ = this.refreshStatsSubject.pipe(
+    switchMap(() => this.getPurchaseSessionStats())
+  );
+  refreshStats() {
+    this.refreshStatsSubject.next();
+  }
+  // =======================================================================
 
   constructor(private http: HttpClient) { }
 
@@ -40,12 +55,22 @@ export class PurchaseService {
     return this.http.get<PurchaseDetailsResponse>(`${this.PURCHASES_URL}/${purchaseId}/details`);
   }
 
+  getPurchaseSessionStats(): Observable<PurchaseSessionStats> {
+    return this.http.get<PurchaseSessionStats>(`${this.PURCHASES_URL}/stats`);
+  }
+
   addPurchase(body: CreatePurchaseRequest): Observable<CreatePurchaseResponse> {
-    return this.http.post<CreatePurchaseResponse>(`${this.PURCHASES_URL}/create`, body);
+    return this.http.post<CreatePurchaseResponse>(`${this.PURCHASES_URL}/create`, body)
+      .pipe(
+        tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+      );
   }
 
   deletePurchase(purchaseId: string): Observable<void> {
-    return this.http.delete<void>(`${this.PURCHASES_URL}/${purchaseId}/delete`);
+    return this.http.delete<void>(`${this.PURCHASES_URL}/${purchaseId}/delete`)
+      .pipe(
+        tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+      );
   }
 
   /* UTILITÁRIOS */

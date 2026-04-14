@@ -13,6 +13,7 @@ export interface ListCustomersResponse {
   name: string;
   email: string | null;
   cpf: string;
+  dateOfBirth?: string | null;
   createdAt: string;
   purchasesThisMonthCount: number;
   status: CustomerStatus;

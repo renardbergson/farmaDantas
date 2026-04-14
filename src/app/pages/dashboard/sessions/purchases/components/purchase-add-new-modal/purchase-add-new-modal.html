@@ -46,9 +46,31 @@
                   placeholder="Selecione ou busque o cliente" 
                   class="custom-ng-select w-100" 
                   [searchable]="true" 
+                  [searchFn]="customerSearchFn"
                   [clearable]="true" 
                   [class.is-invalid]="isFieldInvalid('customer')"
-                />
+                >
+                  <ng-template ng-label-tmp let-item="item">
+                    @if (item) {
+                      {{ item.name }} - {{ item.cpf }}
+                    }
+                  </ng-template>
+
+                  <ng-template ng-option-tmp let-item="item">
+                    <div class="cashback-option">
+                      <span class="cashback-option-value">{{ item.name }}</span>
+                      <span class="cashback-option-meta">
+                        <i class="bi bi-person-vcard me-1"></i> CPF: {{ item.cpf }}
+                        <i class="bi bi-calendar3 ms-2 me-1"></i>
+                        Nasc.: {{ 
+                          item.dateOfBirth 
+                            ? (item.dateOfBirth | date:'dd/MM/yyyy') 
+                            : 'nao informado' 
+                        }}
+                      </span>
+                    </div>
+                  </ng-template>
+                </ng-select>
                 <div class="error-feedback-space">
                   @if (isFieldInvalid('customer')) {
                     <div class="invalid-feedback d-block">O cliente é obrigatório.</div>

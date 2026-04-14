@@ -267,6 +267,16 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     return !!(field && field.invalid && (field.touched || field.dirty));
   }
 
+  customerSearchFn(term: string, item: Customer): boolean {
+    const normalizedTerm = term.trim().toLowerCase();
+    if (!normalizedTerm) return true;
+
+    return (
+      item.name.toLowerCase().includes(normalizedTerm) ||
+      item.cpf.includes(normalizedTerm)
+    );
+  }
+
   private disposeTooltip(): void {
     if (this.tooltipInstance) {
       this.tooltipInstance.dispose();

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PurchaseHeader, PurchaseStatsCards, PurchaseSearchbar, PurchaseTable, PurchaseAddNewModal, PurchaseDeleteModal } from './components'
 import { PurchaseDetailsModalComponent } from '../../../../shared/components/purchase-details-modal/purchase-details-modal.component';
 import { Purchase } from '../../../../shared/models';
-import { PurchaseService, FeedbackService } from '../../../../shared/services';
+import { PurchaseService, FeedbackService, CustomerService } from '../../../../shared/services';
 import { PurchaseFilters } from './components/purchase-searchbar/purchase-searchbar';
 
 @Component({
@@ -21,6 +21,7 @@ export class Purchases implements OnInit {
 
   constructor(
     private purchaseService: PurchaseService,
+    private customerService: CustomerService,
     private feedback: FeedbackService
   ) { }
 
@@ -46,6 +47,7 @@ export class Purchases implements OnInit {
 
   onPurchaseAdded(): void {
     this.loadPurchases();
+    this.customerService.refreshStats(); // atualiza stats$
   }
 
   onFiltersChange(filters: PurchaseFilters): void {
@@ -88,6 +90,7 @@ export class Purchases implements OnInit {
     this.purchaseService.deletePurchase(purchase.id).subscribe({
       next: () => {
         this.loadPurchases();
+        this.customerService.refreshStats(); // atualiza stats$
       },
       error: (err) => {
         this.feedback.apiError(

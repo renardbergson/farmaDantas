@@ -6,9 +6,10 @@ import {
   CustomerDetailsResponse,
   UpdateCustomerResponse,
   Person,
-  Address
+  Address,
+  CustomersSessionStats,
 } from '../models';
-import { Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 export type createAddress = Pick<
@@ -39,6 +40,19 @@ export type updatePerson = Partial<
 export class CustomerService {
   private readonly CUSTOMERS_URL = 'http://localhost:8080/api/customers';
 
+  // Criação e encapsulamento de um Subject para atualizar stats de clientes
+  // Abordagem automática, para que componentes que provoquem mudanças nos
+  // Customers não precisem chamar o método refreshStats() internamente,
+  // assim o service ficará encarregado de tudo
+  private refreshStatsSubject = new BehaviorSubject<void>(undefined);
+  readonly stats$ = this.refreshStatsSubject.pipe(
+    switchMap(() => this.getCustomerStats())
+  );
+  refreshStats() {
+    this.refreshStatsSubject.next();
+  }
+  // =======================================================================
+
   constructor(private http: HttpClient) { }
 
   getCustomers(): Observable<Customer[]> {
@@ -49,9 +63,15 @@ export class CustomerService {
     return this.http.get<CustomerDetailsResponse>(`${this.CUSTOMERS_URL}/${customerId}/details`);
   }
 
+  getCustomerStats(): Observable<CustomersSessionStats> {
+    return this.http.get<CustomersSessionStats>(`${this.CUSTOMERS_URL}/stats`);
+  }
+
   addCustomer(customerData: createPerson): Observable<CreateCustomerResponse> {
     const body = this.mapFormToCreateRequest(customerData);
-    return this.http.post<CreateCustomerResponse>(`${this.CUSTOMERS_URL}/create`, body);
+    return this.http.post<CreateCustomerResponse>(`${this.CUSTOMERS_URL}/create`, body).pipe(
+      tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+    );
   }
 
   updateCustomer(id: string, customerData: updatePerson): Observable<UpdateCustomerResponse> {
@@ -80,7 +100,9 @@ export class CustomerService {
   }
 
   deleteCustomer(customer: Customer): Observable<void> {
-    return this.http.delete<void>(`${this.CUSTOMERS_URL}/${customer.id}/delete`);
+    return this.http.delete<void>(`${this.CUSTOMERS_URL}/${customer.id}/delete`).pipe(
+      tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+    );
   }
 
   private detailsToPerson(details: CustomerDetailsResponse): Person {

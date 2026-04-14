@@ -63,6 +63,12 @@ export interface CustomerDetailsResponse {
   cashbackLifetime: CashbackLifetime;
 }
 
+/** Espelha {@code CustomerStatsResponse} da API (GET /api/customers/stats). */
+export interface CustomersSessionStats {
+  total: number;
+  byStatus: Record<CustomerStatus, number>;
+}
+
 /** Espelha {@code CreateAddressRequest} da API. */
 export interface CreateAddressRequest {
   zipCode: string;

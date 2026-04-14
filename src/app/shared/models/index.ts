@@ -8,6 +8,7 @@ export type {
   CreateCustomerRequest,
   CreateCustomerResponse,
   UpdateCustomerResponse,
+  CustomersSessionStats,
   PurchasesThisMonth,
   ActiveCashback,
   CashbackLifetime,
@@ -24,9 +25,10 @@ export type {
   GeneratedCashbackInfo,
   UsedCashbackInfo,
   PurchaseDetailsResponse,
+  PurchasesStats,
+  PurchaseSessionStats,
 } from './purchase.model';
 export { PurchaseCategory, PurchaseMode, PaymentMethod } from './purchase.model';
-export type { PurchasesStats, PurchaseSessionStats } from './purchases-stats.model';
 export type {
   User,
   ListUsersResponse,

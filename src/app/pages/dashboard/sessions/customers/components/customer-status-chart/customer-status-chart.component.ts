@@ -1,7 +1,19 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Customer, CustomerStatus } from '../../../../../../shared/models';
+import { CustomersSessionStats, CustomerStatus } from '../../../../../../shared/models';
 import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
+import { catchError, Observable, of, startWith } from 'rxjs';
+import { CustomerService, FeedbackService } from '../../../../../../shared/services';
+
+const emptyStats: CustomersSessionStats = {
+  total: 0,
+  byStatus: {
+    [CustomerStatus.NEW]: 0,
+    [CustomerStatus.ACTIVE]: 0,
+    [CustomerStatus.ABSENT]: 0,
+    [CustomerStatus.INACTIVE]: 0
+  }
+};
 
 @Component({
   selector: 'app-customer-status-chart',
@@ -10,14 +22,13 @@ import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
   templateUrl: './customer-status-chart.component.html',
   styleUrl: './customer-status-chart.component.css'
 })
-export class CustomerStatusChart implements OnChanges {
-  @Input() customers: Customer[] = [];
-  statusCounts: Record<CustomerStatus, number> = this.createEmptyStatusCounts();
+export class CustomerStatusChart {
+  readonly stats$: Observable<CustomersSessionStats>;
 
   readonly statusMetrics = [
     {
       status: CustomerStatus.NEW,
-      description: 'Recém cadastrado, nenhuma compra',
+      description: 'Recém cadastrado ou sem compras',
       class: 'badge-new',
       icon: 'bi-person-plus'
     },
@@ -41,29 +52,17 @@ export class CustomerStatusChart implements OnChanges {
     }
   ];
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['customers']) {
-      this.calculateCounts();
-    }
-  }
-
-  private createEmptyStatusCounts(): Record<CustomerStatus, number> {
-    return {
-      [CustomerStatus.NEW]: 0,
-      [CustomerStatus.ACTIVE]: 0,
-      [CustomerStatus.ABSENT]: 0,
-      [CustomerStatus.INACTIVE]: 0
-    };
-  }
-
-  private calculateCounts(): void {
-    // Reset counts
-    this.statusCounts = this.createEmptyStatusCounts();
-    // calculate
-    this.customers.forEach(customer => {
-      if (this.statusCounts[customer.status] !== undefined) {
-        this.statusCounts[customer.status]++;
-      }
-    });
+  constructor(
+    private customerService: CustomerService,
+    private feedback: FeedbackService
+  ) {
+    this.stats$ = this.customerService.stats$.pipe(
+      catchError((err) => {
+        this.feedback.apiError(err, 'Erro ao tentar carregar estatísticas de clientes');
+        console.error('Erro ao tentar carregar estatísticas de clientes:', err);
+        return of(emptyStats);
+      }),
+      startWith(emptyStats) // fallback
+    )
   }
 }

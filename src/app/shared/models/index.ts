@@ -41,3 +41,12 @@ export type {
 } from './user';
 export { UserRole } from './user';
 export type { Address, AddressResponse } from './adress.model';
+
+// STATS MODELS
+export type {
+  DashboardCustomersStats,
+  DashboardPurchasesStats,
+  DashboardCashbacksStats,
+  DashboardReturningCustomersStats,
+  DashboardStatsResponse,
+} from './dashboard-stats.model';

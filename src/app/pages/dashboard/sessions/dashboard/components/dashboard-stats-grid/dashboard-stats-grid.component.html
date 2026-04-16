@@ -1,16 +1,14 @@
 <!-- Stats Grid -->
+@let stats = (stats$ | async);
+
 <div class="row g-4">
   <div class="col-md-6 col-lg-3">
     <div class="stat-card variant-primary">
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Total de clientes</p>
-          <p class="stat-card-value">{{ (stats.totalCustomers ?? 0) | number }}</p>
-          <p class="stat-card-subtitle">{{ (stats.newCustomersToday ?? 0) }} novos hoje</p>
-          <div class="stat-card-trend">
-            <span [class]="getActiveCashbackClass(stats.newCustomersChange ?? 0)">{{ getActiveCashbackText(stats.newCustomersChange ?? 0, 'cliente', 'clientes') }}</span>
-            <span class="trend-label">vs mês anterior</span>
-          </div>
+          <p class="stat-card-value">{{ (stats?.customers?.totalCustomers) | number }}</p>
+          <p class="stat-card-subtitle">{{ (stats?.customers?.newCustomersToday ?? 0) }} novos hoje</p>
         </div>
         <div class="stat-card-icon icon-primary">
           <i class="bi bi-people"></i>
@@ -24,12 +22,8 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Compras no mês</p>
-          <p class="stat-card-value">{{ (stats.purchasesThisMonth ?? 0) | number }}</p>
-          <p class="stat-card-subtitle">{{ (stats.purchasesAmountThisMonth ?? 0) | currency:'BRL' }} no total</p>
-          <div class="stat-card-trend">
-            <span [class]="getActiveCashbackClass(stats.purchasesChange ?? 0)">{{ getActiveCashbackText(stats.purchasesChange ?? 0, 'compra', 'compras') }}</span>
-            <span class="trend-label">vs mês anterior</span>
-          </div>
+          <p class="stat-card-value">{{ (stats?.purchases?.purchasesThisMonth ?? 0) | number }}</p>
+          <p class="stat-card-subtitle">{{ (stats?.purchases?.purchasesAmountThisMonth ?? 0) | currency:'BRL' }} no total</p>
         </div>
         <div class="stat-card-icon icon-info">
           <i class="bi bi-cart"></i>
@@ -43,14 +37,8 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Cashbacks ativos</p>
-          <p class="stat-card-value">{{ (stats.activeCashbacks ?? 0) | number }}</p>
-          <p class="stat-card-subtitle">{{ (stats.activeCashbacksAmount ?? 0) | currency:'BRL' }} no total</p>
-          <div class="stat-card-trend">
-            <span [class]="getActiveCashbackClass(stats.activeCashbacksChange ?? 0)">{{ getActiveCashbackText(stats.activeCashbacksChange ?? 0, 'cashback', 'cashbacks') }}</span>
-            @if (stats.activeCashbacksChange !== 0) {
-            <span class="trend-label">vs mês anterior</span>
-            }
-          </div>
+          <p class="stat-card-value">{{ (stats?.cashbacks?.activeCashbacks) | number }}</p>
+          <p class="stat-card-subtitle">{{ (stats?.cashbacks?.activeCashbacksAmount ?? 0) | currency:'BRL' }} no total</p>
         </div>
         <div class="stat-card-icon icon-success">
           <i class="bi bi-gift"></i>
@@ -64,12 +52,8 @@
       <div class="stat-card-header">
         <div>
           <p class="stat-card-title">Recompras este mês</p>
-          <p class="stat-card-value">{{ (stats.returnRateThisMonth ?? 0) | percent:'1.0-0' }}</p>
-          <p class="stat-card-subtitle">clientes recorrentes</p>
-          <div class="stat-card-trend">
-            <span [class]="getActiveCashbackClass(stats.returningCustomersChange ?? 0)">{{ getActiveCashbackText(stats.returningCustomersChange ?? 0, 'cliente', 'clientes') }}</span>
-            <span class="trend-label">vs mês anterior</span>
-          </div>
+          <p class="stat-card-value">{{ (stats?.returningCustomers?.returningCustomersThisMonth ?? 0) }}</p>
+          <p class="stat-card-subtitle">clientes compraram novamente</p>
         </div>
         <div class="stat-card-icon icon-warning">
           <i class="bi bi-graph-up"></i>

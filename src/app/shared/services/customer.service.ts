@@ -11,6 +11,7 @@ import {
 } from '../models';
 import { BehaviorSubject, Observable, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { DashboardStatsService } from './dashboard-stats.service';
 
 export type createAddress = Pick<
   Address,
@@ -53,7 +54,7 @@ export class CustomerService {
   }
   // =======================================================================
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private dashboardStatsService: DashboardStatsService) { }
 
   getCustomers(): Observable<Customer[]> {
     return this.http.get<Customer[]>(this.CUSTOMERS_URL);
@@ -70,7 +71,10 @@ export class CustomerService {
   addCustomer(customerData: createPerson): Observable<CreateCustomerResponse> {
     const body = this.mapFormToCreateRequest(customerData);
     return this.http.post<CreateCustomerResponse>(`${this.CUSTOMERS_URL}/create`, body).pipe(
-      tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+      tap(() => {
+        this.refreshStats(); // stats de customer
+        this.dashboardStatsService.refreshStats(); // stats de dashboard
+      })
     );
   }
 
@@ -101,7 +105,10 @@ export class CustomerService {
 
   deleteCustomer(customer: Customer): Observable<void> {
     return this.http.delete<void>(`${this.CUSTOMERS_URL}/${customer.id}/delete`).pipe(
-      tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+      tap(() => {
+        this.refreshStats(); // stats de customer
+        this.dashboardStatsService.refreshStats(); // stats de dashboard
+      })
     );
   }
 

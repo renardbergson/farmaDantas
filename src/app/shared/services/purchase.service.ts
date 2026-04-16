@@ -15,6 +15,7 @@ import {
 } from '../models';
 import { getInitials } from '../utils/getInitials';
 import type { CustomerCashbackStats } from './cashback.service';
+import { DashboardStatsService } from './dashboard-stats.service';
 
 export interface TopCustomer {
   name: string;
@@ -41,7 +42,10 @@ export class PurchaseService {
   }
   // =======================================================================
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private dashboardStatsService: DashboardStatsService
+  ) { }
 
   getPurchases(): Observable<Purchase[]> {
     return this.http.get<Purchase[]>(this.PURCHASES_URL);
@@ -62,14 +66,20 @@ export class PurchaseService {
   addPurchase(body: CreatePurchaseRequest): Observable<CreatePurchaseResponse> {
     return this.http.post<CreatePurchaseResponse>(`${this.PURCHASES_URL}/create`, body)
       .pipe(
-        tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+        tap(() => {
+          this.refreshStats(); // stats de compras
+          this.dashboardStatsService.refreshStats(); // stats de dashboard
+        })
       );
   }
 
   deletePurchase(purchaseId: string): Observable<void> {
     return this.http.delete<void>(`${this.PURCHASES_URL}/${purchaseId}/delete`)
       .pipe(
-        tap(() => this.refreshStats()) // atualiza stats$ automaticamente
+        tap(() => {
+          this.refreshStats(); // stats de compras
+          this.dashboardStatsService.refreshStats(); // stats de dashboard
+        })
       );
   }
 

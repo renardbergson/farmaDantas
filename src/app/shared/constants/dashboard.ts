@@ -8,6 +8,7 @@ export const emptyDashboardStats: DashboardStatsResponse = {
   purchases: {
     purchasesThisMonth: 0,
     purchasesAmountThisMonth: 0,
+    top5CustomersThisMonth: [],
   },
   cashbacks: {
     activeCashbacks: 0,

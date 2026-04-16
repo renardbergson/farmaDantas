@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, Observable, of, startWith } from 'rxjs';
+
 import {
-  CustomerService,
-  CashbackService,
-  PurchaseService,
-  TopCustomer
+  DashboardStatsService,
+  FeedbackService
 } from '../../../../../../shared/services';
+import { DashboardStatsResponse } from '../../../../../../shared/models';
+import { emptyDashboardStats } from '../../../../../../shared/constants/dashboard';
+import { getInitials } from '../../../../../../shared/utils/getInitials';
 
 @Component({
   selector: 'app-dashboard-top-customers',
@@ -15,41 +17,29 @@ import {
   templateUrl: './dashboard-top-customers.component.html',
   styleUrl: './dashboard-top-customers.component.css',
 })
-export class DashboardTopCustomers implements OnInit {
-  top5CustomersThisMonth: TopCustomer[] = [];
+export class DashboardTopCustomers {
+  readonly stats$: Observable<DashboardStatsResponse>;
 
   constructor(
     private router: Router,
-    private customerService: CustomerService,
-    private cashbackService: CashbackService,
-    private purchaseService: PurchaseService
-  ) { }
+    private statsService: DashboardStatsService,
+    private feedbackService: FeedbackService
+  ) {
+    this.stats$ = this.statsService.stats$.pipe(
+      catchError((err) => {
+        this.feedbackService.apiError(err, 'Erro ao carregar top 5 clientes');
+        console.error('Erro ao carregar top 5 clientes:', err);
+        return of(emptyDashboardStats);
+      }),
+      startWith(emptyDashboardStats),
+    )
+  }
 
-  ngOnInit(): void {
-    this.loadTop5CustomersThisMonth();
+  getInitials(name: string): string {
+    return getInitials(name);
   }
 
   viewAllCustomers(): void {
     this.router.navigate(['/user/customers']);
-  }
-
-  loadTop5CustomersThisMonth() {
-    forkJoin({
-      customers: this.customerService.getCustomers(),
-      purchases: this.purchaseService.getPurchases(),
-      cashbacks: this.cashbackService.getCashbacks(),
-    }).subscribe({
-      next: ({ customers, purchases, cashbacks }) => {
-        const cashbackStats = this.cashbackService.getCashbackStatsByCustomer(customers, cashbacks);
-        this.top5CustomersThisMonth = this.purchaseService.getTop5CustomersThisMonth(
-          customers,
-          purchases,
-          cashbackStats,
-        );
-      },
-      error: (error) => {
-        console.error('Ocorreu um erro ao tentar carregar os top 5 clientes:', error);
-      }
-    });
   }
 }

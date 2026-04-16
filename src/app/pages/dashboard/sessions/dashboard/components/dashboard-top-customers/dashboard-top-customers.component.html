@@ -1,3 +1,5 @@
+@let stats = (stats$ | async);
+
 <div class="dashboard-card">
   <div class="dashboard-card-header">
     <div>
@@ -13,19 +15,19 @@
   </div>
 
   <div class="dashboard-card-body">
-    @if (top5CustomersThisMonth.length > 0) {
+    @if (stats?.purchases?.top5CustomersThisMonth ?? [].length > 0) {
       <div class="d-flex flex-column gap-2">
-        @for(customer of top5CustomersThisMonth; track $index) {
+        @for(customer of stats?.purchases?.top5CustomersThisMonth ?? []; track $index) {
           <div class="client-list-item">
             <div class="client-rank">{{ $index + 1 }}</div>
-            <div class="client-avatar">{{ customer.avatar }}</div>
+            <div class="client-avatar">{{ getInitials(customer.name) }}</div>
             <div class="client-info">
               <p class="client-name">{{ customer.name }}</p>
-              <p class="client-purchases">{{ customer.purchases }} compras</p>
+              <p class="client-purchases">{{ customer.purchasesCount }} compras</p>
             </div>
             <div class="client-cashback">
-              <p class="client-cashback-value">R$ {{ customer.totalInCashback }}</p>
-              <p class="client-cashback-label">em cashback</p>
+              <p class="client-cashback-value">R$ {{ customer.activeCashbackAmount }}</p>
+              <p class="client-cashback-label">em cashback ativo</p>
             </div>
           </div>
         }

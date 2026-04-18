@@ -30,3 +30,6 @@ export { DashboardStatsService } from './dashboard-stats.service';
 
 // CUSTOMERS STATS SERVICE
 export { CustomersStatsService } from './customers-stats.service';
+
+// PURCHASES STATS SERVICE
+export { PurchasesStatsService } from './purchases-stats.service';

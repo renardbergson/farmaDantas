@@ -1,15 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PurchaseService, FeedbackService } from '../../../../../../shared/services';
+import { PurchasesStatsService, FeedbackService } from '../../../../../../shared/services';
 import { PurchaseSessionStats } from '../../../../../../shared/models';
+import { emptyPurchasesSessionStats } from '../../../../../../shared/constants/purchases';
 import { Observable, catchError, startWith, of } from 'rxjs';
 
-const emptyStats: PurchaseSessionStats = {
-  purchasesThisMonth: 0,
-  purchasesAmountThisMonth: 0,
-  purchasesToday: 0,
-  purchasesAmountToday: 0,
-};
 @Component({
   selector: 'app-purchases-stats-cards',
   imports: [CommonModule],
@@ -20,16 +15,16 @@ export class PurchaseStatsCards {
   readonly stats$: Observable<PurchaseSessionStats>;
 
   constructor(
-    private purchaseService: PurchaseService,
-    private feedback: FeedbackService
+    private purchasesStatsService: PurchasesStatsService,
+    private feedback: FeedbackService,
   ) {
-    this.stats$ = this.purchaseService.stats$.pipe(
+    this.stats$ = this.purchasesStatsService.stats$.pipe(
       catchError((err) => {
         this.feedback.apiError(err, 'Erro ao tentar carregar estatísticas de compras');
         console.error('Erro ao tentar carregar estatísticas de compras:', err);
-        return of(emptyStats);
+        return of(emptyPurchasesSessionStats);
       }),
-      startWith(emptyStats) // fallback
+      startWith(emptyPurchasesSessionStats),
     );
   }
 }

@@ -3,9 +3,8 @@ import { CommonModule } from '@angular/common';
 import { CustomerHeader, CustomerAddNewModal, CustomerDeleteModal, CustomerDetailsModal, CustomerSearchbar, CustomerTable, CustomerStatusChart } from './components';
 import { CustomerCashbacksModal } from '../../../../shared/components';
 import { Customer } from '../../../../shared/models';
-import { CustomerService } from '../../../../shared/services';
+import { CustomerService, FeedbackService } from '../../../../shared/services';
 import { CustomerFilters } from './components/customer-searchbar/customer-searchbar';
-import { FeedbackService } from '../../../../shared/services';
 
 @Component({
   selector: 'app-customers',

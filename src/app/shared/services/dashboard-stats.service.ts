@@ -12,8 +12,8 @@ export class DashboardStatsService {
   private refreshStatsSubject = new BehaviorSubject<void>(undefined);
 
   readonly stats$ = this.refreshStatsSubject.pipe(
-    switchMap(() => this.getDashboardStats())
-  )
+    switchMap(() => this.getDashboardStats()),
+  );
 
   constructor(private http: HttpClient) { }
 

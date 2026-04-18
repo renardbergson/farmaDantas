@@ -15,7 +15,7 @@
   </div>
 
   <div class="dashboard-card-body">
-    @if (stats?.purchases?.top5CustomersThisMonth ?? [].length > 0) {
+    @if ((stats?.purchases?.top5CustomersThisMonth ?? []).length > 0) {
       <div class="d-flex flex-column gap-2">
         @for(customer of stats?.purchases?.top5CustomersThisMonth ?? []; track $index) {
           <div class="client-list-item">
@@ -39,7 +39,7 @@
         </div>
         <h3 class="empty-state-title">Nenhuma compra este mês</h3>
         <p class="empty-state-text">
-          Ainda não há clientes com compras no mês corrente. Quando as vendas começarem, os top 5 aparecerão aqui.
+          Os top 5 clientes serão listados quando novas compras forem registradas.
         </p>
         <button class="btn-ghost empty-state-cta" (click)="viewAllCustomers()">
           Ver todos os clientes <i class="bi bi-arrow-right ms-1"></i>

@@ -1,4 +1,3 @@
-/** Espelha {@code AddressResponse} da API. */
 export interface AddressResponse {
   zipCode: string;
   street: string;

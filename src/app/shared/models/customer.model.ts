@@ -7,7 +7,6 @@ export enum CustomerStatus {
   INACTIVE = 'INACTIVE',
 }
 
-/** Espelha {@code ListCustomersResponse} da API. */
 export interface ListCustomersResponse {
   id: string;
   name: string;
@@ -26,7 +25,6 @@ export interface PurchaseModeThisMonth {
   delivery: number;
 }
 
-/** Espelha {@code CustomerDetailsResponse.PurchasesThisMonth} da API. */
 export interface PurchasesThisMonth {
   count: number;
   totalAmount: number;
@@ -34,13 +32,11 @@ export interface PurchasesThisMonth {
   averageTicket: number;
 }
 
-/** Espelha {@code CustomerDetailsResponse.ActiveCashback} da API. */
 export interface ActiveCashback {
   count: number;
   amount: number;
 }
 
-/** Espelha {@code CustomerDetailsResponse.CashbackLifetime} da API. */
 export interface CashbackLifetime {
   totalEarnedCount: number;
   totalEarnedAmount: number;
@@ -48,7 +44,6 @@ export interface CashbackLifetime {
   totalUsedAmount: number;
 }
 
-/** Espelha {@code CustomerDetailsResponse} da API. */
 export interface CustomerDetailsResponse {
   status: CustomerStatus;
   name: string;
@@ -64,13 +59,11 @@ export interface CustomerDetailsResponse {
   cashbackLifetime: CashbackLifetime;
 }
 
-/** Espelha {@code CustomerStatsResponse} da API (GET /api/customers/stats). */
 export interface CustomersSessionStats {
   total: number;
   byStatus: Record<CustomerStatus, number>;
 }
 
-/** Espelha {@code CreateAddressRequest} da API. */
 export interface CreateAddressRequest {
   zipCode: string;
   street: string;
@@ -81,7 +74,6 @@ export interface CreateAddressRequest {
   stateId: number;
 }
 
-/** Espelha {@code CreatePersonRequest} da API. */
 export interface CreatePersonRequest {
   name: string;
   phone: string;
@@ -91,12 +83,8 @@ export interface CreatePersonRequest {
   address: CreateAddressRequest;
 }
 
-/**
- * Corpo JSON de criação de cliente: {@code CreateCustomerRequest} com {@code person} desempacotado (JsonUnwrapped).
- */
 export type CreateCustomerRequest = CreatePersonRequest;
 
-/** Espelha {@code CreateCustomerResponse} da API. */
 export interface CreateCustomerResponse {
   status: CustomerStatus;
   name: string;
@@ -107,7 +95,6 @@ export interface CreateCustomerResponse {
   address: AddressResponse;
 }
 
-/** Espelha {@code UpdateCustomerResponse} da API. */
 export interface UpdateCustomerResponse {
   status: CustomerStatus;
   name: string;
@@ -119,5 +106,4 @@ export interface UpdateCustomerResponse {
   address: AddressResponse;
 }
 
-/** Linha de listagem de clientes na API. */
 export type Customer = ListCustomersResponse;

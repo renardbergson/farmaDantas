@@ -1,3 +1,5 @@
+import { CashbackStatus } from "./cashback.model";
+
 export interface DashboardCustomersStats {
   totalCustomers: number;
   newCustomersToday: number;
@@ -15,9 +17,17 @@ export interface DashboardPurchasesStats {
   top5CustomersThisMonth: DashboardTop5Customer[];
 }
 
+export interface DashboardRecentCashbackStats {
+  customerName: string;
+  expiresInDays: number | null;
+  status: CashbackStatus;
+  value: number;
+}
+
 export interface DashboardCashbacksStats {
   activeCashbacks: number;
   activeCashbacksAmount: number;
+  recentCashbacks: DashboardRecentCashbackStats[];
 }
 
 export interface DashboardReturningCustomersStats {

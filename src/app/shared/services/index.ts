@@ -17,8 +17,6 @@ export type {
 
 // PURCHASE SERVICE
 export { PurchaseService } from './purchase.service';
-export type { TopCustomer } from './purchase.service';
-export type { PurchasesStats } from '../models';
 
 // USER SERVICE
 export { UserService } from './user.service';

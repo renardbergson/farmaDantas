@@ -11,8 +11,6 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  // TODO: implementar filtro por usuário atual logado
-  // TODO: se for admin, listar o próprio admin + todos os funcionários
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.USERS_URL}`);
   }

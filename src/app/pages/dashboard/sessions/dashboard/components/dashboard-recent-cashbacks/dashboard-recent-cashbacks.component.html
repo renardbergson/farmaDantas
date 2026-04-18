@@ -9,9 +9,11 @@
     </button>
   </div>
   <div class="dashboard-card-body">
-    @if (recentCashbacks.length > 0) {
+    @let stats = (stats$ | async);
+
+    @if ((stats?.cashbacks?.recentCashbacks ?? []).length > 0) {
       <div class="d-flex flex-column gap-3">
-        @for(cashback of recentCashbacks; track $index) {
+        @for(cashback of stats?.cashbacks?.recentCashbacks ?? []; track $index) {
           <div class="cashback-list-item">
             <div class="d-flex align-items-center">
               <div class="cashback-icon">
@@ -19,14 +21,23 @@
               </div>
               <div class="cashback-info">
                 <p class="cashback-cliente">{{ cashback.customerName }}</p>
-                <p class="cashback-expira">{{ cashback.expiresIn }}</p>
+                <p class="cashback-expira">
+                  {{ getExpiresText(cashback.expiresInDays, cashback.status) }}                  
+                </p>
               </div>
             </div>
             <div class="cashback-right">
-              <span class="badge-status" [class.badge-active]="cashback.status" [class.badge-expired]="cashback.status === CashbackStatus.EXPIRED">
-                {{ cashback.status }}
+              <span   
+                class="badge-status" 
+                [class.badge-active]="cashback.status === CashbackStatus.ACTIVE" 
+                [class.badge-used]="cashback.status === CashbackStatus.USED"
+                [class.badge-expired]="cashback.status === CashbackStatus.EXPIRED"
+              >
+                {{ cashback.status | cashbackStatusLabel }}
               </span>
-              <span class="cashback-valor">{{ cashback.value | currency:'BRL' }}</span>
+              <span class="cashback-valor">
+                {{ cashback.value | currency:'BRL' }}                
+              </span>
             </div>
           </div>
         }
@@ -36,9 +47,9 @@
         <div class="empty-state-icon">
           <i class="bi bi-gift"></i>
         </div>
-        <h3 class="empty-state-title">Nenhum cashback ativo</h3>
+        <h3 class="empty-state-title">Nenhum cashback recente</h3>
         <p class="empty-state-text">
-          Não há cashbacks válidos no momento. Novos cashbacks aparecerão aqui quando forem gerados em compras.
+          Novos cashbacks aparecerão aqui quando forem gerados em compras.
         </p>
         <button class="btn-ghost empty-state-cta" (click)="viewAllCashbacks()">
           Ver todos os cashbacks <i class="bi bi-arrow-right ms-1"></i>

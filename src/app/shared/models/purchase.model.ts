@@ -23,7 +23,6 @@ export enum PurchaseCategory {
   ELDERLY = 'ELDERLY',
 }
 
-/** Espelha {@code CreatePurchaseRequest} da API. */
 export interface CreatePurchaseRequest {
   customerId: string;
   userId: string;
@@ -41,7 +40,6 @@ export interface CreatePurchaseRequest {
   usedCashbackId?: string | null;
 }
 
-/** Espelha {@code CreatePurchaseResponse.GeneratedCashbackInfo} da API. */
 export interface GeneratedCashbackInfo {
   id: string;
   value: number;
@@ -50,13 +48,11 @@ export interface GeneratedCashbackInfo {
   status: CashbackStatus;
 }
 
-/** Espelha {@code CreatePurchaseResponse.UsedCashbackInfo} da API. */
 export interface UsedCashbackInfo {
   id: string;
   status: CashbackStatus;
 }
 
-/** Espelha {@code CreatePurchaseResponse} da API. */
 export interface CreatePurchaseResponse {
   id: string;
   customerName: string;
@@ -72,7 +68,6 @@ export interface CreatePurchaseResponse {
   usedCashbackInfo: UsedCashbackInfo | null;
 }
 
-/** Espelha {@code ListPurchasesResponse} da API. */
 export interface ListPurchasesResponse {
   id: string;
   customerName: string;
@@ -85,7 +80,6 @@ export interface ListPurchasesResponse {
   mode: PurchaseMode;
 }
 
-/** Espelha {@code PurchaseDetailsResponse} da API (GET /api/purchases/{id}/details). */
 export interface PurchaseDetailsResponse {
   id: string;
   customerName: string;
@@ -100,22 +94,6 @@ export interface PurchaseDetailsResponse {
   cashbackGenerationRate: number | null;
   generatedCashbackValue: number | null;
   redeemedCashbackValue: number | null;
-}
-
-export interface PurchasesStats {
-  totalCustomers: number;
-  newCustomersToday: number;
-  newCustomersChange: number;
-  purchasesToday: number;
-  purchasesAmountToday: number;
-  purchasesThisMonth: number;
-  purchasesAmountThisMonth: number;
-  purchasesChange: number;
-  activeCashbacks: number;
-  activeCashbacksAmount: number;
-  activeCashbacksChange: number;
-  returnRateThisMonth: number;
-  returningCustomersChange: number;
 }
 
 export interface PurchaseSessionStats {

@@ -25,7 +25,6 @@ export type {
   GeneratedCashbackInfo,
   UsedCashbackInfo,
   PurchaseDetailsResponse,
-  PurchasesStats,
   PurchaseSessionStats,
 } from './purchase.model';
 export { PurchaseCategory, PurchaseMode, PaymentMethod } from './purchase.model';
@@ -41,10 +40,9 @@ export type {
 } from './user';
 export { UserRole } from './user';
 export type { Address, AddressResponse } from './adress.model';
-
-// STATS MODELS
 export type {
   DashboardCustomersStats,
+  DashboardTop5Customer,
   DashboardPurchasesStats,
   DashboardCashbacksStats,
   DashboardReturningCustomersStats,

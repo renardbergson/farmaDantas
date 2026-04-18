@@ -3,17 +3,8 @@ import { CommonModule } from '@angular/common';
 import { CustomersSessionStats, CustomerStatus } from '../../../../../../shared/models';
 import { CustomerStatusLabelPipe } from '../../../../../../shared/pipes';
 import { catchError, Observable, of, startWith } from 'rxjs';
-import { CustomerService, FeedbackService } from '../../../../../../shared/services';
-
-const emptyStats: CustomersSessionStats = {
-  total: 0,
-  byStatus: {
-    [CustomerStatus.NEW]: 0,
-    [CustomerStatus.ACTIVE]: 0,
-    [CustomerStatus.ABSENT]: 0,
-    [CustomerStatus.INACTIVE]: 0
-  }
-};
+import { CustomersStatsService, FeedbackService } from '../../../../../../shared/services';
+import { emptyStats } from '../../../../../../shared/constants/customers';
 
 @Component({
   selector: 'app-customer-status-chart',
@@ -53,10 +44,10 @@ export class CustomerStatusChart {
   ];
 
   constructor(
-    private customerService: CustomerService,
+    private customersStatsService: CustomersStatsService,
     private feedback: FeedbackService
   ) {
-    this.stats$ = this.customerService.stats$.pipe(
+    this.stats$ = this.customersStatsService.stats$.pipe(
       catchError((err) => {
         this.feedback.apiError(err, 'Erro ao tentar carregar estatísticas de clientes');
         console.error('Erro ao tentar carregar estatísticas de clientes:', err);

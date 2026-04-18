@@ -27,3 +27,6 @@ export { FeedbackService } from './feedback.service';
 
 // DASHBOARD STATS SERVICE
 export { DashboardStatsService } from './dashboard-stats.service';
+
+// CUSTOMERS STATS SERVICE
+export { CustomersStatsService } from './customers-stats.service';

@@ -1,6 +1,13 @@
-import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { Chart, TooltipItem } from 'chart.js/auto';
-import { CashbackService, MonthlyCashbackCountData } from '../../../../../../shared/services';
+import { DashboardStatsService, FeedbackService } from '../../../../../../shared/services';
+import { MONTH_LABELS_PT } from '../../../../../../shared/constants/month-labels';
+
+interface MonthlyCashbackCountData {
+  labels: string[];
+  quantities: number[];
+}
 
 @Component({
   selector: 'app-dashboard-monthly-cashback-count',
@@ -10,31 +17,42 @@ import { CashbackService, MonthlyCashbackCountData } from '../../../../../../sha
 })
 export class DashboardMonthlyCashbackCount implements AfterViewInit, OnDestroy {
   private barChart?: Chart<'bar', number[], string>;
+  private statsSubscription?: Subscription;
   hasData = false;
 
   constructor(
-    private cashbackService: CashbackService
+    private statsService: DashboardStatsService,
+    private cdr: ChangeDetectorRef,
+    private feedbackService: FeedbackService
   ) { }
 
   ngAfterViewInit(): void {
-    this.cashbackService.getCashbacks().subscribe({
-      next: (cashbacks) => {
-        this.hasData = cashbacks.length > 0;
-        if (!this.hasData) {
-          this.barChart?.destroy();
-          return;
-        }
+    this.statsSubscription = this.statsService.stats$.subscribe({
+      next: (stats) => {
+        const points = stats.cashbacks.lastSixMonths ?? [];
+        this.hasData = points.some(point => point.count > 0);
 
-        const data = this.cashbackService.getAllLastMonthsCashbackCount(cashbacks);
-        this.initChart(data);
+        this.barChart?.destroy(); // mata instância antiga, se existir
+
+        if (!this.hasData) return;
+
+        const data: MonthlyCashbackCountData = {
+          labels: points.map(point => MONTH_LABELS_PT[point.label] ?? point.label),
+          quantities: points.map(point => point.count),
+        };
+
+        this.cdr.detectChanges(); // garante que o canvas já foi renderizado antes de chamar initChart()
+        queueMicrotask(() => this.initChart(data));
       },
       error: (error) => {
-        console.error('Erro ao obter a contagem de cashbacks mensais:', error);
+        this.feedbackService.apiError(error, 'Erro ao obter contagens mensais em cashback');
+        console.error('Erro ao obter contagens mensais em cashback:', error);
       }
     })
   }
 
   ngOnDestroy(): void {
+    this.statsSubscription?.unsubscribe();
     this.barChart?.destroy();
   }
 

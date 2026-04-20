@@ -24,10 +24,17 @@ export interface DashboardRecentCashbackStats {
   value: number;
 }
 
+export interface DashboardLastSixMonthsCashbackMetricsPoint {
+  label: string;
+  amount: number;
+  count: number;
+}
+
 export interface DashboardCashbacksStats {
   activeCashbacks: number;
   activeCashbacksAmount: number;
   recentCashbacks: DashboardRecentCashbackStats[];
+  lastSixMonths: DashboardLastSixMonthsCashbackMetricsPoint[];
 }
 
 export interface DashboardReturningCustomersStats {

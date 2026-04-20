@@ -4,7 +4,6 @@ export type { ViaCepResponse, State, City } from './address.service';
 
 // CASHBACK SERVICE
 export { CashbackService } from './cashback.service';
-export type { RecentCashback, MonthlyCashbackValueData, MonthlyCashbackCountData } from './cashback.service';
 
 // CUSTOMER SERVICE
 export { CustomerService } from './customer.service';

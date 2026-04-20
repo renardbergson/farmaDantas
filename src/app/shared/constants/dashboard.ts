@@ -14,6 +14,7 @@ export const emptyDashboardStats: DashboardStatsResponse = {
     activeCashbacks: 0,
     activeCashbacksAmount: 0,
     recentCashbacks: [],
+    lastSixMonths: [],
   },
   returningCustomers: {
     returningCustomersThisMonth: 0,

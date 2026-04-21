@@ -33,7 +33,9 @@
       </ul>
     </div>
 
-    <hr>
+    @if(isAdmin) {
+      <hr>
+    }
 
     <!-- Admin Section -->
     @if(isAdmin) {
@@ -74,7 +76,7 @@
     <div class="user-info">
       <div class="user-avatar">{{ getInitials(userInfo.name) }}</div>
       <div class="user-details">
-        <p class="user-name">{{ userInfo.name }}</p>
+        <p class="user-name" [attr.title]="userInfo.name || null">{{ formatSidebarDisplayName(userInfo.name) }}</p>
         <p class="user-role">{{ userInfo.role }}</p>
       </div>
     </div>

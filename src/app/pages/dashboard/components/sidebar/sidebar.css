@@ -303,6 +303,8 @@
 .user-details {
   opacity: 1;
   transition: opacity var(--transition-speed) ease;
+  min-width: 0;
+  flex: 1;
 }
 
 .user-details p {
@@ -320,6 +322,9 @@
   font-weight: 500;
   color: var(--sidebar-text);
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-role {

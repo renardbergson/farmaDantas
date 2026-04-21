@@ -2,7 +2,9 @@ import { Component, OnInit, Output, EventEmitter, HostBinding } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { getInitials } from '../../../../shared/utils/getInitials';
+import { formatSidebarDisplayName } from '../../../../shared/utils/formatSidebarDisplayName';
 import { AuthService } from '../../../../shared/services';
+import { UserRole } from '../../../../shared/models';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,7 +14,17 @@ import { AuthService } from '../../../../shared/services';
 })
 export class Sidebar implements OnInit {
   isCollapsed: boolean = false;
-  isAdmin: boolean = true;
+  isAdmin: boolean = false;
+
+  userInfo = {
+    name: '',
+    role: '',
+  };
+
+  role: Record<UserRole, string> = {
+    [UserRole.ADMIN]: 'Administrador',
+    [UserRole.EMPLOYEE]: 'Funcionário',
+  };
 
   menuItems = [
     { text: "Dashboard", icon: "bi bi-grid-1x2", route: "/user/dashboard" },
@@ -26,12 +38,8 @@ export class Sidebar implements OnInit {
     { text: "Funcionários", icon: "bi bi-person-badge", route: "/admin/employees" },
   ];
 
-  userInfo = {
-    name: 'João da Silva',
-    role: 'Administrador',
-  };
-
   protected readonly getInitials = getInitials;
+  protected readonly formatSidebarDisplayName = formatSidebarDisplayName;
 
   @HostBinding('class.collapsed') get collapsedClass() {
     return this.isCollapsed;
@@ -45,12 +53,17 @@ export class Sidebar implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Carregar estado salvo do localStorage
     const savedState = localStorage.getItem('sidebarCollapsed');
     if (savedState === 'true') {
       this.isCollapsed = true;
     }
     this.collapsedChange.emit(this.isCollapsed);
+
+    const userName = this.authService.getName();
+    const userRole = this.authService.getRole();
+    this.userInfo.name = userName || '';
+    this.userInfo.role = userRole ? this.role[userRole] || '' : '';
+    this.isAdmin = userRole === UserRole.ADMIN;
   }
 
   toggleSidebar(): void {

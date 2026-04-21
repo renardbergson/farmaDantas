@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { DashboardWrapper } from './pages/dashboard/dashboardWrapper';
 import { Dashboard, Customers, Cashbacks, Purchases, Reports, Employees, Configs } from './pages/dashboard/sessions/index';
+import { authGuard } from './shared/guards/auth.guard';
+import { loginScreenGuard } from './shared/guards/login-screen.guard';
 
 export const routes: Routes = [
   // 1. Rota raiz: redireciona "/" para "/login"
@@ -14,7 +16,8 @@ export const routes: Routes = [
   // 2. Rota de login: "/login" renderiza a tela de login (sem sidebar)
   {
     path: 'login',
-    component: Login
+    component: Login,
+    canActivate: [loginScreenGuard]
   },
 
   // 3. Rota com layout (sidebar + conteúdo): "/user/*" e "/admin/*"
@@ -28,6 +31,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'user',
+        canActivate: [authGuard],
         children: [
           { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
           { path: 'dashboard', component: Dashboard },
@@ -39,6 +43,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
+        canActivate: [authGuard],
         children: [
           { path: '', redirectTo: 'reports', pathMatch: 'full' },
           { path: 'reports', component: Reports },

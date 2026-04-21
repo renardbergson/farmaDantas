@@ -19,8 +19,18 @@
   <!-- Form -->
   <form (ngSubmit)="onSubmit()">
     <div class="mb-3">
-      <label for="email" class="form-label">E-mail</label>
-      <input type="email" class="form-control" id="email" [(ngModel)]="email" name="email" placeholder="seu@email.com" required>
+      <label for="cpf" class="form-label">CPF</label>
+      <input 
+        type="text" 
+        class="form-control" 
+        id="cpf" 
+        [(ngModel)]="cpf" 
+        name="cpf" 
+        placeholder="seu cpf" 
+        mask="000.000.000-00"
+        inputmode="numeric"
+        required
+      >
     </div>
 
     <div class="mb-4">
@@ -29,7 +39,13 @@
         <a href="#" class="forgot-link">Esqueceu a senha?</a>
       </div>
       <div class="position-relative">
-        <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+        <input 
+          [type]="showPassword ? 'text' : 'password'" class="form-control" id="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          placeholder="sua senha" 
+          required
+        >
         <button type="button" class="password-toggle" (click)="togglePassword()">
           <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword"></i>
         </button>

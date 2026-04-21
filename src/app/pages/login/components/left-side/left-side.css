@@ -111,8 +111,13 @@
   border-radius: 8px;
   font-weight: 500;
   font-size: 1rem;
+  cursor: pointer;
   box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
   transition: all 0.2s ease;
+}
+
+.btn-login * {
+  cursor: pointer;
 }
 
 .btn-login:hover {

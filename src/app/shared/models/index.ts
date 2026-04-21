@@ -48,3 +48,4 @@ export type {
   DashboardReturningCustomersStats,
   DashboardStatsResponse,
 } from './dashboard-stats.model';
+export type { LoginRequest, LoginResponse } from './auth.model';

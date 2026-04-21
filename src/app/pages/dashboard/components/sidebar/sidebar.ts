@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { getInitials } from '../../../../shared/utils/getInitials';
+import { AuthService } from '../../../../shared/services';
 
 @Component({
   selector: 'app-sidebar',
@@ -38,6 +39,11 @@ export class Sidebar implements OnInit {
 
   @Output() collapsedChange = new EventEmitter<boolean>();
 
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) { }
+
   ngOnInit(): void {
     // Carregar estado salvo do localStorage
     const savedState = localStorage.getItem('sidebarCollapsed');
@@ -56,5 +62,11 @@ export class Sidebar implements OnInit {
 
   getCollapseButtonLabel(): string {
     return this.isCollapsed ? 'Expandir menu' : 'Recolher menu';
+  }
+
+  logout(event: Event): void {
+    event.preventDefault();
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

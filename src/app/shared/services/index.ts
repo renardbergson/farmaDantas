@@ -32,3 +32,6 @@ export { CustomersStatsService } from './customers-stats.service';
 
 // PURCHASES STATS SERVICE
 export { PurchasesStatsService } from './purchases-stats.service';
+
+// AUTH SERVICE
+export { AuthService } from './auth.service';

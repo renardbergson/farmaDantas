@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { PurchaseSessionStats } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PurchasesStatsService {
-  private readonly PURCHASES_STATS_URL = 'http://localhost:8080/api/purchases/stats';
+  private readonly PURCHASES_STATS_URL = `${environment.apiBaseUrl}/api/purchases/stats`;
 
   private refreshStatsSubject = new BehaviorSubject<void>(undefined);
 

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Cashback } from '../models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CashbackService {
-  private readonly CASHBACKS_URL = 'http://localhost:8080/api/cashbacks';
+  private readonly CASHBACKS_URL = `${environment.apiBaseUrl}/api/cashbacks`;
 
   constructor(private http: HttpClient) { }
 

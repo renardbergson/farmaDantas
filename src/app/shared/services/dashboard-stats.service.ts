@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { DashboardStatsResponse } from '../models';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DashboardStatsService {
-  private readonly DASHBOARD_STATS_URL = 'http://localhost:8080/api/dashboard/stats';
+  private readonly DASHBOARD_STATS_URL = `${environment.apiBaseUrl}/api/dashboard/stats`;
 
   private refreshStatsSubject = new BehaviorSubject<void>(undefined);
 

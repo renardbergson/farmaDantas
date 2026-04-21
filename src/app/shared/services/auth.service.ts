@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LoginRequest, LoginResponse, UserRole } from '../models';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly AUTH_URL = 'http://localhost:8080/api/auth/login';
+  private readonly AUTH_URL = `${environment.apiBaseUrl}/api/auth/login`;
   private readonly TOKEN_KEY = 'access_token';
   private readonly ROLE_KEY = 'user_role';
 

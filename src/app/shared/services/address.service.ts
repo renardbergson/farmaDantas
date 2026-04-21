@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ViaCepResponse {
   cep: string;
@@ -27,7 +28,8 @@ export interface City {
   providedIn: 'root', // serviço disponível em toda a aplicação
 })
 export class AddressService {
-  private readonly VIACEP_URL = 'https://viacep.com.br/ws';
+  private readonly VIACEP_URL = environment.viaCepBaseUrl;
+  private readonly IBGE_BASE_URL = environment.ibgeBaseUrl;
 
   constructor(private http: HttpClient) { }
 
@@ -37,12 +39,12 @@ export class AddressService {
   }
 
   getStates(): Observable<State[]> {
-    const IBGE_STATES_URL = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados';
-    return this.http.get<State[]>(IBGE_STATES_URL)
+    const IBGE_STATES_URL = `${this.IBGE_BASE_URL}/estados`;
+    return this.http.get<State[]>(IBGE_STATES_URL);
   }
 
   getCities(state: State): Observable<City[]> {
-    const IBGE_CITIES_URL = `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state.sigla}/municipios`;
-    return this.http.get<City[]>(IBGE_CITIES_URL)
+    const IBGE_CITIES_URL = `${this.IBGE_BASE_URL}/estados/${state.sigla}/municipios`;
+    return this.http.get<City[]>(IBGE_CITIES_URL);
   }
 }

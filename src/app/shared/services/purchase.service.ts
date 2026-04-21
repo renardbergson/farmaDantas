@@ -9,12 +9,13 @@ import {
 } from '../models';
 import { DashboardStatsService } from './dashboard-stats.service';
 import { PurchasesStatsService } from './purchases-stats.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PurchaseService {
-  private readonly PURCHASES_URL = 'http://localhost:8080/api/purchases';
+  private readonly PURCHASES_URL = `${environment.apiBaseUrl}/api/purchases`;
 
   constructor(
     private http: HttpClient,

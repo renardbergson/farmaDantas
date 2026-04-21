@@ -12,6 +12,7 @@ import { Observable, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { DashboardStatsService } from './dashboard-stats.service';
 import { CustomersStatsService } from './customers-stats.service';
+import { environment } from '../../../environments/environment';
 
 export type createAddress = Pick<
   Address,
@@ -39,7 +40,7 @@ export type updatePerson = Partial<
   providedIn: 'root',
 })
 export class CustomerService {
-  private readonly CUSTOMERS_URL = 'http://localhost:8080/api/customers';
+  private readonly CUSTOMERS_URL = `${environment.apiBaseUrl}/api/customers`;
 
   constructor(
     private http: HttpClient,

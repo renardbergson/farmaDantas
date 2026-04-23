@@ -97,6 +97,7 @@
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom d-block">Funcionário</label>
                   <ng-select 
+                    [disabled]="!isAdmin"
                     formControlName="employee" 
                     [items]="users" 
                     bindLabel="name" 
@@ -277,8 +278,18 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn-primary-gradient">
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              data-bs-dismiss="modal"
+            >
+              Cancelar
+            </button>
+
+            <button 
+              type="submit" 
+              class="btn-primary-gradient"
+            >
               <i class="bi bi-cart-plus"></i>
               Registrar Compra
             </button>

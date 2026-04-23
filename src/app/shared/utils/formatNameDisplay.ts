@@ -1,7 +1,7 @@
 /**
  * Exibe os dois primeiros nomes; se houver mais palavras, acrescenta "...".
  */
-export function formatSidebarDisplayName(name: string): string {
+export function formatNameDisplay(name: string): string {
   const trimmed = name.trim();
   if (!trimmed) return '';
 

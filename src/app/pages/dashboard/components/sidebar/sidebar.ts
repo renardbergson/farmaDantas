@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, HostBinding } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { getInitials } from '../../../../shared/utils/getInitials';
-import { formatSidebarDisplayName } from '../../../../shared/utils/formatSidebarDisplayName';
+import { formatNameDisplay } from '../../../../shared/utils/formatNameDisplay';
 import { AuthService } from '../../../../shared/services';
 import { UserRole } from '../../../../shared/models';
 
@@ -33,7 +33,7 @@ export class Sidebar implements OnInit {
   ];
 
   protected readonly getInitials = getInitials;
-  protected readonly formatSidebarDisplayName = formatSidebarDisplayName;
+  protected readonly formatNameDisplay = formatNameDisplay;
 
   @HostBinding('class.collapsed') get collapsedClass() {
     return this.isCollapsed;

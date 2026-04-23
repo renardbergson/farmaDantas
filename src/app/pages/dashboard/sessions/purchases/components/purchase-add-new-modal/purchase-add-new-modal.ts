@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { CustomerService, PurchaseService, UserService, CashbackService, FeedbackService } from '../../../../../../shared/services';
-import { Cashback, CreatePurchaseRequest, Customer, PurchaseCategory, PurchaseMode, PaymentMethod, User } from '../../../../../../shared/models';
+import { CustomerService, PurchaseService, UserService, CashbackService, FeedbackService, AuthService } from '../../../../../../shared/services';
+import { Cashback, CreatePurchaseRequest, Customer, PurchaseCategory, PurchaseMode, PaymentMethod, User, UserRole } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPipe } from '../../../../../../shared/pipes';
@@ -20,9 +20,11 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalRef') modalRef!: ElementRef<HTMLDivElement>;
   @ViewChild('purchaseInfoAlert') purchaseInfoAlert!: ElementRef<HTMLElement>;
 
+  loggedUser: User | null = null;
   private tooltipInstance: any = null;
-  private modalShownHandler?: () => void;
   readonly todayDate = this.dateToInputValue(new Date());
+  private modalShownHandler?: () => void;
+  private modalHiddenHandler?: () => void;
 
   purchaseForm!: FormGroup;
 
@@ -42,7 +44,8 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     private userService: UserService,
     private purchaseService: PurchaseService,
     private cashbackService: CashbackService,
-    private feedback: FeedbackService
+    private feedback: FeedbackService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -62,7 +65,7 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
 
     this.userService.getUsers().subscribe({
       next: (users) => {
-        this.users = users;
+        this.setEmployeeField(users);
       },
       error: (error) => {
         this.feedback.error('Erro ao tentar listar funcionários')
@@ -72,31 +75,84 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
+    // MODAL
     const modalEl = this.modalRef?.nativeElement;
     const alertEl = this.purchaseInfoAlert?.nativeElement;
     const Bootstrap = (window as any).bootstrap;
 
-    if (!modalEl || !alertEl || !Bootstrap?.Tooltip) return;
+    if (!modalEl) return;
 
-    this.modalShownHandler = () => {
+    this.modalHiddenHandler = () => {
       this.disposeTooltip();
-      this.tooltipInstance = new Bootstrap.Tooltip(alertEl, {
-        placement: 'bottom',
-        fallbackPlacements: ['top'],
-        container: 'body',
-        customClass: 'purchase-info-tooltip'
-      });
+      this.resetForm();
     };
 
-    modalEl.addEventListener('shown.bs.modal', this.modalShownHandler);
+    modalEl.addEventListener('hidden.bs.modal', this.modalHiddenHandler);
+
+    // TOOLTIP
+    if (alertEl && Bootstrap?.Tooltip) {
+      this.modalShownHandler = () => {
+        this.disposeTooltip();
+        this.tooltipInstance = new Bootstrap.Tooltip(alertEl, {
+          placement: 'bottom',
+          fallbackPlacements: ['top'],
+          container: 'body',
+          customClass: 'purchase-info-tooltip'
+        });
+      };
+
+      modalEl.addEventListener('shown.bs.modal', this.modalShownHandler);
+    }
   }
 
   ngOnDestroy(): void {
     this.disposeTooltip();
     const modalEl = this.modalRef?.nativeElement;
+
     if (modalEl && this.modalShownHandler) {
       modalEl.removeEventListener('shown.bs.modal', this.modalShownHandler);
     }
+
+    if (modalEl && this.modalHiddenHandler) {
+      modalEl.removeEventListener('hidden.bs.modal', this.modalHiddenHandler);
+    }
+  }
+
+  /* GETTERS */
+  get isAdmin(): boolean {
+    return this.authService.getRole() === UserRole.ADMIN;
+  }
+
+  get purchaseInputValue(): number {
+    const value = this.purchaseForm?.get('purchaseValue')?.value;
+    return value != null ? Number(value) : 0;
+  }
+
+  get selectedCashback(): Cashback | null {
+    return this.purchaseForm?.get('selectedCashback')?.value ?? null;
+  }
+
+  get isCashbackApplicable(): boolean {
+    const cb = this.selectedCashback;
+    if (!cb) return false;
+    return this.purchaseInputValue >= cb.minPurchaseValue;
+  }
+
+  get finalValue(): number {
+    return Number(this.purchaseForm?.get('finalValue')?.value) ?? this.purchaseInputValue;
+  }
+
+  get generateCashback(): boolean {
+    return this.purchaseForm?.get('generateCashback')?.value ?? true;
+  }
+
+  get generatedCashbackValue(): number | null {
+    if (!this.generateCashback) return null;
+    return this.finalValue * CASHBACK_CONFIG.cashbackGenerationRate;
+  }
+
+  get cashbackPercent(): number {
+    return CASHBACK_CONFIG.cashbackGenerationRate * 100;
   }
 
   initForm(): void {
@@ -115,40 +171,6 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       observations: ['']
     });
     this.setValueAndCashbackListeners();
-  }
-
-  private setValueAndCashbackListeners(): void {
-    this.purchaseForm.get('purchaseValue')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
-    this.purchaseForm.get('selectedCashback')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
-  }
-
-  /**
-   * Ao mudar o cliente: limpa o cashback escolhido e busca vouchers disponíveis na API.
-   */
-  private setCustomerChangeListener(): void {
-    this.purchaseForm.get('customer')?.valueChanges.subscribe((customer: Customer | null) => {
-      this.purchaseForm.patchValue({ selectedCashback: null }, { emitEvent: false });
-      this.activeCashbacksList = [];
-
-      if (!customer?.id) return;
-
-      this.cashbackService.getAvailableCashbacksForCustomer(customer.id).subscribe({
-        next: (list) => { this.activeCashbacksList = list; },
-        error: (err) => {
-          this.feedback.error('Erro ao tentar listar vouchers ativos do cliente')
-          console.error('Erro ao tentar listar vouchers ativos do cliente:', err);
-        },
-      });
-    });
-  }
-
-  private syncTotalAndFinalValue(): void {
-    const total = this.purchaseInputValue;
-    const cashback = this.purchaseForm.get('selectedCashback')?.value as Cashback | null;
-    const final = cashback !== null && total >= (cashback.minPurchaseValue ?? 0)
-      ? total - cashback.value
-      : total;
-    this.purchaseForm.patchValue({ totalValue: total, finalValue: final }, { emitEvent: false });
   }
 
   togglePaymentMethod(method: PaymentMethod): void {
@@ -203,13 +225,74 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
+  private setEmployeeField(users: User[]) {
+    const loggedUserId = this.authService.getUserId();
+    this.loggedUser = users.find((user) => user.id === loggedUserId) ?? null;
+
+    if (!this.loggedUser) {
+      this.users = [];
+      this.purchaseForm.patchValue({ employee: null });
+      return;
+    }
+
+    this.users = this.isAdmin ? users : [this.loggedUser];
+    this.purchaseForm.patchValue({ employee: this.loggedUser });
+
+    if (this.isAdmin) {
+      this.purchaseForm.get('employee')?.enable({ emitEvent: false });
+    } else {
+      this.purchaseForm.get('employee')?.disable({ emitEvent: false });
+    }
+  }
+
+  private setValueAndCashbackListeners(): void {
+    this.purchaseForm.get('purchaseValue')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
+    this.purchaseForm.get('selectedCashback')?.valueChanges.subscribe(() => this.syncTotalAndFinalValue());
+  }
+
+  private setCustomerChangeListener(): void {
+    this.purchaseForm.get('customer')?.valueChanges.subscribe((customer: Customer | null) => {
+      this.purchaseForm.patchValue({ selectedCashback: null }, { emitEvent: false });
+      this.activeCashbacksList = [];
+
+      if (!customer?.id) return;
+
+      this.cashbackService.getAvailableCashbacksForCustomer(customer.id).subscribe({
+        next: (list) => { this.activeCashbacksList = list; },
+        error: (err) => {
+          this.feedback.error('Erro ao tentar listar vouchers ativos do cliente')
+          console.error('Erro ao tentar listar vouchers ativos do cliente:', err);
+        },
+      });
+    });
+  }
+
+  private syncTotalAndFinalValue(): void {
+    const total = this.purchaseInputValue;
+    const cashback = this.purchaseForm.get('selectedCashback')?.value as Cashback | null;
+    const final = cashback !== null && total >= (cashback.minPurchaseValue ?? 0)
+      ? total - cashback.value
+      : total;
+    this.purchaseForm.patchValue({ totalValue: total, finalValue: final }, { emitEvent: false });
+  }
+
   private handleSuccess(): void {
     this.purchaseAdded.emit();
+
+    const modalElement = this.modalRef?.nativeElement;
+    if (modalElement) {
+      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
+      modalInstance?.hide(); // já chama resetForm()
+    }
+  }
+
+  private resetForm(): void {
     this.selectedPaymentMethods.clear();
+    this.activeCashbacksList = [];
     this.purchaseForm.reset({
       customer: null,
       purchaseDate: this.dateToInputValue(new Date()),
-      employee: null,
+      employee: this.loggedUser,
       purchaseValue: null,
       totalValue: 0,
       finalValue: 0,
@@ -220,61 +303,6 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       mode: PurchaseMode.IN_STORE,
       observations: ''
     });
-
-    const modalElement = this.modalRef?.nativeElement;
-    if (modalElement) {
-      const modalInstance = (window as any).bootstrap?.Modal?.getInstance(modalElement);
-      modalInstance?.hide();
-    }
-  }
-
-  /* GETTERS */
-  get purchaseInputValue(): number {
-    const value = this.purchaseForm?.get('purchaseValue')?.value;
-    return value != null ? Number(value) : 0;
-  }
-
-  get selectedCashback(): Cashback | null {
-    return this.purchaseForm?.get('selectedCashback')?.value ?? null;
-  }
-
-  get isCashbackApplicable(): boolean {
-    const cb = this.selectedCashback;
-    if (!cb) return false;
-    return this.purchaseInputValue >= cb.minPurchaseValue;
-  }
-
-  get finalValue(): number {
-    return Number(this.purchaseForm?.get('finalValue')?.value) ?? this.purchaseInputValue;
-  }
-
-  get generateCashback(): boolean {
-    return this.purchaseForm?.get('generateCashback')?.value ?? true;
-  }
-
-  get generatedCashbackValue(): number | null {
-    if (!this.generateCashback) return null;
-    return this.finalValue * CASHBACK_CONFIG.cashbackGenerationRate;
-  }
-
-  get cashbackPercent(): number {
-    return CASHBACK_CONFIG.cashbackGenerationRate * 100;
-  }
-
-  /* HELPERS */
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.purchaseForm.get(fieldName);
-    return !!(field && field.invalid && (field.touched || field.dirty));
-  }
-
-  customerSearchFn(term: string, item: Customer): boolean {
-    const normalizedTerm = term.trim().toLowerCase();
-    if (!normalizedTerm) return true;
-
-    return (
-      item.name.toLowerCase().includes(normalizedTerm) ||
-      item.cpf.includes(normalizedTerm)
-    );
   }
 
   private disposeTooltip(): void {
@@ -289,5 +317,21 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  /* HELPERS DE TEMPLATE */
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.purchaseForm.get(fieldName);
+    return !!(field && field.invalid && (field.touched || field.dirty));
+  }
+
+  customerSearchFn(term: string, item: Customer): boolean {
+    const normalizedTerm = term.trim().toLowerCase();
+    if (!normalizedTerm) return true;
+
+    return (
+      item.name.toLowerCase().includes(normalizedTerm) ||
+      item.cpf.includes(normalizedTerm)
+    );
   }
 }

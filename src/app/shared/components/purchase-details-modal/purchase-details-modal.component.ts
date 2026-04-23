@@ -7,6 +7,7 @@ import {
 import { PurchaseService, FeedbackService } from '../../services';
 import { getInitials } from '../../utils/getInitials';
 import { PaymentMethodsLabelPipe, PurchaseCategoryLabelPipe, PurchaseModeLabelPipe } from '../../pipes';
+import { formatNameDisplay } from '../../utils/formatNameDisplay';
 
 @Component({
   selector: 'app-purchase-details-modal',
@@ -20,6 +21,7 @@ export class PurchaseDetailsModalComponent implements OnChanges {
   isLoading = false;
   hasError = false;
   protected readonly getInitials = getInitials;
+  protected readonly formatNameDisplay = formatNameDisplay;
 
   constructor(
     private purchaseService: PurchaseService,

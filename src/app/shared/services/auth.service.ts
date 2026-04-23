@@ -52,6 +52,10 @@ export class AuthService {
     return sessionStorage.getItem(this.TOKEN_KEY);
   }
 
+  getUserId(): string | null {
+    return this.getDecodedToken()?.sub ?? null;
+  }
+
   getName(): string | null {
     return this.getDecodedToken()?.name ?? null;
   }

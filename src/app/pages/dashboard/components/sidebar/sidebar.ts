@@ -14,12 +14,6 @@ import { UserRole } from '../../../../shared/models';
 })
 export class Sidebar implements OnInit {
   isCollapsed: boolean = false;
-  isAdmin: boolean = false;
-
-  userInfo = {
-    name: '',
-    role: '',
-  };
 
   role: Record<UserRole, string> = {
     [UserRole.ADMIN]: 'Administrador',
@@ -58,12 +52,22 @@ export class Sidebar implements OnInit {
       this.isCollapsed = true;
     }
     this.collapsedChange.emit(this.isCollapsed);
+  }
 
-    const userName = this.authService.getName();
-    const userRole = this.authService.getRole();
-    this.userInfo.name = userName || '';
-    this.userInfo.role = userRole ? this.role[userRole] || '' : '';
-    this.isAdmin = userRole === UserRole.ADMIN;
+  // Getters evitam estado duplicado e sempre retornam
+  // os dados mais atuais do AuthService, sendo reavaliados 
+  // no change detection do Angular
+  get userName(): string {
+    return this.authService.getName() || '';
+  }
+
+  get userRole(): string {
+    const role = this.authService.getRole();
+    return role ? this.role[role] as UserRole : '';
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.getRole() === UserRole.ADMIN;
   }
 
   toggleSidebar(): void {
@@ -80,6 +84,6 @@ export class Sidebar implements OnInit {
   logout(event: Event): void {
     event.preventDefault();
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }

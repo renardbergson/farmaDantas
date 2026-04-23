@@ -4,19 +4,29 @@ import { LoginRequest, LoginResponse, UserRole } from '../models';
 import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+type JwtPayload = {
+  name: string;
+  role: UserRole;
+  exp: number;
+  sub: string;
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly AUTH_URL = `${environment.apiBaseUrl}/api/auth/login`;
   private readonly TOKEN_KEY = 'access_token';
-  private readonly ROLE_KEY = 'user_role';
-  private readonly NAME_KEY = 'user_name';
+  private decodedToken: JwtPayload | null = null;
 
   constructor(private http: HttpClient) { }
 
   isAuthenticated(): boolean {
-    return !!this.getToken();
+    const token = this.getDecodedToken();
+    if (!token) return false;
+
+    const now = Math.floor(Date.now() / 1000); // transforma em segundos
+    return token.exp > now; // token ainda não expirou? (exp > now)
   }
 
   login(payload: LoginRequest): Observable<LoginResponse> {
@@ -28,10 +38,14 @@ export class AuthService {
     );
   }
 
+  private setSession(response: LoginResponse): void {
+    sessionStorage.setItem(this.TOKEN_KEY, response.accessToken);
+    this.decodedToken = null; // invalida cache porque o token mudou
+  }
+
   logout(): void {
     sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.NAME_KEY);
-    sessionStorage.removeItem(this.ROLE_KEY);
+    this.decodedToken = null; // limpa o cache
   }
 
   getToken(): string | null {
@@ -39,17 +53,29 @@ export class AuthService {
   }
 
   getName(): string | null {
-    return sessionStorage.getItem(this.NAME_KEY);
+    return this.getDecodedToken()?.name ?? null;
   }
 
   getRole(): UserRole | null {
-    const raw = sessionStorage.getItem(this.ROLE_KEY);
-    return raw as UserRole | null;
+    return this.getDecodedToken()?.role ?? null;
   }
 
-  private setSession(response: LoginResponse): void {
-    sessionStorage.setItem(this.TOKEN_KEY, response.accessToken);
-    sessionStorage.setItem(this.NAME_KEY, response.name);
-    sessionStorage.setItem(this.ROLE_KEY, response.role);
+  // mantém o payload decodificado em memória 
+  // para evitar decodificar toda hora
+  private getDecodedToken(): JwtPayload | null {
+    if (this.decodedToken) return this.decodedToken;
+
+    const token = this.getToken();
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];
+      if (!payload) return null;
+
+      this.decodedToken = JSON.parse(atob(payload));
+      return this.decodedToken;
+    } catch {
+      return null;
+    }
   }
 }

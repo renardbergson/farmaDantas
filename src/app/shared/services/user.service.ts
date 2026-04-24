@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../models';
+import { User, UserRole, UserStatus } from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -12,7 +12,19 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.USERS_URL}`);
+  getUsers(
+    filters?: { role?: UserRole; status?: UserStatus }
+  ): Observable<User[]> {
+    let params = new HttpParams();
+
+    if (filters?.role) {
+      params = params.set('role', filters.role);
+    }
+
+    if (filters?.status) {
+      params = params.set('status', filters.status);
+    }
+
+    return this.http.get<User[]>(`${this.USERS_URL}`, { params });
   }
 }

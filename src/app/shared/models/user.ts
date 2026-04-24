@@ -6,6 +6,11 @@ export enum UserRole {
   EMPLOYEE = 'EMPLOYEE',
 }
 
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
 export interface ListUsersResponse {
   id: string;
   name: string;

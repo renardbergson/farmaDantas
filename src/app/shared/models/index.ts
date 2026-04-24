@@ -38,7 +38,7 @@ export type {
   UpdateUserRoleRequest,
   UpdateUserRoleResponse,
 } from './user';
-export { UserRole } from './user';
+export { UserRole, UserStatus } from './user';
 export type { Address, AddressResponse } from './adress.model';
 export type {
   DashboardCustomersStats,

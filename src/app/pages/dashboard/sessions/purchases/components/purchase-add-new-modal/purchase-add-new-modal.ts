@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CustomerService, PurchaseService, UserService, CashbackService, FeedbackService, AuthService } from '../../../../../../shared/services';
-import { Cashback, CreatePurchaseRequest, Customer, PurchaseCategory, PurchaseMode, PaymentMethod, User, UserRole } from '../../../../../../shared/models';
+import { Cashback, CreatePurchaseRequest, Customer, PurchaseCategory, PurchaseMode, PaymentMethod, User, UserRole, UserStatus } from '../../../../../../shared/models';
 import { CASHBACK_CONFIG } from '../../../../../../shared/constants/cashback.config';
 import { NgxCurrencyDirective } from 'ngx-currency';
 import { PaymentMethodsLabelPipe, PurchaseModeLabelPipe, PurchaseCategoryLabelPipe } from '../../../../../../shared/pipes';
+
+type EssencialUserInfo = Pick<User, 'id' | 'name' | 'role'>;
 
 @Component({
   selector: 'app-purchase-add-new-modal',
@@ -20,7 +22,7 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('modalRef') modalRef!: ElementRef<HTMLDivElement>;
   @ViewChild('purchaseInfoAlert') purchaseInfoAlert!: ElementRef<HTMLElement>;
 
-  loggedUser: User | null = null;
+  loggedUser: EssencialUserInfo | null = null;
   private tooltipInstance: any = null;
   readonly todayDate = this.dateToInputValue(new Date());
   private modalShownHandler?: () => void;
@@ -29,7 +31,7 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
   purchaseForm!: FormGroup;
 
   customers: Customer[] = [];
-  users: User[] = [];
+  users: EssencialUserInfo[] = [];
   categories: PurchaseCategory[] = Object.values(PurchaseCategory);
 
   paymentMethods: PaymentMethod[] = Object.values(PaymentMethod);
@@ -63,15 +65,19 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
       },
     });
 
-    this.userService.getUsers().subscribe({
-      next: (users) => {
-        this.setEmployeeField(users);
-      },
-      error: (error) => {
-        this.feedback.error('Erro ao tentar listar funcionários')
-        console.error('Erro ao tentar listar funcionários:', error);
-      },
-    });
+    if (this.isAdmin) {
+      this.userService.getUsers({ status: UserStatus.ACTIVE }).subscribe({
+        next: (users) => {
+          this.setEmployeeField(users);
+        },
+        error: (error) => {
+          this.feedback.error('Erro ao tentar listar funcionários')
+          console.error('Erro ao tentar listar funcionários:', error);
+        },
+      });
+    } else {
+      this.setLoggedUserAsEmployee();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -225,7 +231,25 @@ export class PurchaseAddNewModal implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private setEmployeeField(users: User[]) {
+  private setLoggedUserAsEmployee(): void {
+    const id = this.authService.getUserId();
+    const name = this.authService.getName();
+    const role = this.authService.getRole();
+
+    if (!id || !name || !role) {
+      this.loggedUser = null;
+      this.users = [];
+      this.purchaseForm.patchValue({ employee: null });
+      return;
+    }
+
+    this.loggedUser = { id, name, role };
+    this.users = [this.loggedUser];
+    this.purchaseForm.patchValue({ employee: this.loggedUser });
+    this.purchaseForm.get('employee')?.disable({ emitEvent: false });
+  }
+
+  private setEmployeeField(users: EssencialUserInfo[]) {
     const loggedUserId = this.authService.getUserId();
     this.loggedUser = users.find((user) => user.id === loggedUserId) ?? null;
 

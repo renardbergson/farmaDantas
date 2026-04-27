@@ -1,13 +1,13 @@
 export interface AddressResponse {
-  zipCode: string;
-  street: string;
+  zipCode: string | null;
+  street: string | null;
   number: string | null;
   complement: string | null;
-  neighborhood: string;
-  cityId: number;
-  cityName: string;
-  stateId: number;
-  stateName: string;
+  neighborhood: string | null;
+  cityId: number | null;
+  cityName: string | null;
+  stateId: number | null;
+  stateName: string | null;
 }
 
 export type Address = AddressResponse;

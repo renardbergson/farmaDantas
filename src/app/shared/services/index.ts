@@ -7,12 +7,6 @@ export { CashbackService } from './cashback.service';
 
 // CUSTOMER SERVICE
 export { CustomerService } from './customer.service';
-export type {
-  createAddress,
-  createPerson,
-  updateAddress,
-  updatePerson,
-} from './customer.service';
 
 // PURCHASE SERVICE
 export { PurchaseService } from './purchase.service';

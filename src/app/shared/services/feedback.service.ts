@@ -19,6 +19,10 @@ export class FeedbackService {
     this.toastr.warning(message);
   }
 
+  info(message: string): void {
+    this.toastr.info(message);
+  }
+
   error(message: string): void {
     this.toastr.error(message);
   }

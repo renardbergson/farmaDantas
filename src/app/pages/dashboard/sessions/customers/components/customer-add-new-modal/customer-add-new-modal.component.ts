@@ -8,11 +8,9 @@ import {
   State,
   City,
   CustomerService,
-  createPerson,
-  updatePerson,
   FeedbackService,
 } from '../../../../../../shared/services';
-import { Customer, CustomerDetailsResponse } from '../../../../../../shared/models';
+import { CreateCustomerRequest, Customer, CustomerDetailsResponse } from '../../../../../../shared/models';
 
 @Component({
   selector: 'app-customer-add-new-modal',
@@ -42,6 +40,12 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   ngOnInit(): void {
     this.initForm();
     this.loadStates();
+    this.customerForm.get('zipCode')?.valueChanges.subscribe((value: string | null) => {
+      const digits = (value ?? '').replace(/\D/g, '');
+      if (!digits) {
+        this.clearStateAndCityFromCep();
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -69,48 +73,37 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
 
   initForm(): void {
     this.customerForm = this.fb.group({
-      name: ['', Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       cpf: ['', Validators.required],
       email: [''],
       phone: ['', Validators.required],
       dateOfBirth: [''],
-      zipCode: ['', Validators.required],
-      street: ['', Validators.required],
+
+      zipCode: [''],
+      street: [''],
       number: [''],
       complement: [''],
-      neighborhood: ['', Validators.required],
-      stateId: ['', Validators.required],
-      cityId: ['', Validators.required],
+      neighborhood: [''],
+      stateId: [''],
+      cityId: [''],
     });
     this.customerForm.get('cityId')?.disable();
   }
 
-  private fillFormFromDetails(details: CustomerDetailsResponse): void {
-    this.customerForm.patchValue({
-      name: details.name,
-      cpf: details.cpf,
-      email: details.email ?? '',
-      phone: details.phone,
-      dateOfBirth: details.dateOfBirth
-        ? details.dateOfBirth
-        : null,
-      zipCode: details.address.zipCode,
-      street: details.address.street,
-      number: details.address.number ?? '',
-      complement: details.address.complement ?? '',
-      neighborhood: details.address.neighborhood,
-      stateId: details.address.stateId,
-      cityId: details.address.cityId,
-    });
-  }
-
-  private loadCitiesFromResponse(details: CustomerDetailsResponse): void {
-    const state = this.states.find((state) => state.id === details.address.stateId);
-    if (state) {
-      this.loadCities(state, details.address.cityId ?? undefined);
-    } else {
+  onStateChange(stateValue: State | undefined): void {
+    if (!stateValue) {
+      this.cities = [];
+      this.customerForm.patchValue({ cityId: null });
       this.customerForm.get('cityId')?.disable();
+      return;
     }
+
+    const state = this.states.find((st) => st.id === stateValue.id);
+    if (!state) return;
+
+    this.customerForm.get('cityId')?.enable();
+    this.customerForm.patchValue({ cityId: null });
+    this.loadCities(state);
   }
 
   loadStates(): void {
@@ -181,16 +174,32 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
   }
 
   onSubmit(): void {
-    if (this.customerForm.valid) {
-      const raw = this.customerForm.getRawValue();
+    if (!this.customerForm.valid) {
+      this.customerForm.markAllAsTouched();
+      this.feedback.error('Formulário inválido');
+      console.warn('Formulário inválido');
+      return;
+    }
 
-      const customerData = {
-        name: raw.name,
-        cpf: raw.cpf,
-        email: raw.email,
-        phone: raw.phone,
-        dateOfBirth: raw.dateOfBirth,
-        address: {
+    const raw = this.customerForm.getRawValue();
+
+    const hasAddress =
+      !!raw.zipCode ||
+      !!raw.street ||
+      !!raw.number ||
+      !!raw.complement ||
+      !!raw.neighborhood ||
+      !!raw.stateId ||
+      !!raw.cityId;
+
+    const customerData = {
+      name: raw.name,
+      cpf: raw.cpf,
+      email: raw.email,
+      phone: raw.phone,
+      dateOfBirth: raw.dateOfBirth,
+      address: hasAddress
+        ? {
           zipCode: raw.zipCode,
           street: raw.street,
           number: raw.number,
@@ -198,39 +207,26 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
           neighborhood: raw.neighborhood,
           cityId: raw.cityId,
           stateId: raw.stateId,
-        },
-      };
+        }
+        : null
+    };
 
-      if (this.customer) {
-        this.customerService.updateCustomer(this.customer.id, customerData as updatePerson).subscribe({
-          next: () => this.handleSuccess('Cliente atualizado com sucesso'),
-          error: (err) => {
-            this.feedback.apiError(
-              err,
-              'Erro ao tentar atualizar o cliente', // fallback message
-              { apiStatuses: [409] } // conflito de CPF (api)
-            )
-            console.error('Erro ao tentar atualizar o cliente:', err);
-          }
-        });
-      } else {
-        this.customerService.addCustomer(customerData as createPerson).subscribe({
-          next: () => this.handleSuccess('Cliente salvo com sucesso'),
-          error: (err) => {
-            this.feedback.apiError(
-              err,
-              'Erro ao tentar salvar o cliente', // fallback message
-              { apiStatuses: [409] } // conflito de CPF (api)
-            )
-            console.error('Erro ao tentar salvar o cliente:', err);
-          }
-        });
-      }
-    } else {
-      this.customerForm.markAllAsTouched();
-      this.feedback.error('Formulário inválido');
-      console.warn('Formulário inválido');
-    }
+    const request$ = this.customer
+      ? this.customerService.updateCustomer(this.customer.id, customerData)
+      : this.customerService.addCustomer(customerData);
+
+    request$.subscribe({
+      next: () =>
+        this.handleSuccess(this.customer ? 'Cliente atualizado com sucesso' : 'Cliente salvo com sucesso'),
+      error: (err) => {
+        this.feedback.apiError(
+          err,
+          this.customer ? 'Erro ao tentar atualizar o cliente' : 'Erro ao tentar salvar o cliente',
+          { apiStatuses: [409] }
+        );
+        console.error(this.customer ? 'Erro ao tentar atualizar o cliente:' : 'Erro ao tentar salvar o cliente:', err);
+      },
+    });
   }
 
   private handleSuccess(feedbackMessage: string): void {
@@ -240,5 +236,46 @@ export class CustomerAddNewModal implements OnInit, OnChanges {
     const closeBtn = document.querySelector<HTMLElement>('#newCustomerModal .btn-close');
     closeBtn?.click();
     this.feedback.success(feedbackMessage);
+  }
+
+  private fillFormFromDetails(details: CustomerDetailsResponse): void {
+    this.customerForm.patchValue({
+      name: details.name,
+      cpf: details.cpf,
+      email: details.email ?? '',
+      phone: details.phone,
+      dateOfBirth: details.dateOfBirth
+        ? details.dateOfBirth
+        : null,
+      zipCode: details?.address?.zipCode ?? '',
+      street: details?.address?.street ?? '',
+      number: details?.address?.number ?? '',
+      complement: details?.address?.complement ?? '',
+      neighborhood: details?.address?.neighborhood ?? '',
+      stateId: details?.address?.stateId ?? '',
+      cityId: details?.address?.cityId ?? '',
+    });
+  }
+
+  private loadCitiesFromResponse(details: CustomerDetailsResponse): void {
+    const state = this.states.find((state) => state.id === details?.address?.stateId);
+    if (state) {
+      this.loadCities(state, details?.address?.cityId ?? undefined);
+    } else {
+      this.customerForm.get('cityId')?.disable();
+    }
+  }
+
+  private clearStateAndCityFromCep(): void {
+    this.cities = [];
+    this.customerForm.patchValue({
+      stateId: null,
+      cityId: null,
+      street: '',
+      neighborhood: '',
+      complement: '',
+      number: ''
+    });
+    this.customerForm.get('cityId')?.disable();
   }
 }

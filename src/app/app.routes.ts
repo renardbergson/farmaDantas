@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
+import { Register } from './pages/register/register';
 import { DashboardWrapper } from './pages/dashboard/dashboardWrapper';
 import { Dashboard, Customers, Cashbacks, Purchases, Reports, Employees, Configs } from './pages/dashboard/sessions/index';
 import { authGuard } from './shared/guards/auth.guard';
@@ -13,10 +14,16 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  // 2. Rota de login: "/login" renderiza a tela de login (sem sidebar)
+  // 2. Rotas de login e registro: "/login" e "/register"
   {
     path: 'login',
     component: Login,
+    canActivate: [loginScreenGuard]
+  },
+
+  {
+    path: 'register',
+    component: Register,
     canActivate: [loginScreenGuard]
   },
 

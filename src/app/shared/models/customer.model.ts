@@ -16,8 +16,8 @@ export interface ListCustomersResponse {
   createdAt: string;
   purchasesThisMonthCount: number;
   status: CustomerStatus;
-  stateId: number;
-  cityId: number;
+  stateId: number | null;
+  cityId: number | null;
 }
 
 export interface PurchaseModeThisMonth {
@@ -53,7 +53,7 @@ export interface CustomerDetailsResponse {
   dateOfBirth: string | null;
   age: number | null;
   createdAt: string;
-  address: AddressResponse;
+  address: AddressResponse | null;
   purchasesThisMonth: PurchasesThisMonth;
   activeCashback: ActiveCashback;
   cashbackLifetime: CashbackLifetime;
@@ -65,13 +65,13 @@ export interface CustomersSessionStats {
 }
 
 export interface CreateAddressRequest {
-  zipCode: string;
-  street: string;
+  zipCode?: string | null;
+  street?: string | null;
   number?: string | null;
   complement?: string | null;
-  neighborhood: string;
-  cityId: number;
-  stateId: number;
+  neighborhood?: string | null;
+  cityId?: number | null;
+  stateId?: number | null;
 }
 
 export interface CreatePersonRequest {
@@ -80,7 +80,7 @@ export interface CreatePersonRequest {
   email?: string | null;
   cpf: string;
   dateOfBirth?: string | null;
-  address: CreateAddressRequest;
+  address?: CreateAddressRequest | null;
 }
 
 export type CreateCustomerRequest = CreatePersonRequest;
@@ -92,7 +92,30 @@ export interface CreateCustomerResponse {
   email: string | null;
   dateOfBirth: string | null;
   createdAt: string;
-  address: AddressResponse;
+  address: AddressResponse | null;
+}
+
+export interface UpdateAddressPayload {
+  zipCode?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  cityId?: number | null;
+  stateId?: number | null;
+}
+
+export interface UpdateCustomerRequest {
+  name: string;
+  phone: string;
+  email?: string | null;
+  cpf: string;
+  dateOfBirth?: string | null;
+  // semântica do backend:
+  // - undefined: não mexe
+  // - null: remove endereço
+  // - objeto: patch/cria parcial
+  address?: UpdateAddressPayload | null;
 }
 
 export interface UpdateCustomerResponse {
@@ -103,7 +126,7 @@ export interface UpdateCustomerResponse {
   cpf: string;
   dateOfBirth: string | null;
   createdAt: string;
-  address: AddressResponse;
+  address: AddressResponse | null;
 }
 
 export type Customer = ListCustomersResponse;

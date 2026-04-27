@@ -9,6 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
 
   // se não tem token, passa a requisição normalmente
   // rotas públicas (api/auth/login) não precisam de token
+
   if (!token) return next(request);
 
   // Por que clonar? Em Angular, HttpRequest é imutável, 

@@ -67,31 +67,48 @@
             <div class="row g-2 g-md-3">
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">CEP</label>
-                <span class="detail-text">{{ (customerDetails.address.zipCode | mask: '00000-000') || '--' }}</span>
+                <span class="detail-text">
+                  {{ 
+                    customerDetails.address?.zipCode
+                    ? ((customerDetails.address?.zipCode ?? '') | mask: '00000-000')
+                    : '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Logradouro</label>
-                <span class="detail-text">{{ customerDetails.address.street || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.street ?? '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Número</label>
-                <span class="detail-text">{{ customerDetails.address.number || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.number ?? '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Complemento</label>
-                <span class="detail-text">{{ customerDetails.address.complement || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.complement ?? '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Bairro</label>
-                <span class="detail-text">{{ customerDetails.address.neighborhood || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.neighborhood ?? '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Cidade</label>
-                <span class="detail-text">{{ customerDetails.address.cityName || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.cityName ?? '--' }}
+                </span>
               </div>
               <div class="col-12 col-md-4 detail-field">
                 <label class="detail-label">Estado</label>
-                <span class="detail-text">{{ customerDetails.address.stateName || '--' }}</span>
+                <span class="detail-text">
+                  {{ customerDetails.address?.stateName ?? '--' }}
+                </span>
               </div>
             </div>
           </div>

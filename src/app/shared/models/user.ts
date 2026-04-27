@@ -13,24 +13,24 @@ export enum UserStatus {
 
 export interface ListUsersResponse {
   id: string;
+  status: UserStatus;
   name: string;
   email: string | null;
   createdAt: string;
   role: UserRole;
-  stateId: number;
-  cityId: number;
+  stateId: number | null;
+  cityId: number | null;
 }
 
 export type CreateUserRequest = CreatePersonRequest & {
-  role: UserRole;
   password: string;
 };
 
 export interface CreateUserResponse {
   name: string;
   email: string | null;
-  stateId: number;
-  cityId: number;
+  stateId: number | null;
+  cityId: number | null;
   role: UserRole;
 }
 
@@ -44,7 +44,7 @@ export interface UpdateUserResponse {
   email: string | null;
   cpf: string;
   dateOfBirth: string | null;
-  address: AddressResponse;
+  address: AddressResponse | null;
 }
 
 export interface UpdateUserRoleRequest {

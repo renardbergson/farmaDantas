@@ -1,0 +1,203 @@
+<div class="w-100" style="max-width: 440px; margin: 0 auto;">
+  <div class="d-flex align-items-center gap-3 mb-5">
+    <div class="logo-icon">
+      <i class="bi bi-capsule"></i>
+    </div>
+    <div>
+      <h1 class="brand-name mb-0">Farma<span class="brand-accent">Dantas</span></h1>
+      <p class="brand-subtitle mb-0">
+        A vermelhinha de Santa Luzia
+      </p>
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <h2 class="welcome-title">Crie seu cadastro</h2>
+    <p class="welcome-subtitle">
+      Preencha os dados abaixo para solicitar acesso
+    </p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="name" class="form-label">Nome completo*</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        formControlName="name"
+        placeholder="seu nome completo"
+        [class.is-invalid]="isFieldInvalid('name')"
+      >
+      @if (isFieldInvalid('name')) {
+        @if (form.get('name')?.hasError('required')) {
+          <div class="invalid-feedback d-block">O nome é obrigatório.</div>
+        } @else if (form.get('name')?.hasError('minlength') || form.get('name')?.hasError('maxlength')) {
+          <div class="invalid-feedback d-block">O nome deve ter entre 3 e 100 caracteres.</div>
+        }
+      }
+    </div>
+
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-6">
+        <label for="cpf" class="form-label">CPF*</label>
+        <input
+          type="text"
+          class="form-control"
+          id="cpf"
+          formControlName="cpf"
+          placeholder="seu cpf"
+          mask="000.000.000-00"
+          inputmode="numeric"
+          [class.is-invalid]="isFieldInvalid('cpf')"
+        >
+        @if (isFieldInvalid('cpf')) {
+          @if (form.get('cpf')?.hasError('required')) {
+            <div class="invalid-feedback d-block">O CPF é obrigatório.</div>
+          } @else if (form.get('cpf')?.hasError('cpfInvalid')) {
+            <div class="invalid-feedback d-block">CPF inválido.</div>
+          }
+        }
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="phone" class="form-label">Telefone*</label>
+        <input
+          type="text"
+          class="form-control"
+          id="phone"
+          formControlName="phone"
+          placeholder="seu telefone"
+          mask="(00) 00000-0000"
+          inputmode="tel"
+          [class.is-invalid]="isFieldInvalid('phone')"
+        >
+        @if (isFieldInvalid('phone')) {
+          @if (form.get('phone')?.hasError('required')) {
+            <div class="invalid-feedback d-block">O telefone é obrigatório.</div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">E-mail*</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        formControlName="email"
+        placeholder="seu email"
+        [class.is-invalid]="isFieldInvalid('email')"
+      >
+      @if (isFieldInvalid('email')) {
+        @if (form.get('email')?.hasError('required')) {
+          <div class="invalid-feedback d-block">O e-mail é obrigatório.</div>
+        } @else if (form.get('email')?.hasError('email')) {
+          <div class="invalid-feedback d-block">E-mail inválido.</div>
+        }
+      }
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-md-6">
+        <label for="dateOfBirth" class="form-label">Data de nascimento*</label>
+        <input
+          type="date"
+          class="form-control"
+          id="dateOfBirth"
+          formControlName="dateOfBirth"
+          [max]="todayDate"
+          [class.is-invalid]="isFieldInvalid('dateOfBirth')"
+        >
+        @if (isFieldInvalid('dateOfBirth')) {
+          @if (form.get('dateOfBirth')?.hasError('required')) {
+            <div class="invalid-feedback d-block">A data de nascimento é obrigatória.</div>
+          } @else if (form.get('dateOfBirth')?.hasError('minAge')) {
+            <div class="invalid-feedback d-block">É necessário ter pelo menos 18 anos.</div>
+          }
+        }
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label for="password" class="form-label">Senha*</label>
+        <div class="position-relative">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            placeholder="crie uma senha"
+            (input)="syncConfirmPasswordMismatch()"
+            [class.is-invalid]="isFieldInvalid('password')"
+          >
+          <button 
+            type="button" 
+            class="password-toggle" 
+            (click)="togglePassword()"
+          >
+            <i 
+              class="bi" 
+              [class.bi-eye]="!showPassword" 
+              [class.bi-eye-slash]="showPassword"
+              >
+            </i>
+          </button>
+        </div>
+        @if (isFieldInvalid('password')) {
+          @if (form.get('password')?.hasError('required')) {
+            <div class="invalid-feedback d-block">A senha é obrigatória.</div>
+          } @else if (form.get('password')?.hasError('minlength')) {
+            <div class="invalid-feedback d-block">A senha deve ter pelo menos 8 caracteres.</div>
+          } @else if (form.get('password')?.hasError('pattern')) {
+            <div class="invalid-feedback d-block">A senha deve ter letras maiúsculas, minúsculas e números.</div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label for="confirmPassword" class="form-label">Confirmar senha*</label>
+      <div class="position-relative">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          class="form-control"
+          id="confirmPassword"
+          formControlName="confirmPassword"
+          placeholder="confirme a senha"
+          (input)="syncConfirmPasswordMismatch()"
+          [class.is-invalid]="isFieldInvalid('confirmPassword')"
+        >
+        <button type="button" class="password-toggle" (click)="togglePassword()">
+          <i
+            class="bi"
+            [class.bi-eye]="!showPassword"
+            [class.bi-eye-slash]="showPassword"
+          ></i>
+        </button>
+      </div>
+      @if (isFieldInvalid('confirmPassword')) {
+        @if (form.get('confirmPassword')?.hasError('mismatch')) {
+          <div class="invalid-feedback d-block">As senhas não conferem.</div>
+        } @else if (form.get('confirmPassword')?.hasError('required')) {
+          <div class="invalid-feedback d-block">Confirme a senha.</div>
+        }
+      }
+    </div>
+
+    <button 
+      type="submit"
+      class="btn btn-primary btn-login w-100 d-flex align-items-center justify-content-center gap-2"
+      [class.disabled]="isSubmitting"
+      [disabled]="isSubmitting"
+    >
+      <span>Solicitar cadastro</span>
+      <i class="bi bi-person-plus"></i>
+    </button>
+  </form>
+
+  <p class="auth-switch text-center mt-4 mb-0">
+    Já tem cadastro?
+    <a routerLink="/login">Faça login</a>
+  </p>
+</div>

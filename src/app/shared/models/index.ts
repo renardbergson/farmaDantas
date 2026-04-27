@@ -15,6 +15,7 @@ export type {
   PurchaseModeThisMonth,
 } from './customer.model';
 export { CustomerStatus } from './customer.model';
+export type { UpdateAddressPayload, UpdateCustomerRequest } from './customer.model';
 export type { Cashback, ListCashbacksResponse } from './cashback.model';
 export { CashbackStatus } from './cashback.model';
 export type {

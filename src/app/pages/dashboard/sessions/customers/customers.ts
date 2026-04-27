@@ -85,7 +85,6 @@ export class Customers implements OnInit {
     });
   }
 
-  // Abre o modal de novo cliente
   onAddCustomer(): void {
     // abertura de modal gerenciada pelo bootstrap ***
     this.customerToEdit = undefined;
@@ -98,7 +97,8 @@ export class Customers implements OnInit {
   }
 
   onEditCustomer(customer: Customer): void {
-    this.customerToEdit = customer;
+    this.customerToEdit = { ...customer };
+    // cria uma nova referência para forçar re-atualização
   }
 
   onDeleteCustomer(customer: Customer): void {

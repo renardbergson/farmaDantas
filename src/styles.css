@@ -115,3 +115,62 @@ label[for],
   max-width: 28rem;
   line-height: 1.6;
 }
+
+
+/* TOAST */
+.toast-container .ngx-toastr {
+  border-radius: 10px !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28) !important;
+  font-size: 0.92rem;
+  color: #fff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.35) !important;
+  outline: 1.5px solid rgba(0, 0, 0, 0.18);
+}
+
+.toast-container .ngx-toastr.toast-success {
+  background-color: #1f9d55 !important;
+  border-left: 5px solid #0f6a37 !important;
+}
+
+.toast-container .ngx-toastr.toast-error {
+  background-color: #c0392b !important;
+  border-left: 5px solid #7f1d1d !important;
+}
+
+.toast-container .ngx-toastr.toast-warning {
+  background-color: #d68910 !important;
+  border-left: 5px solid #8a5a08 !important;
+}
+
+.toast-container .ngx-toastr.toast-info {
+  background-color: #2471a3 !important;
+  border-left: 5px solid #164d73 !important;
+}
+
+@keyframes toast-shake {
+  0%,
+
+  20% {
+    transform: translateX(-20px);
+  }
+
+  40% {
+    transform: translateX(20px);
+  }
+
+  60% {
+    transform: translateX(-10px);
+  }
+
+  80% {
+    transform: translateX(10px);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.toast-container .ngx-toastr.toast-error {
+  animation: toast-shake 320ms ease-in-out;
+}

@@ -7,7 +7,7 @@
       </div>
       <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
         <div class="modal-body">
-          <p class="text-muted form-intro">Preencha os dados abaixo.</p>
+          <p class="text-muted form-intro">Preencha os dados abaixo. Os campos com * são obrigatórios.</p>
 
           <div class="form-grid">
             <!-- Linha 0: cabeçalhos -->
@@ -21,7 +21,11 @@
               <input formControlName="name" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('name')" placeholder="Nome do cliente">
               <div class="error-feedback-space">
                 @if(isFieldInvalid('name')) {
+                @if(customerForm.get('name')?.errors?.['required']) {
                 <div class="invalid-feedback d-block">O nome é obrigatório.</div>
+                } @else if(customerForm.get('name')?.errors?.['minlength']) {
+                <div class="invalid-feedback d-block">O nome deve ter ao menos 3 caracteres.</div>
+                }
                 }
               </div>
             </div>
@@ -31,13 +35,13 @@
               <div class="row g-2 address-row">
                 <!-- CEP -->
                 <div class="col-5 form-group-with-error-space">
-                  <label class="form-label-custom">CEP*</label>
+                  <label class="form-label-custom">CEP</label>
                   <div class="input-group input-group-cep">
                     <input 
                       formControlName="zipCode" 
                       type="text" 
                       class="form-control form-control-custom" 
-                      [class.is-invalid]="isFieldInvalid('zipCode')" mask="00000-000" 
+                      mask="00000-000" 
                       placeholder="00000-000" 
                       (blur)="searchByCep()">
 
@@ -51,22 +55,22 @@
                       <i class="bi bi-search"></i>
                     </button>
                   </div>
-                  <div class="error-feedback-space">
-                    @if(isFieldInvalid('zipCode')) {
-                    <div class="invalid-feedback d-block">O CEP é obrigatório.</div>
-                    }
-                  </div>
+                  <div class="error-feedback-space"></div>
                 </div>
                 <!-- Estado -->
                 <div class="col-4 form-group-with-error-space">
-                  <label class="form-label-custom">Estado*</label>
-                  <ng-select (change)="loadCities($event)" formControlName="stateId" bindLabel="nome" bindValue="id" placeholder="Estado" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('stateId')" [items]="states" [searchable]="true" [clearable]="false">
+                  <label class="form-label-custom">Estado</label>
+                  <ng-select 
+                    (change)="onStateChange($event)" formControlName="stateId" 
+                    bindLabel="nome" 
+                    bindValue="id" 
+                    placeholder="Estado" 
+                    class="custom-ng-select" 
+                    [items]="states" 
+                    [searchable]="true" 
+                    [clearable]="true">
                   </ng-select>
-                  <div class="error-feedback-space">
-                    @if(isFieldInvalid('stateId')) {
-                    <div class="invalid-feedback d-block">O estado é obrigatório.</div>
-                    }
-                  </div>
+                  <div class="error-feedback-space"></div>
                 </div>
                 <!-- Número -->
                 <div class="col-3 form-group-with-error-space">
@@ -101,13 +105,9 @@
               </div>
             </div>
             <div class="form-grid-cell-right form-group-with-error-space">
-              <label class="form-label-custom">Logradouro*</label>
-              <input formControlName="street" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('street')" placeholder="Nome da rua">
-              <div class="error-feedback-space">
-                @if(isFieldInvalid('street')) {
-                <div class="invalid-feedback d-block">O logradouro é obrigatório.</div>
-                }
-              </div>
+              <label class="form-label-custom">Logradouro</label>
+              <input formControlName="street" type="text" class="form-control form-control-custom" placeholder="Nome da rua">
+              <div class="error-feedback-space"></div>
             </div>
 
             <!-- Linha 3: E-mail | Bairro + Complemento -->
@@ -119,13 +119,9 @@
             <div class="form-grid-cell-right">
               <div class="row g-2">
                 <div class="col-6 form-group-with-error-space">
-                  <label class="form-label-custom">Bairro*</label>
-                  <input formControlName="neighborhood" type="text" class="form-control form-control-custom" [class.is-invalid]="isFieldInvalid('neighborhood')" placeholder="Bairro">
-                  <div class="error-feedback-space">
-                    @if(isFieldInvalid('neighborhood')) {
-                    <div class="invalid-feedback d-block">O bairro é obrigatório.</div>
-                    }
-                  </div>
+                  <label class="form-label-custom">Bairro</label>
+                  <input formControlName="neighborhood" type="text" class="form-control form-control-custom" placeholder="Bairro">
+                  <div class="error-feedback-space"></div>
                 </div>
                 <div class="col-6 form-group-with-error-space">
                   <label class="form-label-custom">Complemento</label>
@@ -142,18 +138,17 @@
               <div class="error-feedback-space"></div>
             </div>
             <div class="form-grid-cell-right form-group-with-error-space">
-              <label class="form-label-custom">Cidade*</label>
-              <ng-select formControlName="cityId" bindLabel="nome" bindValue="id" placeholder="Selecione ou busque a cidade" class="custom-ng-select" [class.is-invalid]="isFieldInvalid('cityId')" [items]="cities" [searchable]="true" [clearable]="false">
+              <label class="form-label-custom">Cidade</label>
+              <ng-select 
+                formControlName="cityId" 
+                bindLabel="nome" 
+                bindValue="id" 
+                placeholder="Selecione ou busque a cidade" class="custom-ng-select" 
+                [items]="cities" 
+                [searchable]="true" 
+                [clearable]="true">
               </ng-select>
-              <div class="error-feedback-space">
-                @if(isFieldInvalid('cityId')) {
-                @if(customerForm.get('cityId')?.errors?.['cityNotFound']) {
-                <div class="invalid-feedback d-block">Cidade não encontrada.</div>
-                } @else {
-                <div class="invalid-feedback d-block">A cidade é obrigatória.</div>
-                }
-                }
-              </div>
+              <div class="error-feedback-space"></div>
             </div>
           </div>
         </div>

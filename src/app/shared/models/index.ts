@@ -36,8 +36,8 @@ export type {
   CreateUserResponse,
   UpdateUserRequest,
   UpdateUserResponse,
-  UpdateUserRoleRequest,
-  UpdateUserRoleResponse,
+  UpdateUserAccessRequest,
+  UpdateUserAccessResponse,
 } from './user';
 export { UserRole, UserStatus } from './user';
 export type { Address, AddressResponse } from './adress.model';

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateUserRequest, CreateUserResponse, User, UserRole, UserStatus } from '../models';
+import { CreateUserRequest, CreateUserResponse, UpdateUserAccessRequest, UpdateUserAccessResponse, User, UserRole, UserStatus } from '../models';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -30,5 +30,9 @@ export class UserService {
 
   createUser(user: CreateUserRequest): Observable<CreateUserResponse> {
     return this.http.post<CreateUserResponse>(`${this.USERS_URL}/create`, user);
+  }
+
+  updateUserAccess(userId: string, payload: UpdateUserAccessRequest): Observable<UpdateUserAccessResponse> {
+    return this.http.put<UpdateUserAccessResponse>(`${this.USERS_URL}/${userId}/access/update`, payload);
   }
 }

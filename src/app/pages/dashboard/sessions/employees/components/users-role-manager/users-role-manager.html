@@ -1,0 +1,138 @@
+<article class="employees-card">
+  <header class="employees-card-head">
+    <h2>Usuários do sistema</h2>
+    <p>Altere a função e o status dos usuários do sistema</p>
+  </header>
+
+  <div class="status-legend">
+    <div class="legend-header">
+      <h5 class="legend-title">Legenda de Status</h5>
+      <p class="legend-subtitle">
+        Entenda o significado de cada status de funcionário
+      </p>
+    </div>
+    <div class="legend-items">
+      <div class="legend-item">
+        <span class="legend-dot dot-active"></span>
+        <div class="legend-text">
+          <span class="legend-label">Ativo</span>
+          <p class="legend-description">
+            Pode acessar o sistema normalmente.
+          </p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot dot-inactive"></span>
+        <div class="legend-text">
+          <span class="legend-label">Inativo</span>
+          <p class="legend-description">
+            Recém-cadastrado ou temporariamente sem acesso.
+          </p>
+        </div>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot dot-dismissed"></span>
+        <div class="legend-text">
+          <span class="legend-label">Demitido</span>
+          <p class="legend-description">
+            Desligado da empresa, sem acesso ao sistema.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="employees-tabs" aria-label="Filtros por status de funcionários">
+    <button
+      type="button"
+      class="employees-tab"
+      [class.active]="activeTab === 'activeAndInactive'"
+      (click)="setTab('activeAndInactive')"
+    >
+      Ativos e inativos
+    </button>
+    <button
+      type="button"
+      class="employees-tab"
+      [class.active]="activeTab === 'dismissed'"
+      (click)="setTab('dismissed')"
+    >
+      Demitidos
+    </button>
+  </nav>
+
+  <div class="table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Status</th>
+          <th>Alterar função</th>
+          <th>Alterar status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of usersByTab; track user.id) {
+          <tr>
+            <td>
+              <div class="user-name-cell">
+                <span class="role-icon" [ngClass]="getRoleBadgeClass(user)">
+                  <i class="bi" [ngClass]="getRoleIconClass(user)"></i>
+                </span>
+                <span>{{ user.name }}</span>
+              </div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusBadgeClass(user)">
+                {{ getStatusLabel(user) }}
+              </span>
+            </td>
+            <td>
+              <select 
+                [(ngModel)]="user.role" 
+                (ngModelChange)="onUserChange(user)"
+                [name]="'role-' + user.id" 
+                class="role-select"
+                [disabled]="isCurrentUser(user.id)"
+              >
+                @for (role of roleOptions; track role.value) {
+                  <option [ngValue]="role.value">
+                    {{ role.label }}
+                  </option>
+                }
+              </select>
+            </td>
+            <td>
+              <select 
+                [(ngModel)]="user.status" 
+                (ngModelChange)="onUserChange(user)"
+                [name]="'status-' + user.id" 
+                class="role-select"
+                [disabled]="isCurrentUser(user.id)"
+              >
+                @for (status of statusOptions; track status.value) {
+                  <option [ngValue]="status.value">
+                    {{ status.label }}
+                  </option>
+                }
+              </select>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <footer class="employees-card-footer">
+    <button 
+      type="button" 
+      class="btn-primary" 
+      (click)="onSubmit()" 
+      [disabled]="isSaving"
+    >
+      Salvar alterações
+    </button>
+  </footer>
+</article>

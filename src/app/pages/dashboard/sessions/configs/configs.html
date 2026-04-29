@@ -1,8 +1,211 @@
-<section class="session-under-construction">
-  <i class="bi bi-tools text-danger mb-3" style="font-size: 2.75rem;" aria-hidden="true"></i>
-  <h2 class="h5 fw-semibold text-dark mb-3">Em construção</h2>
-  <p class="text-secondary mb-0 small session-under-construction__text">
-    Estamos construindo esta área do painel com todo capricho.<br />
-    Em breve ela aparece aqui e poderá ser utilizada.
-  </p>
+<section class="configs-page animate-fade-in">
+  <div class="configs-head">
+    <h1 class="configs-title">Configurações</h1>
+    <p class="configs-subtitle">Gerencie as configurações do sistema</p>
+  </div>
+
+  <div class="alert alert-info border-0 bg-info-subtle d-flex align-items-center gap-3 mb-4 rounded-3 configs-info-alert" role="note">
+    <i class="bi bi-info-circle-fill fs-4 text-info"></i>
+    <p class="mb-0 small">
+      As opções desativadas são recursos que ainda estão em desenvolvimento.
+    </p>
+  </div>
+
+  <nav class="configs-tabs" aria-label="Seções de configurações">
+    <button type="button" class="configs-tab" [class.active]="activeTab === 'profile'" (click)="setTab('profile')">
+      <i class="bi bi-person"></i> Perfil
+    </button>
+    <button type="button" class="configs-tab" [class.active]="activeTab === 'security'" (click)="setTab('security')">
+      <i class="bi bi-shield-lock"></i> Segurança
+    </button>
+    <button type="button" class="configs-tab" [class.active]="activeTab === 'cashback'" (click)="setTab('cashback')">
+      <i class="bi bi-percent"></i> Cashback
+    </button>
+    <button type="button" class="configs-tab" [class.active]="activeTab === 'notifications'" (click)="setTab('notifications')">
+      <i class="bi bi-bell"></i> Notif.
+    </button>
+  </nav>
+
+  @if (activeTab === 'profile') {
+    <article class="configs-card">
+      <header class="configs-card-head">
+        <h2>Informações do Perfil</h2>
+        <p>Atualize suas informações pessoais</p>
+      </header>
+
+      <div class="profile-row">
+        <div class="profile-avatar">{{ getInitials(profile.name) }}</div>
+        <div>
+          <button type="button" class="btn-outline-sm" disabled>Alterar foto</button>
+          <p class="hint">JPG, PNG ou GIF. Máximo 2MB.</p>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>Nome completo</span>
+          <input type="text" [(ngModel)]="profile.name" name="profileName" />
+        </label>
+        <label class="field">
+          <span>E-mail</span>
+          <input type="email" [(ngModel)]="profile.email" name="profileEmail" />
+        </label>
+        <label class="field">
+          <span>Telefone</span>
+          <input type="text" [(ngModel)]="profile.phone" name="profilePhone" />
+        </label>
+        <label class="field">
+          <span>Cargo</span>
+          <input type="text" [value]="profileRoleLabel" disabled />
+        </label>
+      </div>
+
+      <footer class="configs-card-footer">
+        <button type="button" class="btn-primary" (click)="saveProfile()">Salvar alterações</button>
+      </footer>
+    </article>
+  }
+
+  @if (activeTab === 'security') {
+    <article class="configs-card">
+      <header class="configs-card-head">
+        <h2>Segurança da Conta</h2>
+        <p>Gerencie a segurança da sua conta</p>
+      </header>
+
+      <div class="security-fields">
+        <label class="field">
+          <span>Senha atual</span>
+          <input type="password" [(ngModel)]="security.currentPassword" name="curPwd" autocomplete="current-password" />
+        </label>
+        <label class="field">
+          <span>Nova senha</span>
+          <input type="password" [(ngModel)]="security.newPassword" name="newPwd" autocomplete="new-password" />
+        </label>
+        <label class="field">
+          <span>Confirmar nova senha</span>
+          <input type="password" [(ngModel)]="security.confirmPassword" name="confPwd" autocomplete="new-password" />
+        </label>
+      </div>
+
+      <footer class="configs-card-footer configs-card-footer-split">
+        <button type="button" class="btn-secondary" (click)="cancelSecurity()">Cancelar</button>
+        <button type="button" class="btn-primary" (click)="saveSecurity()">Alterar senha</button>
+      </footer>
+    </article>
+  }
+
+  @if (activeTab === 'cashback') {
+    <article class="configs-card">
+      <header class="configs-card-head">
+        <h2>Configurações de Cashback</h2>
+        <p>Defina as regras do programa de cashback</p>
+      </header>
+
+      <div class="form-grid">
+        <label class="field">
+          <span>Percentual de Cashback (%)</span>
+          <input type="number" [(ngModel)]="cashback.generationPercent" name="cbGen" min="0" max="100" />
+          <p class="hint">Percentual aplicado sobre o valor da compra.</p>
+        </label>
+        <label class="field">
+          <span>Validade (dias)</span>
+          <input type="number" [(ngModel)]="cashback.validityDays" name="cbVal" min="1" />
+          <p class="hint">Dias até o cashback expirar.</p>
+        </label>
+        <label class="field">
+          <span>Taxa de resgate de cashback (%)</span>
+          <input type="number" [(ngModel)]="cashback.redemptionPercent" name="cbRed" min="0" max="100" step="0.1" />
+          <p class="hint">
+            Percentual cobrado sobre o valor da compra registrada para permitir o resgate de um voucher (ex.: 10% =
+            0,10).
+          </p>
+        </label>
+        <label class="field">
+          <span>Cashback máximo por compra (R$)</span>
+          <input type="number" [(ngModel)]="cashback.maxCashbackPerPurchase" name="cbMax" min="0" />
+          <p class="hint">Limite máximo de cashback por compra.</p>
+        </label>
+      </div>
+
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Cashback automático</p>
+          <p class="hint">Gerar cashback automaticamente ao registrar compra</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="cashback.autoCashback" name="cbAuto" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Notificar cliente por SMS</p>
+          <p class="hint">Enviar SMS quando cashback for gerado</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="cashback.smsOnGenerate" name="cbSms" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <footer class="configs-card-footer">
+        <button type="button" class="btn-primary" (click)="saveCashback()">Salvar configurações</button>
+      </footer>
+    </article>
+  }
+
+  @if (activeTab === 'notifications') {
+    <article class="configs-card">
+      <header class="configs-card-head">
+        <h2>Preferências de Notificação</h2>
+        <p>Configure como você deseja receber notificações</p>
+      </header>
+
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Notificações por e-mail</p>
+          <p class="hint">Receber resumos diários por e-mail</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifications.emailDigest" name="nEmail" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Novo cliente cadastrado</p>
+          <p class="hint">Notificar quando um novo cliente for cadastrado</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifications.newCustomer" name="nNew" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Cashback próximo do vencimento</p>
+          <p class="hint">Alertar sobre cashbacks que expiram em 5 dias</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifications.cashbackExpiring" name="nExp" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <p class="toggle-title">Relatórios semanais</p>
+          <p class="hint">Receber relatório semanal de desempenho</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="notifications.weeklyReport" name="nWeek" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <footer class="configs-card-footer">
+        <button type="button" class="btn-primary" (click)="saveNotifications()">Salvar preferências</button>
+      </footer>
+    </article>
+  }
 </section>

@@ -67,6 +67,10 @@ export class LeftSide implements OnInit {
             this.feedback.info('Usuário aguardando aprovação do administrador.');
             return;
           }
+          if (err?.status === 400) {
+            this.feedback.warning('Acesso negado. Verifique suas permissões de acesso.');
+            return;
+          }
           this.feedback.apiError(
             err,
             'CPF ou senha inválidos',

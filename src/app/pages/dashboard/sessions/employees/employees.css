@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.employees-page {
+  width: 100%;
+}
+
+.employees-head {
+  margin-bottom: 20px;
+}
+
+.employees-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.employees-subtitle {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.employees-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.employees-empty-message {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}

@@ -4,11 +4,13 @@ import type { CreatePersonRequest } from './customer.model';
 export enum UserRole {
   ADMIN = 'ADMIN',
   EMPLOYEE = 'EMPLOYEE',
+  NONE = 'NONE',
 }
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
+  DISMISSED = 'DISMISSED',
 }
 
 export interface ListUsersResponse {
@@ -47,13 +49,15 @@ export interface UpdateUserResponse {
   address: AddressResponse | null;
 }
 
-export interface UpdateUserRoleRequest {
+export interface UpdateUserAccessRequest {
   role: UserRole;
+  status: UserStatus;
 }
 
-export interface UpdateUserRoleResponse {
+export interface UpdateUserAccessResponse {
   name: string;
   role: UserRole;
+  status: UserStatus;
 }
 
 export type User = ListUsersResponse;

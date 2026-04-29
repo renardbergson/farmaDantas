@@ -5,6 +5,8 @@ import { DashboardWrapper } from './pages/dashboard/dashboardWrapper';
 import { Dashboard, Customers, Cashbacks, Purchases, Reports, Employees, Configs } from './pages/dashboard/sessions/index';
 import { authGuard } from './shared/guards/auth.guard';
 import { loginScreenGuard } from './shared/guards/login-screen.guard';
+import { roleGuard } from './shared/guards/role.guard';
+import { UserRole } from './shared/models';
 
 export const routes: Routes = [
   // 1. Rota raiz: redireciona "/" para "/login"
@@ -51,6 +53,8 @@ export const routes: Routes = [
       {
         path: 'admin',
         canActivate: [authGuard],
+        canActivateChild: [roleGuard],
+        data: { roles: [UserRole.ADMIN] },
         children: [
           { path: '', redirectTo: 'reports', pathMatch: 'full' },
           { path: 'reports', component: Reports },

@@ -15,9 +15,9 @@ import { UserRole } from '../../../../shared/models';
 export class Sidebar implements OnInit {
   isCollapsed: boolean = false;
 
-  role: Record<UserRole, string> = {
+  role: Partial<Record<UserRole, string>> = {
     [UserRole.ADMIN]: 'Administrador',
-    [UserRole.EMPLOYEE]: 'Funcionário',
+    [UserRole.EMPLOYEE]: 'Funcionário'
   };
 
   menuItems = [

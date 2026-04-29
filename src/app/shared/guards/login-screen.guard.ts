@@ -6,6 +6,7 @@ export const loginScreenGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
+  // se o usuário não está autenticado, libera acesso
   if (!auth.isAuthenticated()) return true;
 
   router.navigate(['/user/dashboard']);
